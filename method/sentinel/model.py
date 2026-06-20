@@ -5,7 +5,7 @@ from torch import nn
 import torch.nn.functional as F
 from torch.nn.utils.rnn import pad_sequence
 
-from .vocab import BOS, COLORS, EOS, OBJECTS, PAD, SHAPES, WORD_TO_ID, decode, extract_objects
+from .vocab import BOS, EOS, PAD, decode
 
 
 class TinyVLM(nn.Module):
@@ -18,16 +18,13 @@ class TinyVLM(nn.Module):
         self.embed = nn.Embedding(vocab_size, hidden, padding_idx=PAD)
         self.gru = nn.GRU(hidden, hidden, batch_first=True)
         self.lm_head = nn.Linear(hidden, vocab_size)
-        self.object_head = nn.Sequential(nn.Linear(hidden, hidden), nn.Tanh(), nn.Linear(hidden, n_objects))
+        self.visual_lm_bias = nn.Linear(n_objects, vocab_size, bias=False)
 
     def forward(self, image_vec: torch.Tensor, tokens: torch.Tensor) -> torch.Tensor:
         h0 = self.image_proj(image_vec).unsqueeze(0)
         emb = self.embed(tokens)
         out, _ = self.gru(emb, h0)
-        return self.lm_head(out)
-
-    def object_logits(self, image_vec: torch.Tensor) -> torch.Tensor:
-        return self.object_head(self.image_proj(image_vec))
+        return self.lm_head(out) + self.visual_lm_bias(image_vec).unsqueeze(1)
 
     def sequence_logprob(self, image_vec: torch.Tensor, prefix: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         seqs = []
@@ -55,21 +52,15 @@ class TinyVLM(nn.Module):
         prefix: list[int],
         max_new_tokens: int = 36,
         temperature: float = 0.0,
-        object_bias: float = 0.0,
-        repeat_penalty: float = 0.0,
     ) -> str:
         device = image_vec.device
         ids = list(prefix) if prefix else [BOS]
         prefix_len = len(ids)
         finished = False
-        obj_logits = self.object_logits(image_vec.unsqueeze(0)).squeeze(0)
-        object_index = {obj: i for i, obj in enumerate(OBJECTS)}
         for _ in range(max_new_tokens):
             inp = torch.tensor([ids], dtype=torch.long, device=device)
             logits = self.forward(image_vec.unsqueeze(0), inp)[:, -1, :]
             logits[:, PAD] = -1e9
-            if object_bias:
-                self._apply_object_bias(logits[0], ids[prefix_len:], obj_logits, object_index, object_bias, repeat_penalty)
             if temperature and temperature > 0:
                 probs = torch.softmax(logits / temperature, dim=-1)
                 nxt = torch.multinomial(probs, 1).item()
@@ -82,35 +73,3 @@ class TinyVLM(nn.Module):
         if not finished:
             ids.append(EOS)
         return decode(ids[prefix_len:])
-
-    @staticmethod
-    def _apply_object_bias(
-        logits: torch.Tensor,
-        generated_ids: list[int],
-        obj_logits: torch.Tensor,
-        object_index: dict[str, int],
-        object_bias: float,
-        repeat_penalty: float,
-    ) -> None:
-        """Bias only object-word positions using the model's learned visual scores."""
-        last = generated_ids[-1] if generated_ids else None
-        seen = set(extract_objects(decode(generated_ids)))
-        if last == WORD_TO_ID["a"]:
-            for color in COLORS:
-                color_candidates = []
-                for shape in SHAPES:
-                    obj = f"{color} {shape}"
-                    score = obj_logits[object_index[obj]]
-                    if obj in seen:
-                        score = score - repeat_penalty
-                    color_candidates.append(score)
-                color_score = torch.stack(color_candidates).max()
-                logits[WORD_TO_ID[color]] += object_bias * color_score
-        elif last in [WORD_TO_ID[color] for color in COLORS]:
-            color = next(color for color in COLORS if WORD_TO_ID[color] == last)
-            for shape in SHAPES:
-                obj = f"{color} {shape}"
-                score = obj_logits[object_index[obj]]
-                if obj in seen:
-                    score = score - repeat_penalty
-                logits[WORD_TO_ID[shape]] += object_bias * score

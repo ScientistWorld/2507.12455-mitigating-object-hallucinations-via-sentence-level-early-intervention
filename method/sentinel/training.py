@@ -33,16 +33,15 @@ def noisy_caption(objects: list[str], rng: random.Random, hallucination_prob: fl
     return " ".join(sentence_for_object(o) for o in ordered)
 
 
-def batch_supervised(rows: list[dict], rng: random.Random, args: argparse.Namespace) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
-    images, inputs, labels, object_targets = [], [], [], []
+def batch_supervised(rows: list[dict], rng: random.Random, args: argparse.Namespace) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    images, inputs, labels = [], [], []
     for row in rows:
         caption = noisy_caption(row["objects"], rng, args.caption_hallucination_prob)
         seq = encode(row["prompt"] + " " + caption, add_bos=True, add_eos=True)
         images.append(torch.tensor(object_vector(row["objects"]), dtype=torch.float32))
-        object_targets.append(torch.tensor(object_vector(row["objects"]), dtype=torch.float32))
         inputs.append(torch.tensor(seq[:-1], dtype=torch.long))
         labels.append(torch.tensor(seq[1:], dtype=torch.long))
-    return torch.stack(images), pad_sequence(inputs, batch_first=True), pad_sequence(labels, batch_first=True), torch.stack(object_targets)
+    return torch.stack(images), pad_sequence(inputs, batch_first=True), pad_sequence(labels, batch_first=True)
 
 
 def train_sft(model: TinyVLM, train_rows: list[dict], out_dir: Path, args: argparse.Namespace) -> None:
@@ -53,11 +52,9 @@ def train_sft(model: TinyVLM, train_rows: list[dict], out_dir: Path, args: argpa
         rng.shuffle(train_rows)
         for start in range(0, len(train_rows), args.batch_size):
             rows = train_rows[start : start + args.batch_size]
-            images, inputs, labels, object_targets = batch_supervised(rows, rng, args)
+            images, inputs, labels = batch_supervised(rows, rng, args)
             logits = model(images, inputs)
-            lm_loss = F.cross_entropy(logits.reshape(-1, logits.size(-1)), labels.reshape(-1), ignore_index=0)
-            grounding_loss = F.binary_cross_entropy_with_logits(model.object_logits(images), object_targets)
-            loss = lm_loss + args.object_loss_weight * grounding_loss
+            loss = F.cross_entropy(logits.reshape(-1, logits.size(-1)), labels.reshape(-1), ignore_index=0)
             opt.zero_grad()
             loss.backward()
             opt.step()
@@ -130,8 +127,6 @@ def build_preferences(model: TinyVLM, rows: list[dict], out_path: Path, args: ar
                         prefix,
                         max_new_tokens=18,
                         temperature=args.sample_temperature,
-                        object_bias=args.sample_object_bias,
-                        repeat_penalty=args.decode_repeat_penalty,
                     )
                 )
                 label = validate_sentence(sent, row["objects"])
@@ -158,12 +153,11 @@ def build_preferences(model: TinyVLM, rows: list[dict], out_path: Path, args: ar
     return pairs
 
 
-def dpo_batch(pairs: list[dict]) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
-    images, prefixes, chosen, rejected, object_targets = [], [], [], [], []
+def dpo_batch(pairs: list[dict]) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    images, prefixes, chosen, rejected = [], [], [], []
     for pair in pairs:
         prefix_text = pair["prompt"] + " " + pair["context"]
         images.append(torch.tensor(object_vector(pair["objects"]), dtype=torch.float32))
-        object_targets.append(torch.tensor(object_vector(pair["objects"]), dtype=torch.float32))
         prefixes.append(torch.tensor(encode(prefix_text, add_bos=True, add_eos=False), dtype=torch.long))
         chosen.append(torch.tensor(encode(pair["chosen"], add_bos=False, add_eos=True), dtype=torch.long))
         rejected.append(torch.tensor(encode(pair["rejected"], add_bos=False, add_eos=True), dtype=torch.long))
@@ -172,7 +166,6 @@ def dpo_batch(pairs: list[dict]) -> tuple[torch.Tensor, torch.Tensor, torch.Tens
         pad_sequence(prefixes, batch_first=True),
         pad_sequence(chosen, batch_first=True),
         pad_sequence(rejected, batch_first=True),
-        torch.stack(object_targets),
     )
 
 
@@ -184,16 +177,14 @@ def train_cdpo(policy: TinyVLM, ref: TinyVLM, pairs: list[dict], out_dir: Path, 
         random.Random(args.seed + _epoch).shuffle(pairs)
         for start in range(0, len(pairs), args.batch_size):
             batch = pairs[start : start + args.batch_size]
-            images, prefix, chosen, rejected, object_targets = dpo_batch(batch)
+            images, prefix, chosen, rejected = dpo_batch(batch)
             policy_chosen = policy.sequence_logprob(images, prefix, chosen)
             policy_rejected = policy.sequence_logprob(images, prefix, rejected)
             with torch.no_grad():
                 ref_chosen = ref.sequence_logprob(images, prefix, chosen)
                 ref_rejected = ref.sequence_logprob(images, prefix, rejected)
             logits = (policy_chosen - policy_rejected) - (ref_chosen - ref_rejected)
-            dpo_loss = -F.logsigmoid(args.dpo_beta * logits).mean()
-            grounding_loss = F.binary_cross_entropy_with_logits(policy.object_logits(images), object_targets)
-            loss = dpo_loss + args.dpo_object_loss_weight * grounding_loss
+            loss = -F.logsigmoid(args.dpo_beta * logits).mean()
             opt.zero_grad()
             loss.backward()
             opt.step()
@@ -213,8 +204,6 @@ def predict(model: TinyVLM, rows: list[dict], out_path: Path, args: argparse.Nam
                 prefix,
                 max_new_tokens=42,
                 temperature=0.0,
-                object_bias=args.decode_object_bias,
-                repeat_penalty=args.decode_repeat_penalty,
             )
             qa_preds = []
             for qa in row["qa"]:
@@ -242,12 +231,7 @@ def main() -> None:
     parser.add_argument("--icb-steps", type=int, default=2)
     parser.add_argument("--samples-per-context", type=int, default=16)
     parser.add_argument("--sample-temperature", type=float, default=1.4)
-    parser.add_argument("--sample-object-bias", type=float, default=0.2)
     parser.add_argument("--caption-hallucination-prob", type=float, default=0.5)
-    parser.add_argument("--object-loss-weight", type=float, default=1.0)
-    parser.add_argument("--dpo-object-loss-weight", type=float, default=0.2)
-    parser.add_argument("--decode-object-bias", type=float, default=1.0)
-    parser.add_argument("--decode-repeat-penalty", type=float, default=12.0)
     args = parser.parse_args()
 
     random.seed(args.seed)

@@ -1,8 +1,98 @@
 {
   "experiments": {
+    "paper_llava_v15_7b_main": {
+      "description": "Paper-reported main SENTINEL result for LLaVA-v1.5-7B from Table 1.",
+      "weight": 0.45,
+      "primary_metric": "response_hallucination_rate",
+      "metrics": {
+        "response_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0},
+        "mention_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0},
+        "amber_chair": {"higher_is_better": false, "coefficient": -0.7},
+        "amber_hal_score": {"higher_is_better": false, "coefficient": -0.7},
+        "amber_cog_score": {"higher_is_better": false, "coefficient": -0.5},
+        "hallusion_question_accuracy": {"higher_is_better": true, "coefficient": 0.4},
+        "vqav2_accuracy": {"higher_is_better": true, "coefficient": 0.5},
+        "textvqa_accuracy": {"higher_is_better": true, "coefficient": 0.5},
+        "scienceqa_image_accuracy": {"higher_is_better": true, "coefficient": 0.4},
+        "mmvet_overall": {"higher_is_better": true, "coefficient": 0.4}
+      },
+      "results": {
+        "llava_v15_7b_baseline": {
+          "type": "baseline",
+          "response_hallucination_rate": 52.7,
+          "mention_hallucination_rate": 28.0,
+          "amber_chair": 8.4,
+          "amber_hal_score": 35.5,
+          "amber_cog_score": 4.0,
+          "hallusion_question_accuracy": 46.86,
+          "vqav2_accuracy": 78.5,
+          "textvqa_accuracy": 58.2,
+          "scienceqa_image_accuracy": 66.8,
+          "mmvet_overall": 31.0
+        },
+        "sentinel_llava_v15_7b": {
+          "type": "proposed",
+          "response_hallucination_rate": 4.3,
+          "mention_hallucination_rate": 2.6,
+          "amber_chair": 2.9,
+          "amber_hal_score": 14.6,
+          "amber_cog_score": 1.2,
+          "hallusion_question_accuracy": 47.56,
+          "vqav2_accuracy": 78.4,
+          "textvqa_accuracy": 58.2,
+          "scienceqa_image_accuracy": 69.2,
+          "mmvet_overall": 32.6
+        }
+      }
+    },
+    "paper_llava_v15_13b_main": {
+      "description": "Paper-reported main SENTINEL result for LLaVA-v1.5-13B from Table 1.",
+      "weight": 0.25,
+      "primary_metric": "response_hallucination_rate",
+      "metrics": {
+        "response_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0},
+        "mention_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0},
+        "amber_chair": {"higher_is_better": false, "coefficient": -0.7},
+        "amber_hal_score": {"higher_is_better": false, "coefficient": -0.7},
+        "amber_cog_score": {"higher_is_better": false, "coefficient": -0.5},
+        "hallusion_question_accuracy": {"higher_is_better": true, "coefficient": 0.4},
+        "vqav2_accuracy": {"higher_is_better": true, "coefficient": 0.5},
+        "textvqa_accuracy": {"higher_is_better": true, "coefficient": 0.5},
+        "scienceqa_image_accuracy": {"higher_is_better": true, "coefficient": 0.4},
+        "mmvet_overall": {"higher_is_better": true, "coefficient": 0.4}
+      },
+      "results": {
+        "llava_v15_13b_baseline": {
+          "type": "baseline",
+          "response_hallucination_rate": 46.0,
+          "mention_hallucination_rate": 23.0,
+          "amber_chair": 6.9,
+          "amber_hal_score": 31.9,
+          "amber_cog_score": 3.3,
+          "hallusion_question_accuracy": 46.43,
+          "vqav2_accuracy": 80.0,
+          "textvqa_accuracy": 61.2,
+          "scienceqa_image_accuracy": 71.6,
+          "mmvet_overall": 36.0
+        },
+        "sentinel_llava_v15_13b": {
+          "type": "proposed",
+          "response_hallucination_rate": 3.3,
+          "mention_hallucination_rate": 1.9,
+          "amber_chair": 2.7,
+          "amber_hal_score": 11.7,
+          "amber_cog_score": 0.9,
+          "hallusion_question_accuracy": 46.77,
+          "vqav2_accuracy": 79.9,
+          "textvqa_accuracy": 61.0,
+          "scienceqa_image_accuracy": 72.8,
+          "mmvet_overall": 36.2
+        }
+      }
+    },
     "synthetic_object_halbench": {
-      "description": "Scaled SENTINEL reproduction of the paper's Object HalBench-style claim: reduce object hallucination while preserving useful object coverage. The paper's full LLaVA-v1.5-7B Object HalBench values are documented in briefing/evaluation.md; the numeric targets here are the validated scaled synthetic benchmark reference values so automated checks compare the same data, model scale, and metric implementation.",
-      "weight": 1.0,
+      "description": "Runnable scaled SENTINEL reproduction of the paper's Object HalBench-style claim on deterministic synthetic scenes. These targets are from the validated scaled run and exist so scripts/evaluate.sh can compare future methods on the compact benchmark; the paper-reported full-scale targets are recorded in the paper_llava_v15_* experiments.",
+      "weight": 0.3,
       "primary_metric": "response_hallucination_rate",
       "metrics": {
         "response_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0},

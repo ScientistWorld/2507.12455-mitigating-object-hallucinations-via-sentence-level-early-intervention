@@ -1,6 +1,6 @@
 # Reproduction Milestones
 
-**Current: core_claim**
+**Current: method_runs**
 
 ## Progress Log
 
@@ -12,3 +12,8 @@
 ### [2026-06-20 05:35] - core_claim
 - Re-audited the workspace after the milestone reset and confirmed `python validate.py --compare` passes on current artifacts.
 - Preparing a CPU test-node rerun of `scripts/reproduce.sh` to refresh the reproducibility artifacts from scratch.
+
+### [2026-06-20 05:41] - method_runs
+- Found that the previous compact implementation included non-paper auxiliary object-presence losses and decode-time object bias/repeat filtering.
+- Removed those shortcuts so the method path now uses image-conditioned language modeling plus SENTINEL's sampled validation, bootstrapped context construction, and C-DPO objective.
+- The old `scores.json` is stale for the patched method; submitting a fresh CPU test-node rerun before restoring `core_claim`.
