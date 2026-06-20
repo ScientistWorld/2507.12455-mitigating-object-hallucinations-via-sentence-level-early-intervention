@@ -52,8 +52,9 @@ def score_qa_rows(rows: list[dict]) -> dict:
     correct = 0
     total = 0
     for row in rows:
-        for qa in row.get("qa_predictions", []):
-            pred = qa.get("prediction", "").strip().lower()
+        mentioned = set(extract_objects(row.get("prediction", "")))
+        for qa in row.get("qa", []):
+            pred = "yes" if qa.get("object") in mentioned else "no"
             gold = qa.get("answer", "").strip().lower()
             if pred == gold:
                 correct += 1

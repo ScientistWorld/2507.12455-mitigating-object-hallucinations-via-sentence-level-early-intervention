@@ -38,6 +38,7 @@ class TinyVLM(nn.Module):
     def generate(self, image_vec: torch.Tensor, prefix: list[int], max_new_tokens: int = 36, temperature: float = 0.0) -> str:
         device = image_vec.device
         ids = list(prefix) if prefix else [BOS]
+        prefix_len = len(ids)
         finished = False
         for _ in range(max_new_tokens):
             inp = torch.tensor([ids], dtype=torch.long, device=device)
@@ -54,4 +55,4 @@ class TinyVLM(nn.Module):
                 break
         if not finished:
             ids.append(EOS)
-        return decode(ids)
+        return decode(ids[prefix_len:])

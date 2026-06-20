@@ -5,4 +5,4 @@ action: submit
 gpus: 0
 test: true
 milestone: none
-notes: "CPU smoke job for the full scaled SENTINEL pipeline: generate synthetic data, run baseline, train C-DPO method, evaluate outputs, and validate scores."
+notes: "CPU smoke job after audit fixes: generate synthetic data, run language-prior baseline, train the scaled in-domain SENTINEL C-DPO method without oracle preference fallbacks, evaluate outputs, and validate scores."

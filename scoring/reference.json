@@ -14,27 +14,27 @@
       "results": {
         "language_prior": {
           "type": "baseline",
-          "response_hallucination_rate": 0.50,
-          "mention_hallucination_rate": 0.35,
-          "object_recall": 0.40,
+          "response_hallucination_rate": 50.0,
+          "mention_hallucination_rate": 35.0,
+          "object_recall": 40.0,
           "avg_object_mentions": 2.0,
-          "qa_accuracy": 0.50
+          "qa_accuracy": 50.0
         },
         "baseline": {
           "type": "baseline",
-          "response_hallucination_rate": 0.52,
-          "mention_hallucination_rate": 0.28,
-          "object_recall": 0.70,
+          "response_hallucination_rate": 52.7,
+          "mention_hallucination_rate": 28.0,
+          "object_recall": 70.0,
           "avg_object_mentions": 2.0,
-          "qa_accuracy": 0.60
+          "qa_accuracy": 60.0
         },
         "sentinel": {
           "type": "proposed",
-          "response_hallucination_rate": 0.043,
-          "mention_hallucination_rate": 0.026,
-          "object_recall": 0.70,
+          "response_hallucination_rate": 4.3,
+          "mention_hallucination_rate": 2.6,
+          "object_recall": 70.0,
           "avg_object_mentions": 2.0,
-          "qa_accuracy": 0.70
+          "qa_accuracy": 70.0
         }
       }
     }

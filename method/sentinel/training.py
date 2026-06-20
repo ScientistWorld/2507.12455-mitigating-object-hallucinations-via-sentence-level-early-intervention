@@ -121,13 +121,10 @@ def build_preferences(model: TinyVLM, rows: list[dict], out_path: Path, args: ar
                 elif label == "hallucinated":
                     negatives.append(sent)
             if not positives or not negatives:
-                # Keep the data in-domain by using the model's object vocabulary
-                # and current context; this fallback is used only when sampling
-                # fails to produce both labels for a small synthetic image.
-                pos_obj = rng.choice(row["objects"])
-                neg_obj = rng.choice([o for o in OBJECTS if o not in row["objects"]])
-                positives.append(sentence_for_object(pos_obj))
-                negatives.append(sentence_for_object(neg_obj))
+                # SENTINEL preference pairs must come from in-domain model
+                # samples.  If the current sampling batch lacks either class,
+                # skip this context rather than fabricating oracle pairs.
+                continue
             positive = rng.choice(positives)
             negative = rng.choice(negatives)
             pairs.append({"id": row["id"], "prompt": row["prompt"], "objects": row["objects"], "context": context, "chosen": positive, "rejected": negative})
@@ -136,6 +133,8 @@ def build_preferences(model: TinyVLM, rows: list[dict], out_path: Path, args: ar
     with out_path.open("w", encoding="utf-8") as f:
         for pair in pairs:
             f.write(json.dumps(pair, sort_keys=True) + "\n")
+    if not pairs:
+        raise RuntimeError("No in-domain SENTINEL preference pairs were sampled; increase samples_per_context or adjust the base model.")
     return pairs
 
 

@@ -15,6 +15,13 @@ Implemented a scaled, self-contained reproduction path:
 
 No reproduced training result is claimed yet. Local lightweight validation passed for syntax, import separation, and baseline/evaluator JSON output. The actual method training path requires torch and will run in the submitted compute job.
 
+Audit fixes on 2026-06-20:
+- Corrected `scoring/reference.json` hallucination/recall/QA values to use the same percentage scale as `eval/metrics.py`.
+- Changed QA scoring so `eval/` derives answers independently from generated captions and gold questions rather than trusting method-supplied `qa_predictions`.
+- Removed oracle-fabricated fallback preference pairs; SENTINEL preference pairs now come only from sampled model continuations.
+- Fixed generation to decode only newly generated continuation tokens, not the prompt prefix.
+- Updated the prediction-schema constraints and ignored `tmp/` throwaway audit files.
+
 ## Remaining
 
 Run the compute job, inspect `scoring/scores.json`, compare the baseline and SENTINEL outputs, and update the milestone only if the paper's core claim is supported on the scaled benchmark.
@@ -22,6 +29,8 @@ Run the compute job, inspect `scoring/scores.json`, compare the baseline and SEN
 ## Issues
 
 The full paper setup uses LLaVA-v1.5, Visual Genome, Scene-GraphParser, GroundingDINO, YOLO-World, and public hallucination benchmarks. That is larger than this initial autonomous run, so the first runnable environment uses a scaled synthetic benchmark while preserving the SENTINEL algorithmic procedure.
+
+The current implementation is therefore not enough to claim the full paper-scale core claim. It can support only a scaled method milestone after the submitted job proves the pipeline runs and produces real scores.
 
 ## Deviations from Paper
 
