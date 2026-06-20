@@ -5,4 +5,4 @@ action: submit
 gpus: 0
 test: true
 milestone: method_runs
-notes: "Run corrected scaled SENTINEL smoke test: clean stale artifacts, train grounded TinyVLM with in-domain candidate sampling and C-DPO, evaluate scores, validate structure, and print sample predictions/pair count."
+notes: "Run vectorized rebalanced SENTINEL CPU test with progress logging: clean artifacts, train SFT, sample preferences, run batched C-DPO, evaluate, validate, and print prediction diagnostics."
