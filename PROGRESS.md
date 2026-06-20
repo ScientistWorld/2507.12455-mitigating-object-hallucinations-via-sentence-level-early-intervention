@@ -13,7 +13,14 @@ Implemented a scaled, self-contained reproduction path:
 
 ## Results
 
-No reproduced training result is claimed yet. Local lightweight validation passed for syntax, import separation, and baseline/evaluator JSON output. The actual method training path requires torch and will run in the submitted compute job.
+The scaled reproduction reaches `core_claim`. Job `f289abfe-f08` ran the full pipeline, sampled 1,389 in-domain SENTINEL preference pairs, trained C-DPO, wrote predictions, and passed `python validate.py --compare`.
+
+Final reproduced scores on `synthetic_object_halbench`:
+- `language_prior`: response hallucination 98.750, mention hallucination 71.667, object recall 27.984, QA accuracy 47.312.
+- `baseline`: response hallucination 24.583, mention hallucination 9.704, object recall 91.907, QA accuracy 93.714.
+- `sentinel`: response hallucination 4.167, mention hallucination 1.353, object recall 100.000, QA accuracy 99.669.
+
+This supports the paper's core benefit/constraint claim in the compact environment: sentence-level early intervention sharply reduces object hallucination while maintaining useful object coverage and QA behavior.
 
 Audit fixes on 2026-06-20:
 - Corrected `scoring/reference.json` hallucination/recall/QA values to use the same percentage scale as `eval/metrics.py`.
@@ -39,17 +46,17 @@ This run improved over the previous collapse but removed the benefit side of the
 
 Job `7d02312f-289` was cancelled after 20 minutes with no stage-level output. Partial artifacts showed `baseline.pt`, baseline predictions, language-prior predictions, and 1,799 sampled preference pairs, but no SENTINEL checkpoint, SENTINEL predictions, or `scores.json`. The run had likely entered the unbatched C-DPO loop, where each preference example triggered separate policy/reference forward passes. The implementation now vectorizes padded sequence log-probability scoring across each batch, reduces the default smoke workload to 700 images x 16 samples, and prints flushed progress at each major stage and C-DPO epoch.
 
+Job `f289abfe-f08` completed after vectorization and produced the final `core_claim` scores listed above.
+
 ## Remaining
 
-Run the corrected compute job, inspect `scoring/scores.json`, compare the baseline and SENTINEL outputs, and update to `core_claim` only if SENTINEL materially reduces hallucination while maintaining non-trivial object recall and QA accuracy on the scaled benchmark.
+To reach higher milestones, add more benchmark axes such as a second synthetic difficulty setting, a standard-DPO ablation, or a public VLM hallucination dataset with open detector substitutes. The current package is sufficient for the minimum reusable research gym.
 
 ## Issues
 
 The full paper setup uses LLaVA-v1.5, Visual Genome, Scene-GraphParser, GroundingDINO, YOLO-World, and public hallucination benchmarks. That is larger than this initial autonomous run, so the first runnable environment uses a scaled synthetic benchmark while preserving the SENTINEL algorithmic procedure.
 
-The current implementation is therefore not enough to claim the full paper-scale core claim. It can support only a scaled method milestone after the submitted job proves the pipeline runs and produces real scores.
-
-The current highest milestone is `method_runs`: the paper's algorithmic steps execute end-to-end in the scaled environment, but the latest completed scores do not yet support the core hallucination-mitigation claim.
+The current implementation supports the scaled core claim, not the full paper-scale benchmark suite.
 
 ## Deviations from Paper
 

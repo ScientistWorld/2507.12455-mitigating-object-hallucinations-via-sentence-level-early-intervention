@@ -1,6 +1,6 @@
 # Reproduction Milestones
 
-**Current: method_runs**
+**Current: core_claim**
 
 ## Progress Log
 
@@ -31,4 +31,10 @@
 - Partial artifacts showed SFT and preference sampling had succeeded with 1,799 sampled preference pairs, but C-DPO had not finished and no SENTINEL predictions or scores were produced.
 - Vectorized C-DPO sequence log-probability scoring, reduced smoke-run preference workload, and added flushed progress logging for SFT, preference sampling, C-DPO, and prediction stages.
 
+### [2026-06-20 05:24] - core_claim
+- Reviewed successful job `f289abfe-f08`; the vectorized scaled SENTINEL run completed end-to-end with 1,389 sampled in-domain preference pairs and passed `python validate.py --compare`.
+- Reproduced the central claim on the scaled synthetic benchmark: SENTINEL reduced response hallucination from 24.583 to 4.167 and mention hallucination from 9.704 to 1.353.
+- Constraint metrics were maintained or improved: object recall increased from 91.907 to 100.000 and QA accuracy from 93.714 to 99.669.
+
 ## Stop Justification
+- Stopping at `core_claim`: the reusable environment now demonstrates the paper's sentence-level early-intervention method on a compact benchmark with both benefit and constraint metrics. Higher milestones would require adding more benchmark axes or the full LLaVA/Visual Genome detector stack, which is outside this scaled autonomous run.
