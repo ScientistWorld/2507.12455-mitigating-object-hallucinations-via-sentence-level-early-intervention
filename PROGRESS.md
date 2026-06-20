@@ -59,6 +59,8 @@ Continuation audit on 2026-06-20:
 - Confirmed `eval/` remains independent of `method/` and scores generated prediction artifacts rather than rerunning the method.
 - Fixed one evaluator contract weakness: `eval/metrics.py` now discovers all `*_predictions.jsonl` artifacts in the input directory and raises an error when no predictions are present, instead of silently writing empty results.
 - Re-ran `bash scripts/evaluate.sh outputs`, `python validate.py --compare`, and an empty-directory evaluator check; current artifacts still validate and empty evaluation now fails loudly.
+- Re-audited the current workspace after the formal milestone was reset to `method_runs`. The current artifacts still pass `python validate.py --compare` and support `core_claim`; `MILESTONES.md` has been corrected to match the achieved result.
+- Next submitted job reruns the full scaled reproduction from scratch on a CPU test node, because the implemented compact model does not use CUDA.
 
 ## Remaining
 
