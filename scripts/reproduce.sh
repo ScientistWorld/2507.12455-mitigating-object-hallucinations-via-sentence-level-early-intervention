@@ -18,6 +18,12 @@ set -e
 
 cd /home/user
 
+mkdir -p outputs
+rm -f outputs/language_prior_predictions.jsonl \
+      outputs/baseline_predictions.jsonl \
+      outputs/sentinel_predictions.jsonl \
+      outputs/standard_dpo_predictions.jsonl
+
 python data/synthetic_scenes.py --out-dir data
 python -m baseline.majority_language_prior --eval-data data/eval_scenes.jsonl --out outputs/language_prior_predictions.jsonl
 bash scripts/method.sh "$@"

@@ -14,7 +14,7 @@ set -e
 cd /home/user
 
 rm -rf outputs checkpoints/sentinel scoring/scores.json
-bash scripts/reproduce.sh
+bash scripts/reproduce.sh --sft-epochs 20 --dpo-epochs 8 --preference-images 700 --samples-per-context 16
 python validate.py --compare
 
 python - <<'PY'
