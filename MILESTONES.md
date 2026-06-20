@@ -1,6 +1,6 @@
 # Reproduction Milestones
 
-**Current: none**
+**Current: method_runs**
 
 ## Progress Log
 
@@ -15,5 +15,10 @@
 ### [2026-06-20 04:37] - none
 - Reviewed failed job `f9b6e519-0ae`; it reached data generation and language-prior output but failed before method training due to a top-level package import path issue.
 - Fixed `scripts/method.sh` to run `python -m method.train`; no execution milestone is claimed yet because no SENTINEL method output or `scoring/scores.json` exists.
+
+### [2026-06-20 04:44] - method_runs
+- Reviewed successful job `1f76b35f-f0d`; the scaled SENTINEL pipeline trained, sampled in-domain preference pairs, ran C-DPO, generated predictions, and produced `scoring/scores.json`.
+- Did not claim `core_claim`: both baseline and SENTINEL collapsed to one repeated object, yielding poor recall and only a tiny hallucination-rate difference.
+- Patched the compact VLM with a learned visual object-presence head, model-based object-token decoding bias, and corrected variable-length C-DPO log-probability scoring before the next run.
 
 ## Stop Justification

@@ -24,15 +24,24 @@ Audit fixes on 2026-06-20:
 
 Job `f9b6e519-0ae` failed before method training. It generated the synthetic data and `outputs/language_prior_predictions.jsonl`, then stopped with `ModuleNotFoundError: No module named 'method'` because `scripts/method.sh` executed `python method/train.py`. Fixed by invoking the method as a module with `python -m method.train`.
 
+Job `1f76b35f-f0d` completed the scaled SENTINEL path and validates `method_runs`, but not `core_claim`. Reproduced scores were:
+- `language_prior`: response hallucination 98.75, mention hallucination 71.667, object recall 27.984, QA accuracy 47.312.
+- `baseline`: response hallucination 80.000, mention hallucination 80.000, object recall 6.584, QA accuracy 40.447.
+- `sentinel`: response hallucination 77.917, mention hallucination 77.917, object recall 7.270, QA accuracy 40.778.
+
+The failure mode is generation collapse: baseline and SENTINEL mostly emit one repeated object, so the evaluator has little useful object coverage to score. After this job, the method was patched to train an auxiliary visual object-presence head, use the learned object scores as a decoding bias for object tokens, prevent repeated object mentions, and fix padded-prefix scoring in the C-DPO sequence log-probability computation.
+
 ## Remaining
 
-Run the compute job, inspect `scoring/scores.json`, compare the baseline and SENTINEL outputs, and update the milestone only if the paper's core claim is supported on the scaled benchmark.
+Run the corrected compute job, inspect `scoring/scores.json`, compare the baseline and SENTINEL outputs, and update to `core_claim` only if SENTINEL materially reduces hallucination while maintaining non-trivial object recall and QA accuracy on the scaled benchmark.
 
 ## Issues
 
 The full paper setup uses LLaVA-v1.5, Visual Genome, Scene-GraphParser, GroundingDINO, YOLO-World, and public hallucination benchmarks. That is larger than this initial autonomous run, so the first runnable environment uses a scaled synthetic benchmark while preserving the SENTINEL algorithmic procedure.
 
 The current implementation is therefore not enough to claim the full paper-scale core claim. It can support only a scaled method milestone after the submitted job proves the pipeline runs and produces real scores.
+
+The current highest milestone is `method_runs`: the paper's algorithmic steps execute end-to-end in the scaled environment, but the latest completed scores do not yet support the core hallucination-mitigation claim.
 
 ## Deviations from Paper
 

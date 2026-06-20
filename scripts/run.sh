@@ -13,5 +13,22 @@ set -e
 
 cd /home/user
 
+rm -rf outputs checkpoints/sentinel scoring/scores.json
 bash scripts/reproduce.sh
 python validate.py --compare
+
+python - <<'PY'
+import json
+from pathlib import Path
+
+for name in ["baseline", "sentinel"]:
+    path = Path("outputs") / f"{name}_predictions.jsonl"
+    print(f"\n{name} sample predictions:")
+    for line in path.read_text(encoding="utf-8").splitlines()[:3]:
+        row = json.loads(line)
+        print(f"- {row['prediction']}")
+
+pairs = Path("checkpoints/sentinel/preference_pairs.jsonl")
+if pairs.exists():
+    print(f"\npreference_pairs: {sum(1 for _ in pairs.open(encoding='utf-8'))}")
+PY

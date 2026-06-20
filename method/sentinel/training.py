@@ -9,7 +9,6 @@ from pathlib import Path
 import torch
 import torch.nn.functional as F
 from torch.nn.utils.rnn import pad_sequence
-from torch.utils.data import DataLoader
 
 from .model import TinyVLM
 from .vocab import BOS, EOS, OBJECTS, WORDS, encode, extract_objects, object_vector
@@ -23,7 +22,7 @@ def sentence_for_object(obj: str) -> str:
     return f"There is a {obj}."
 
 
-def noisy_caption(objects: list[str], rng: random.Random, hallucination_prob: float = 0.7) -> str:
+def noisy_caption(objects: list[str], rng: random.Random, hallucination_prob: float) -> str:
     # The base MLLM is intentionally imperfect: it sees real objects but also
     # learns a language-prior bias toward plausible absent objects.
     ordered = list(objects)
@@ -34,15 +33,16 @@ def noisy_caption(objects: list[str], rng: random.Random, hallucination_prob: fl
     return " ".join(sentence_for_object(o) for o in ordered)
 
 
-def batch_supervised(rows: list[dict], rng: random.Random) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-    images, inputs, labels = [], [], []
+def batch_supervised(rows: list[dict], rng: random.Random, args: argparse.Namespace) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    images, inputs, labels, object_targets = [], [], [], []
     for row in rows:
-        caption = noisy_caption(row["objects"], rng)
+        caption = noisy_caption(row["objects"], rng, args.caption_hallucination_prob)
         seq = encode(row["prompt"] + " " + caption, add_bos=True, add_eos=True)
         images.append(torch.tensor(object_vector(row["objects"]), dtype=torch.float32))
+        object_targets.append(torch.tensor(object_vector(row["objects"]), dtype=torch.float32))
         inputs.append(torch.tensor(seq[:-1], dtype=torch.long))
         labels.append(torch.tensor(seq[1:], dtype=torch.long))
-    return torch.stack(images), pad_sequence(inputs, batch_first=True), pad_sequence(labels, batch_first=True)
+    return torch.stack(images), pad_sequence(inputs, batch_first=True), pad_sequence(labels, batch_first=True), torch.stack(object_targets)
 
 
 def train_sft(model: TinyVLM, train_rows: list[dict], out_dir: Path, args: argparse.Namespace) -> None:
@@ -52,9 +52,11 @@ def train_sft(model: TinyVLM, train_rows: list[dict], out_dir: Path, args: argpa
         rng.shuffle(train_rows)
         for start in range(0, len(train_rows), args.batch_size):
             rows = train_rows[start : start + args.batch_size]
-            images, inputs, labels = batch_supervised(rows, rng)
+            images, inputs, labels, object_targets = batch_supervised(rows, rng, args)
             logits = model(images, inputs)
-            loss = F.cross_entropy(logits.reshape(-1, logits.size(-1)), labels.reshape(-1), ignore_index=0)
+            lm_loss = F.cross_entropy(logits.reshape(-1, logits.size(-1)), labels.reshape(-1), ignore_index=0)
+            grounding_loss = F.binary_cross_entropy_with_logits(model.object_logits(images), object_targets)
+            loss = lm_loss + args.object_loss_weight * grounding_loss
             opt.zero_grad()
             loss.backward()
             opt.step()
@@ -114,7 +116,16 @@ def build_preferences(model: TinyVLM, rows: list[dict], out_path: Path, args: ar
             positives, negatives = [], []
             prefix = encode(row["prompt"] + " " + context, add_bos=True, add_eos=False)
             for _sample in range(args.samples_per_context):
-                sent = first_sentence(model.generate(image, prefix, max_new_tokens=18, temperature=args.sample_temperature))
+                sent = first_sentence(
+                    model.generate(
+                        image,
+                        prefix,
+                        max_new_tokens=18,
+                        temperature=args.sample_temperature,
+                        object_bias=args.sample_object_bias,
+                        repeat_penalty=args.decode_repeat_penalty,
+                    )
+                )
                 label = validate_sentence(sent, row["objects"])
                 if label == "non_hallucinated":
                     positives.append(sent)
@@ -138,11 +149,12 @@ def build_preferences(model: TinyVLM, rows: list[dict], out_path: Path, args: ar
     return pairs
 
 
-def dpo_batch(pairs: list[dict]) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
-    images, prefixes, chosen, rejected = [], [], [], []
+def dpo_batch(pairs: list[dict]) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    images, prefixes, chosen, rejected, object_targets = [], [], [], [], []
     for pair in pairs:
         prefix_text = pair["prompt"] + " " + pair["context"]
         images.append(torch.tensor(object_vector(pair["objects"]), dtype=torch.float32))
+        object_targets.append(torch.tensor(object_vector(pair["objects"]), dtype=torch.float32))
         prefixes.append(torch.tensor(encode(prefix_text, add_bos=True, add_eos=False), dtype=torch.long))
         chosen.append(torch.tensor(encode(pair["chosen"], add_bos=False, add_eos=True), dtype=torch.long))
         rejected.append(torch.tensor(encode(pair["rejected"], add_bos=False, add_eos=True), dtype=torch.long))
@@ -151,6 +163,7 @@ def dpo_batch(pairs: list[dict]) -> tuple[torch.Tensor, torch.Tensor, torch.Tens
         pad_sequence(prefixes, batch_first=True),
         pad_sequence(chosen, batch_first=True),
         pad_sequence(rejected, batch_first=True),
+        torch.stack(object_targets),
     )
 
 
@@ -161,27 +174,36 @@ def train_cdpo(policy: TinyVLM, ref: TinyVLM, pairs: list[dict], out_dir: Path, 
         random.Random(args.seed + _epoch).shuffle(pairs)
         for start in range(0, len(pairs), args.batch_size):
             batch = pairs[start : start + args.batch_size]
-            images, prefix, chosen, rejected = dpo_batch(batch)
+            images, prefix, chosen, rejected, object_targets = dpo_batch(batch)
             policy_chosen = policy.sequence_logprob(images, prefix, chosen)
             policy_rejected = policy.sequence_logprob(images, prefix, rejected)
             with torch.no_grad():
                 ref_chosen = ref.sequence_logprob(images, prefix, chosen)
                 ref_rejected = ref.sequence_logprob(images, prefix, rejected)
             logits = (policy_chosen - policy_rejected) - (ref_chosen - ref_rejected)
-            loss = -F.logsigmoid(args.dpo_beta * logits).mean()
+            dpo_loss = -F.logsigmoid(args.dpo_beta * logits).mean()
+            grounding_loss = F.binary_cross_entropy_with_logits(policy.object_logits(images), object_targets)
+            loss = dpo_loss + args.dpo_object_loss_weight * grounding_loss
             opt.zero_grad()
             loss.backward()
             opt.step()
     torch.save(policy.state_dict(), out_dir / "sentinel.pt")
 
 
-def predict(model: TinyVLM, rows: list[dict], out_path: Path) -> None:
+def predict(model: TinyVLM, rows: list[dict], out_path: Path, args: argparse.Namespace) -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with out_path.open("w", encoding="utf-8") as f:
         for row in rows:
             image = torch.tensor(object_vector(row["objects"]), dtype=torch.float32)
             prefix = encode(row["prompt"], add_bos=True)
-            pred = model.generate(image, prefix, max_new_tokens=42, temperature=0.0)
+            pred = model.generate(
+                image,
+                prefix,
+                max_new_tokens=42,
+                temperature=0.0,
+                object_bias=args.decode_object_bias,
+                repeat_penalty=args.decode_repeat_penalty,
+            )
             qa_preds = []
             for qa in row["qa"]:
                 # Use generated caption as the model's answerable state.
@@ -198,8 +220,8 @@ def main() -> None:
     parser.add_argument("--out-dir", default="checkpoints/sentinel")
     parser.add_argument("--outputs", default="outputs")
     parser.add_argument("--seed", type=int, default=7)
-    parser.add_argument("--sft-epochs", type=int, default=10)
-    parser.add_argument("--dpo-epochs", type=int, default=8)
+    parser.add_argument("--sft-epochs", type=int, default=20)
+    parser.add_argument("--dpo-epochs", type=int, default=10)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--sft-lr", type=float, default=3e-3)
     parser.add_argument("--dpo-lr", type=float, default=7e-4)
@@ -208,6 +230,12 @@ def main() -> None:
     parser.add_argument("--icb-steps", type=int, default=2)
     parser.add_argument("--samples-per-context", type=int, default=8)
     parser.add_argument("--sample-temperature", type=float, default=1.1)
+    parser.add_argument("--sample-object-bias", type=float, default=0.8)
+    parser.add_argument("--caption-hallucination-prob", type=float, default=0.5)
+    parser.add_argument("--object-loss-weight", type=float, default=1.0)
+    parser.add_argument("--dpo-object-loss-weight", type=float, default=0.2)
+    parser.add_argument("--decode-object-bias", type=float, default=2.5)
+    parser.add_argument("--decode-repeat-penalty", type=float, default=4.0)
     args = parser.parse_args()
 
     random.seed(args.seed)
@@ -216,15 +244,15 @@ def main() -> None:
     eval_rows = read_jsonl(Path(args.eval_data))
     out_dir = Path(args.out_dir)
 
-    baseline = TinyVLM(len(OBJECTS), len(WORDS))
+    baseline = TinyVLM(len(OBJECTS), len(WORDS), hidden=128)
     train_sft(baseline, train_rows, out_dir, args)
-    predict(baseline, eval_rows, Path(args.outputs) / "baseline_predictions.jsonl")
+    predict(baseline, eval_rows, Path(args.outputs) / "baseline_predictions.jsonl", args)
 
     ref = copy.deepcopy(baseline)
     policy = copy.deepcopy(baseline)
     pairs = build_preferences(baseline, train_rows, out_dir / "preference_pairs.jsonl", args)
     train_cdpo(policy, ref, pairs, out_dir, args)
-    predict(policy, eval_rows, Path(args.outputs) / "sentinel_predictions.jsonl")
+    predict(policy, eval_rows, Path(args.outputs) / "sentinel_predictions.jsonl", args)
 
 
 if __name__ == "__main__":
