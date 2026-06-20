@@ -18,7 +18,6 @@ set -e
 
 cd /home/user
 
-# TODO: implement full reproduction pipeline
-# e.g.:
-#   bash scripts/baseline.sh
-#   bash scripts/method.sh
+python data/synthetic_scenes.py --out-dir data
+python -m baseline.majority_language_prior --eval-data data/eval_scenes.jsonl --out outputs/language_prior_predictions.jsonl
+bash scripts/method.sh "$@"

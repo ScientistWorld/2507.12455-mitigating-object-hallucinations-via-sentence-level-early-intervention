@@ -17,4 +17,5 @@ set -e
 
 cd /home/user
 
-# TODO: run baseline
+python -m baseline.majority_language_prior --eval-data data/eval_scenes.jsonl --out outputs/language_prior_predictions.jsonl
+bash scripts/evaluate.sh outputs

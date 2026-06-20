@@ -10,5 +10,6 @@ set -e
 
 cd /home/user
 
-# TODO: run the paper's method
-# TODO: call scripts/evaluate.sh to score
+python data/synthetic_scenes.py --out-dir data
+python method/train.py "$@"
+bash scripts/evaluate.sh outputs

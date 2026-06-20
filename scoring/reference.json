@@ -1,0 +1,42 @@
+{
+  "experiments": {
+    "synthetic_object_halbench": {
+      "description": "Scaled SENTINEL reproduction of the paper's Object HalBench-style claim: reduce object hallucination while preserving useful object coverage. The paper's main LLaVA-v1.5-7B result reports Object HalBench response hallucination 52.7 for the base model and 4.3 for SENTINEL, with mention hallucination 28.0 and 2.6 respectively; this compact benchmark measures the same benefit/constraint structure on deterministic synthetic scenes.",
+      "weight": 1.0,
+      "primary_metric": "response_hallucination_rate",
+      "metrics": {
+        "response_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0},
+        "mention_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0},
+        "object_recall": {"higher_is_better": true, "coefficient": 0.7},
+        "avg_object_mentions": {"higher_is_better": true, "coefficient": 0.2},
+        "qa_accuracy": {"higher_is_better": true, "coefficient": 0.5}
+      },
+      "results": {
+        "language_prior": {
+          "type": "baseline",
+          "response_hallucination_rate": 0.50,
+          "mention_hallucination_rate": 0.35,
+          "object_recall": 0.40,
+          "avg_object_mentions": 2.0,
+          "qa_accuracy": 0.50
+        },
+        "baseline": {
+          "type": "baseline",
+          "response_hallucination_rate": 0.52,
+          "mention_hallucination_rate": 0.28,
+          "object_recall": 0.70,
+          "avg_object_mentions": 2.0,
+          "qa_accuracy": 0.60
+        },
+        "sentinel": {
+          "type": "proposed",
+          "response_hallucination_rate": 0.043,
+          "mention_hallucination_rate": 0.026,
+          "object_recall": 0.70,
+          "avg_object_mentions": 2.0,
+          "qa_accuracy": 0.70
+        }
+      }
+    }
+  }
+}

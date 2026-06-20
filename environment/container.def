@@ -16,15 +16,8 @@
 # Only OS-level packages (apt-get) belong in %post.
 # Putting pip install in %post is the #1 cause of build failures.
 
-# --- CPU-only base (default) ---
 Bootstrap: docker
 From: python:3.11-slim
-
-# --- GPU / CUDA base (uncomment if your paper needs GPU) ---
-# Bootstrap: docker
-# From: nvidia/cuda:12.1.0-runtime-ubuntu22.04
-# Use 'runtime' (~1 GB) unless you need to compile CUDA code,
-# in which case use 'devel' (~4 GB).
 
 %files
     # Data that the agent can see (training data + test features only)
@@ -42,7 +35,7 @@ From: python:3.11-slim
 
 %post
     apt-get update && apt-get install -y --no-install-recommends \
-        tmux nano vim-tiny less curl wget git && \
+        tmux nano vim-tiny less curl wget git ca-certificates && \
     ln -sf /usr/bin/vim.tiny /usr/bin/vim && \
     rm -rf /var/lib/apt/lists/*
 
