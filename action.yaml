@@ -1,6 +1,8 @@
 # IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends. Sleeping blocks the entire pipeline.
-action: done
-milestone: core_claim
-notes: "Scaled SENTINEL core claim reproduced and validation repaired. Both python validate.py and python validate.py --compare pass; automated reference values now match the scaled synthetic benchmark contract."
+action: pending
+gpus: 1
+test: false
+milestone: method_runs
+notes: ""
