@@ -37,6 +37,8 @@ Job `83e8b9d2-ea1` completed after those fixes, but still does not support `core
 
 This run improved over the previous collapse but removed the benefit side of the benchmark: the baseline no longer hallucinated, and only 9 in-domain preference pairs were sampled. The next run lowers the shared object decoding bias, strengthens duplicate-object suppression at both color and shape selection, and increases stochastic sampling to produce a larger C-DPO preference set.
 
+Job `7d02312f-289` was cancelled after 20 minutes with no stage-level output. Partial artifacts showed `baseline.pt`, baseline predictions, language-prior predictions, and 1,799 sampled preference pairs, but no SENTINEL checkpoint, SENTINEL predictions, or `scores.json`. The run had likely entered the unbatched C-DPO loop, where each preference example triggered separate policy/reference forward passes. The implementation now vectorizes padded sequence log-probability scoring across each batch, reduces the default smoke workload to 700 images x 16 samples, and prints flushed progress at each major stage and C-DPO epoch.
+
 ## Remaining
 
 Run the corrected compute job, inspect `scoring/scores.json`, compare the baseline and SENTINEL outputs, and update to `core_claim` only if SENTINEL materially reduces hallucination while maintaining non-trivial object recall and QA accuracy on the scaled benchmark.

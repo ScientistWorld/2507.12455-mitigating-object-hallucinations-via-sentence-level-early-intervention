@@ -3,6 +3,7 @@ from __future__ import annotations
 import torch
 from torch import nn
 import torch.nn.functional as F
+from torch.nn.utils.rnn import pad_sequence
 
 from .vocab import BOS, COLORS, EOS, OBJECTS, PAD, SHAPES, WORD_TO_ID, decode, extract_objects
 
@@ -29,17 +30,23 @@ class TinyVLM(nn.Module):
         return self.object_head(self.image_proj(image_vec))
 
     def sequence_logprob(self, image_vec: torch.Tensor, prefix: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
-        scores = []
+        seqs = []
+        masks = []
         for idx in range(prefix.shape[0]):
             clean_prefix = prefix[idx][prefix[idx] != PAD]
             clean_target = target[idx][target[idx] != PAD]
-            seq = torch.cat([clean_prefix, clean_target]).unsqueeze(0)
-            logits = self.forward(image_vec[idx : idx + 1], seq[:, :-1])
-            labels = seq[:, 1:]
-            logp = F.log_softmax(logits, dim=-1).gather(-1, labels.unsqueeze(-1)).squeeze(-1)
+            seq = torch.cat([clean_prefix, clean_target])
             start = max(clean_prefix.numel() - 1, 0)
-            scores.append(logp[:, start:].sum())
-        return torch.stack(scores)
+            mask = torch.zeros(seq.numel() - 1, dtype=torch.float32, device=seq.device)
+            mask[start:] = 1.0
+            seqs.append(seq)
+            masks.append(mask)
+        inputs = pad_sequence([seq[:-1] for seq in seqs], batch_first=True, padding_value=PAD)
+        labels = pad_sequence([seq[1:] for seq in seqs], batch_first=True, padding_value=PAD)
+        mask = pad_sequence(masks, batch_first=True, padding_value=0.0)
+        logits = self.forward(image_vec, inputs)
+        logp = F.log_softmax(logits, dim=-1).gather(-1, labels.unsqueeze(-1)).squeeze(-1)
+        return (logp * mask).sum(dim=1)
 
     @torch.no_grad()
     def generate(

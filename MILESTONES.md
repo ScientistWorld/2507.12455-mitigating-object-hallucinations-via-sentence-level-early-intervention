@@ -26,4 +26,9 @@
 - Kept milestone at `method_runs` because SENTINEL did not outperform the baseline on the benefit/constraint trade-off.
 - Rebalanced the next run by lowering the shared grounding bias, strengthening repeated-object suppression, and increasing stochastic in-domain candidate sampling for C-DPO.
 
+### [2026-06-20 05:14] - method_runs
+- Cancelled job `7d02312f-289` after 20 minutes with no stdout beyond the scheduler header.
+- Partial artifacts showed SFT and preference sampling had succeeded with 1,799 sampled preference pairs, but C-DPO had not finished and no SENTINEL predictions or scores were produced.
+- Vectorized C-DPO sequence log-probability scoring, reduced smoke-run preference workload, and added flushed progress logging for SFT, preference sampling, C-DPO, and prediction stages.
+
 ## Stop Justification

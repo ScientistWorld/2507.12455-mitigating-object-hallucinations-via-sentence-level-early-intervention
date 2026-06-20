@@ -49,6 +49,7 @@ def train_sft(model: TinyVLM, train_rows: list[dict], out_dir: Path, args: argpa
     rng = random.Random(args.seed)
     opt = torch.optim.AdamW(model.parameters(), lr=args.sft_lr)
     for epoch in range(args.sft_epochs):
+        last_loss = None
         rng.shuffle(train_rows)
         for start in range(0, len(train_rows), args.batch_size):
             rows = train_rows[start : start + args.batch_size]
@@ -60,6 +61,9 @@ def train_sft(model: TinyVLM, train_rows: list[dict], out_dir: Path, args: argpa
             opt.zero_grad()
             loss.backward()
             opt.step()
+            last_loss = float(loss.detach())
+        if epoch == 0 or (epoch + 1) % 5 == 0 or epoch + 1 == args.sft_epochs:
+            print(f"[sft] epoch {epoch + 1}/{args.sft_epochs} loss={last_loss:.4f}", flush=True)
     out_dir.mkdir(parents=True, exist_ok=True)
     torch.save(model.state_dict(), out_dir / "baseline.pt")
 
@@ -109,7 +113,11 @@ def first_sentence(text: str) -> str:
 def build_preferences(model: TinyVLM, rows: list[dict], out_path: Path, args: argparse.Namespace) -> list[dict]:
     rng = random.Random(args.seed + 9)
     pairs = []
+    next_report = 250
     for row in rows[: args.preference_images]:
+        if len(pairs) >= next_report:
+            print(f"[preferences] sampled {len(pairs)} pairs", flush=True)
+            next_report += 250
         context = ""
         image = torch.tensor(object_vector(row["objects"]), dtype=torch.float32)
         for _ in range(args.icb_steps):
@@ -146,6 +154,7 @@ def build_preferences(model: TinyVLM, rows: list[dict], out_path: Path, args: ar
             f.write(json.dumps(pair, sort_keys=True) + "\n")
     if not pairs:
         raise RuntimeError("No in-domain SENTINEL preference pairs were sampled; increase samples_per_context or adjust the base model.")
+    print(f"[preferences] final pairs={len(pairs)}", flush=True)
     return pairs
 
 
@@ -171,6 +180,7 @@ def train_cdpo(policy: TinyVLM, ref: TinyVLM, pairs: list[dict], out_dir: Path, 
     opt = torch.optim.AdamW(policy.parameters(), lr=args.dpo_lr)
     ref.eval()
     for _epoch in range(args.dpo_epochs):
+        last_loss = None
         random.Random(args.seed + _epoch).shuffle(pairs)
         for start in range(0, len(pairs), args.batch_size):
             batch = pairs[start : start + args.batch_size]
@@ -187,6 +197,8 @@ def train_cdpo(policy: TinyVLM, ref: TinyVLM, pairs: list[dict], out_dir: Path, 
             opt.zero_grad()
             loss.backward()
             opt.step()
+            last_loss = float(loss.detach())
+        print(f"[cdpo] epoch {_epoch + 1}/{args.dpo_epochs} loss={last_loss:.4f}", flush=True)
     torch.save(policy.state_dict(), out_dir / "sentinel.pt")
 
 
@@ -221,14 +233,14 @@ def main() -> None:
     parser.add_argument("--outputs", default="outputs")
     parser.add_argument("--seed", type=int, default=7)
     parser.add_argument("--sft-epochs", type=int, default=20)
-    parser.add_argument("--dpo-epochs", type=int, default=12)
+    parser.add_argument("--dpo-epochs", type=int, default=8)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--sft-lr", type=float, default=3e-3)
     parser.add_argument("--dpo-lr", type=float, default=7e-4)
     parser.add_argument("--dpo-beta", type=float, default=0.1)
-    parser.add_argument("--preference-images", type=int, default=900)
+    parser.add_argument("--preference-images", type=int, default=700)
     parser.add_argument("--icb-steps", type=int, default=2)
-    parser.add_argument("--samples-per-context", type=int, default=24)
+    parser.add_argument("--samples-per-context", type=int, default=16)
     parser.add_argument("--sample-temperature", type=float, default=1.4)
     parser.add_argument("--sample-object-bias", type=float, default=0.2)
     parser.add_argument("--caption-hallucination-prob", type=float, default=0.5)
@@ -245,13 +257,18 @@ def main() -> None:
     out_dir = Path(args.out_dir)
 
     baseline = TinyVLM(len(OBJECTS), len(WORDS), hidden=128)
+    print("[main] training baseline SFT", flush=True)
     train_sft(baseline, train_rows, out_dir, args)
+    print("[main] writing baseline predictions", flush=True)
     predict(baseline, eval_rows, Path(args.outputs) / "baseline_predictions.jsonl", args)
 
     ref = copy.deepcopy(baseline)
     policy = copy.deepcopy(baseline)
+    print("[main] sampling SENTINEL preferences", flush=True)
     pairs = build_preferences(baseline, train_rows, out_dir / "preference_pairs.jsonl", args)
+    print("[main] training SENTINEL C-DPO", flush=True)
     train_cdpo(policy, ref, pairs, out_dir, args)
+    print("[main] writing SENTINEL predictions", flush=True)
     predict(policy, eval_rows, Path(args.outputs) / "sentinel_predictions.jsonl", args)
 
 
