@@ -21,4 +21,9 @@
 - Did not claim `core_claim`: both baseline and SENTINEL collapsed to one repeated object, yielding poor recall and only a tiny hallucination-rate difference.
 - Patched the compact VLM with a learned visual object-presence head, model-based object-token decoding bias, and corrected variable-length C-DPO log-probability scoring before the next run.
 
+### [2026-06-20 04:51] - method_runs
+- Reviewed successful job `83e8b9d2-ea1`; the grounded run completed and improved object grounding, but it made the baseline hallucination rate 0.0, so it no longer tested SENTINEL's hallucination-reduction claim.
+- Kept milestone at `method_runs` because SENTINEL did not outperform the baseline on the benefit/constraint trade-off.
+- Rebalanced the next run by lowering the shared grounding bias, strengthening repeated-object suppression, and increasing stochastic in-domain candidate sampling for C-DPO.
+
 ## Stop Justification

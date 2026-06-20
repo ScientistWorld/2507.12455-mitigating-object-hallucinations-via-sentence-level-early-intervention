@@ -31,6 +31,12 @@ Job `1f76b35f-f0d` completed the scaled SENTINEL path and validates `method_runs
 
 The failure mode is generation collapse: baseline and SENTINEL mostly emit one repeated object, so the evaluator has little useful object coverage to score. After this job, the method was patched to train an auxiliary visual object-presence head, use the learned object scores as a decoding bias for object tokens, prevent repeated object mentions, and fix padded-prefix scoring in the C-DPO sequence log-probability computation.
 
+Job `83e8b9d2-ea1` completed after those fixes, but still does not support `core_claim`. The shared grounding bias made both trained models non-hallucinatory:
+- `baseline`: response hallucination 0.000, mention hallucination 0.000, object recall 45.542, QA accuracy 67.163.
+- `sentinel`: response hallucination 0.000, mention hallucination 0.000, object recall 44.307, QA accuracy 66.419.
+
+This run improved over the previous collapse but removed the benefit side of the benchmark: the baseline no longer hallucinated, and only 9 in-domain preference pairs were sampled. The next run lowers the shared object decoding bias, strengthens duplicate-object suppression at both color and shape selection, and increases stochastic sampling to produce a larger C-DPO preference set.
+
 ## Remaining
 
 Run the corrected compute job, inspect `scoring/scores.json`, compare the baseline and SENTINEL outputs, and update to `core_claim` only if SENTINEL materially reduces hallucination while maintaining non-trivial object recall and QA accuracy on the scaled benchmark.

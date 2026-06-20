@@ -90,7 +90,14 @@ class TinyVLM(nn.Module):
         seen = set(extract_objects(decode(generated_ids)))
         if last == WORD_TO_ID["a"]:
             for color in COLORS:
-                color_score = torch.stack([obj_logits[object_index[f"{color} {shape}"]] for shape in SHAPES]).max()
+                color_candidates = []
+                for shape in SHAPES:
+                    obj = f"{color} {shape}"
+                    score = obj_logits[object_index[obj]]
+                    if obj in seen:
+                        score = score - repeat_penalty
+                    color_candidates.append(score)
+                color_score = torch.stack(color_candidates).max()
                 logits[WORD_TO_ID[color]] += object_bias * color_score
         elif last in [WORD_TO_ID[color] for color in COLORS]:
             color = next(color for color in COLORS if WORD_TO_ID[color] == last)
