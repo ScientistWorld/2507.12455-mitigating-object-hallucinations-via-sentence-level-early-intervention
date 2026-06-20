@@ -4,5 +4,5 @@
 action: submit
 gpus: 0
 test: true
-milestone: none
-notes: "Retry CPU smoke job after fixing method package invocation: generate synthetic data, run language-prior baseline, train the scaled in-domain SENTINEL C-DPO method, evaluate outputs, and validate scores."
+milestone: method_runs
+notes: "Run corrected scaled SENTINEL smoke test: clean stale artifacts, train grounded TinyVLM with in-domain candidate sampling and C-DPO, evaluate scores, validate structure, and print sample predictions/pair count."
