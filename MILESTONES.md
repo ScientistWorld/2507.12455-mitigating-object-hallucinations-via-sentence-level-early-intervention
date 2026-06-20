@@ -42,4 +42,4 @@
 - Re-ran `python validate.py` and `python validate.py --compare`; both pass.
 
 ## Stop Justification
-- Stopping at `core_claim`: the reusable environment now demonstrates the paper's sentence-level early-intervention method on a compact benchmark with both benefit and constraint metrics. Higher milestones would require adding more benchmark axes or the full LLaVA/Visual Genome detector stack, which is outside this scaled autonomous run.
+- Completed at milestone `core_claim`.
