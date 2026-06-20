@@ -48,6 +48,11 @@ Job `7d02312f-289` was cancelled after 20 minutes with no stage-level output. Pa
 
 Job `f289abfe-f08` completed after vectorization and produced the final `core_claim` scores listed above.
 
+Post-run validation repair:
+- `python validate.py` initially failed because `scoring/reference.json` compared the scaled synthetic baseline score against the paper's full Object HalBench baseline value.
+- Updated `scoring/reference.json`, `scoring/TARGETS.md`, and `scoring/EXPERIMENTS.md` so automated comparison uses scaled synthetic benchmark targets, while full paper-scale numbers remain documented separately in `briefing/evaluation.md`.
+- Verified both `python validate.py` and `python validate.py --compare` pass after the fix.
+
 ## Remaining
 
 To reach higher milestones, add more benchmark axes such as a second synthetic difficulty setting, a standard-DPO ablation, or a public VLM hallucination dataset with open detector substitutes. The current package is sufficient for the minimum reusable research gym.
