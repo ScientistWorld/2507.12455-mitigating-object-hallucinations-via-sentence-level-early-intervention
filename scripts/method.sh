@@ -11,5 +11,5 @@ set -e
 cd /home/user
 
 python data/synthetic_scenes.py --out-dir data
-python method/train.py "$@"
+python -m method.train "$@"
 bash scripts/evaluate.sh outputs

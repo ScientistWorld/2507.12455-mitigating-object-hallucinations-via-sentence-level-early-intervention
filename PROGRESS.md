@@ -22,6 +22,8 @@ Audit fixes on 2026-06-20:
 - Fixed generation to decode only newly generated continuation tokens, not the prompt prefix.
 - Updated the prediction-schema constraints and ignored `tmp/` throwaway audit files.
 
+Job `f9b6e519-0ae` failed before method training. It generated the synthetic data and `outputs/language_prior_predictions.jsonl`, then stopped with `ModuleNotFoundError: No module named 'method'` because `scripts/method.sh` executed `python method/train.py`. Fixed by invoking the method as a module with `python -m method.train`.
+
 ## Remaining
 
 Run the compute job, inspect `scoring/scores.json`, compare the baseline and SENTINEL outputs, and update the milestone only if the paper's core claim is supported on the scaled benchmark.
