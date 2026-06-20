@@ -22,4 +22,4 @@
 - Fixed evaluator artifact discovery and empty-output handling, then verified `scripts/evaluate.sh` and `python validate.py --compare` still pass on the current outputs.
 
 ## Stop Justification
-- Current package supports the paper's core claim in a compact, reusable environment. Higher milestones would require adding more benchmark axes or larger public VLM resources beyond the current scaled reproduction.
+- Completed at milestone `core_claim`.
