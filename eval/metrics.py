@@ -70,13 +70,16 @@ def main() -> None:
     input_dir = Path(args.input_dir)
 
     experiments: dict[str, dict] = {"synthetic_object_halbench": {"results": {}}}
-    for name in ["language_prior", "baseline", "sentinel", "standard_dpo"]:
-        path = input_dir / f"{name}_predictions.jsonl"
-        if path.exists():
-            rows = read_jsonl(path)
-            metrics = score_caption_rows(rows)
-            metrics.update(score_qa_rows(rows))
-            experiments["synthetic_object_halbench"]["results"][name] = metrics
+    prediction_paths = sorted(input_dir.glob("*_predictions.jsonl"))
+    if not prediction_paths:
+        raise FileNotFoundError(f"No '*_predictions.jsonl' artifacts found in {input_dir}")
+
+    for path in prediction_paths:
+        name = path.name.removesuffix("_predictions.jsonl")
+        rows = read_jsonl(path)
+        metrics = score_caption_rows(rows)
+        metrics.update(score_qa_rows(rows))
+        experiments["synthetic_object_halbench"]["results"][name] = metrics
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

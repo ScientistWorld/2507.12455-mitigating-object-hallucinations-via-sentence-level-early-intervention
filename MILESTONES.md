@@ -17,5 +17,9 @@
 - On the scaled Object HalBench-style benchmark, SENTINEL reduced response hallucination from the trained baseline's 24.58% to 4.17% and mention hallucination from 9.70% to 1.35%.
 - Constraint metrics were preserved or improved: object recall rose from 91.91% to 100.00%, and QA accuracy rose from 93.71% to 99.67%.
 
+### [2026-06-20 00:00] - core_claim
+- Continuation audit restored `core_claim` after checking the method, evaluator, scripts, scoring, and environment.
+- Fixed evaluator artifact discovery and empty-output handling, then verified `scripts/evaluate.sh` and `python validate.py --compare` still pass on the current outputs.
+
 ## Stop Justification
 - Current package supports the paper's core claim in a compact, reusable environment. Higher milestones would require adding more benchmark axes or larger public VLM resources beyond the current scaled reproduction.

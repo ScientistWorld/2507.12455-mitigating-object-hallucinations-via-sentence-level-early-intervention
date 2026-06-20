@@ -53,6 +53,13 @@ Post-run validation repair:
 - Updated `scoring/reference.json`, `scoring/TARGETS.md`, and `scoring/EXPERIMENTS.md` so automated comparison uses scaled synthetic benchmark targets, while full paper-scale numbers remain documented separately in `briefing/evaluation.md`.
 - Verified both `python validate.py` and `python validate.py --compare` pass after the fix.
 
+Continuation audit on 2026-06-20:
+- Re-read the method, evaluation, scripts, scoring, and environment setup after the milestone reset.
+- Confirmed the implementation contains SENTINEL's distinctive computational steps: in-domain sentence sampling, object extraction, two-validator cross-checking, uncertain filtering, iterative context bootstrapping, and C-DPO over chosen/rejected continuations.
+- Confirmed `eval/` remains independent of `method/` and scores generated prediction artifacts rather than rerunning the method.
+- Fixed one evaluator contract weakness: `eval/metrics.py` now discovers all `*_predictions.jsonl` artifacts in the input directory and raises an error when no predictions are present, instead of silently writing empty results.
+- Re-ran `bash scripts/evaluate.sh outputs`, `python validate.py --compare`, and an empty-directory evaluator check; current artifacts still validate and empty evaluation now fails loudly.
+
 ## Remaining
 
 To reach higher milestones, add more benchmark axes such as a second synthetic difficulty setting, a standard-DPO ablation, or a public VLM hallucination dataset with open detector substitutes. The current package is sufficient for the minimum reusable research gym.
