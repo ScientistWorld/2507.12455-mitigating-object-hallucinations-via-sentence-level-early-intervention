@@ -3,11 +3,11 @@
     "synthetic_object_halbench": {
       "results": {
         "baseline": {
-          "avg_object_mentions": 1.3833333333333333,
-          "mention_hallucination_rate": 0.0,
-          "object_recall": 45.541838134430726,
-          "qa_accuracy": 67.16294458229942,
-          "response_hallucination_rate": 0.0
+          "avg_object_mentions": 3.091666666666667,
+          "mention_hallucination_rate": 9.703504043126685,
+          "object_recall": 91.90672153635117,
+          "qa_accuracy": 93.71381306865177,
+          "response_hallucination_rate": 24.583333333333332
         },
         "language_prior": {
           "avg_object_mentions": 3.0,
@@ -17,11 +17,11 @@
           "response_hallucination_rate": 98.75
         },
         "sentinel": {
-          "avg_object_mentions": 1.3458333333333334,
-          "mention_hallucination_rate": 0.0,
-          "object_recall": 44.30727023319616,
-          "qa_accuracy": 66.41852770885029,
-          "response_hallucination_rate": 0.0
+          "avg_object_mentions": 3.0791666666666666,
+          "mention_hallucination_rate": 1.3531799729364005,
+          "object_recall": 100.0,
+          "qa_accuracy": 99.66914805624484,
+          "response_hallucination_rate": 4.166666666666667
         }
       }
     }
