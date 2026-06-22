@@ -3,6 +3,6 @@
 # only after your turn ends. Sleeping blocks the entire pipeline.
 action: submit
 gpus: 0
-test: true
+test: false
 milestone: method_runs
-notes: "Faithful CPU test-node rerun after removing auxiliary object loss and decode-time object filtering; expected to verify whether SENTINEL C-DPO alone restores the scaled core claim."
+notes: "CPU sweep after adding context-coherent positive selection and prompt-masked SFT; selects the best faithful C-DPO-only compact run and validates scores."

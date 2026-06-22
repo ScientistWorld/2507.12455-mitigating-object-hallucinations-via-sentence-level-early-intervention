@@ -17,3 +17,9 @@
 - Found that the previous compact implementation included non-paper auxiliary object-presence losses and decode-time object bias/repeat filtering.
 - Removed those shortcuts so the method path now uses image-conditioned language modeling plus SENTINEL's sampled validation, bootstrapped context construction, and C-DPO objective.
 - The old `scores.json` is stale for the patched method; submitting a fresh CPU test-node rerun before restoring `core_claim`.
+
+### [2026-06-22 23:53] - method_runs
+- The faithful rerun completed but did not support `core_claim`: SENTINEL reduced hallucination only modestly and sharply reduced object recall/QA behavior.
+- Audited the compact preference construction against the paper and added context-coherent positive selection before ICB context appending.
+- Masked prompt tokens during supervised baseline training so response modeling, preference scoring, and evaluation use a consistent generation target.
+- Submitting a CPU sweep over conservative C-DPO settings; milestone remains `method_runs` until the resulting scores support the benefit and constraint sides together.

@@ -37,10 +37,15 @@ def batch_supervised(rows: list[dict], rng: random.Random, args: argparse.Namesp
     images, inputs, labels = [], [], []
     for row in rows:
         caption = noisy_caption(row["objects"], rng, args.caption_hallucination_prob)
-        seq = encode(row["prompt"] + " " + caption, add_bos=True, add_eos=True)
+        prefix = encode(row["prompt"], add_bos=True, add_eos=False)
+        response = encode(" " + caption, add_bos=False, add_eos=True)
+        seq = prefix + response
+        target = seq[1:]
+        prefix_targets = max(len(prefix) - 1, 0)
+        labels_seq = [0] * prefix_targets + target[prefix_targets:]
         images.append(torch.tensor(object_vector(row["objects"]), dtype=torch.float32))
         inputs.append(torch.tensor(seq[:-1], dtype=torch.long))
-        labels.append(torch.tensor(seq[1:], dtype=torch.long))
+        labels.append(torch.tensor(labels_seq, dtype=torch.long))
     return torch.stack(images), pad_sequence(inputs, batch_first=True), pad_sequence(labels, batch_first=True)
 
 
@@ -107,6 +112,34 @@ def first_sentence(text: str) -> str:
     return (parts[0].strip() + ".") if parts and parts[0].strip() else text.strip()
 
 
+def related_to_context(candidate: str, context: str) -> bool:
+    """Synthetic analogue of SENTINEL's context-coherent positive filtering."""
+    context_objects = extract_objects(context)
+    if not context_objects:
+        return True
+    candidate_objects = extract_objects(candidate)
+    if not candidate_objects:
+        return False
+    context_colors = {obj.split()[0] for obj in context_objects}
+    context_shapes = {obj.split()[1] for obj in context_objects}
+    for obj in candidate_objects:
+        color, shape = obj.split()
+        if obj in context_objects or color in context_colors or shape in context_shapes:
+            return True
+    return False
+
+
+def select_context_coherent_positive(positives: list[str], context: str, rng: random.Random) -> str:
+    coherent = [sent for sent in positives if related_to_context(sent, context)]
+    candidates = coherent or positives
+    if context:
+        context_objects = set(extract_objects(context))
+        novel = [sent for sent in candidates if set(extract_objects(sent)) - context_objects]
+        if novel:
+            candidates = novel
+    return rng.choice(candidates)
+
+
 def build_preferences(model: TinyVLM, rows: list[dict], out_path: Path, args: argparse.Namespace) -> list[dict]:
     rng = random.Random(args.seed + 9)
     pairs = []
@@ -139,7 +172,7 @@ def build_preferences(model: TinyVLM, rows: list[dict], out_path: Path, args: ar
                 # samples.  If the current sampling batch lacks either class,
                 # skip this context rather than fabricating oracle pairs.
                 continue
-            positive = rng.choice(positives)
+            positive = select_context_coherent_positive(positives, context, rng)
             negative = rng.choice(negatives)
             pairs.append({"id": row["id"], "prompt": row["prompt"], "objects": row["objects"], "context": context, "chosen": positive, "rejected": negative})
             context = (context + " " + positive).strip()
