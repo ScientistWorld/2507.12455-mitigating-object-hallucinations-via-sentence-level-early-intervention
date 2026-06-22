@@ -72,6 +72,7 @@ Continuation audit on 2026-06-20:
 - Patched preference construction so the chosen non-hallucinated sentence is selected for relation to the existing context before being appended as ICB context. In the synthetic scene domain, relation is measured by exact object overlap or shared color/shape, which preserves the paper's context-aware selection step without adding an inference-time object filter.
 - Patched supervised training to mask prompt tokens, matching the response-only target used by generation and DPO sequence scoring.
 - The next job sweeps conservative C-DPO learning rates, epoch counts, and beta values and selects the best run by hallucination reduction with recall/QA included as constraint terms. This is still a `method_runs` iteration until the refreshed scores show both benefit and constraint preservation.
+- Continuation audit on 2026-06-22 found no fresh sweep artifacts after the milestone reset: `scoring/scores.json` still contains the failed `84900da4-ee5` run and `tmp/sentinel_sweep/summary.json` is absent. `eval/metrics.py` remains method-independent and `python validate.py --compare` passes structurally, but the current numbers do not justify `core_claim`. The workspace is therefore being submitted for the prepared CPU sweep rather than marked complete.
 
 ## Remaining
 

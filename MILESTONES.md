@@ -23,3 +23,8 @@
 - Audited the compact preference construction against the paper and added context-coherent positive selection before ICB context appending.
 - Masked prompt tokens during supervised baseline training so response modeling, preference scoring, and evaluation use a consistent generation target.
 - Submitting a CPU sweep over conservative C-DPO settings; milestone remains `method_runs` until the resulting scores support the benefit and constraint sides together.
+
+### [2026-06-22 23:57] - method_runs
+- Continued audit after milestone reset: current `scoring/scores.json` still contains the failed `84900da4-ee5` scores and no `tmp/sentinel_sweep/summary.json` exists yet.
+- Verified `eval/metrics.py` scores prediction artifacts independently from `method/`, and `validate.py --compare` passes structurally while showing the current SENTINEL scores are not good enough for `core_claim`.
+- Keeping milestone at `method_runs` and submitting the prepared CPU sweep to generate fresh C-DPO-only results.
