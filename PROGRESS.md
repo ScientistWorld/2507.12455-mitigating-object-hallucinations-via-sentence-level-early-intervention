@@ -86,6 +86,7 @@ Continuation audit on 2026-06-20:
 - Diagnosed the remaining compact-model bottleneck as random-order SFT captions: after `There is a`, many different true objects are valid next tokens, so the tiny model learns a high-entropy language pattern and repeats one object under greedy decoding. The data generator already stores canonical sorted captions; the method-side noisy caption source now follows canonical visual-object order and appends an occasional absent object to preserve the hallucination problem while making the base captioning task learnable.
 - Added `--hidden-size` to the method CLI and updated the next sweep to use a modestly larger hidden state with fewer configurations and a stronger penalty for recall/QA losses.
 - Job `30b976da-67f` completed that canonical-order sweep and selected `h192_dpo1_lr5e5_p50`. The baseline now produces useful multi-object captions, and SENTINEL improves both hallucination metrics while also improving recall and QA. This restores `core_claim` for the patched C-DPO-only reproduction.
+- Validation follow-up: `scoring/reference.json` still contained stale synthetic benchmark targets from the pre-audit shortcut run, so `python validate.py` compared the faithful C-DPO scores against invalid compact targets. The runnable `synthetic_object_halbench` reference values now match the faithful `30b976da-67f` artifacts, while the full paper LLaVA Table 1 targets remain preserved in the separate `paper_llava_v15_*` reference entries.
 
 ## Remaining
 

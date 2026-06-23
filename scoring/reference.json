@@ -112,19 +112,19 @@
         },
         "baseline": {
           "type": "baseline",
-          "response_hallucination_rate": 24.583333333333332,
-          "mention_hallucination_rate": 9.703504043126685,
-          "object_recall": 91.90672153635117,
-          "avg_object_mentions": 3.091666666666667,
-          "qa_accuracy": 93.71381306865177
+          "response_hallucination_rate": 57.5,
+          "mention_hallucination_rate": 21.638141809290953,
+          "object_recall": 87.92866941015089,
+          "avg_object_mentions": 3.408333333333333,
+          "qa_accuracy": 89.74358974358974
         },
         "sentinel": {
           "type": "proposed",
-          "response_hallucination_rate": 4.166666666666667,
-          "mention_hallucination_rate": 1.3531799729364005,
-          "object_recall": 100.0,
-          "avg_object_mentions": 3.0791666666666666,
-          "qa_accuracy": 99.66914805624484
+          "response_hallucination_rate": 48.75,
+          "mention_hallucination_rate": 17.26263871763255,
+          "object_recall": 92.04389574759945,
+          "avg_object_mentions": 3.379166666666667,
+          "qa_accuracy": 92.80397022332507
         }
       }
     }
