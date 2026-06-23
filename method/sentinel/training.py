@@ -25,8 +25,8 @@ def sentence_for_object(obj: str) -> str:
 def noisy_caption(objects: list[str], rng: random.Random, hallucination_prob: float) -> str:
     # The base MLLM is intentionally imperfect: it sees real objects but also
     # learns a language-prior bias toward plausible absent objects.
-    ordered = list(objects)
-    rng.shuffle(ordered)
+    present = set(objects)
+    ordered = [obj for obj in OBJECTS if obj in present]
     if rng.random() < hallucination_prob:
         absent = [o for o in OBJECTS if o not in objects]
         ordered.append(rng.choice(absent))
@@ -265,6 +265,7 @@ def main() -> None:
     parser.add_argument("--samples-per-context", type=int, default=16)
     parser.add_argument("--sample-temperature", type=float, default=1.4)
     parser.add_argument("--caption-hallucination-prob", type=float, default=0.5)
+    parser.add_argument("--hidden-size", type=int, default=128)
     args = parser.parse_args()
 
     random.seed(args.seed)
@@ -273,7 +274,7 @@ def main() -> None:
     eval_rows = read_jsonl(Path(args.eval_data))
     out_dir = Path(args.out_dir)
 
-    baseline = TinyVLM(len(OBJECTS), len(WORDS), hidden=128)
+    baseline = TinyVLM(len(OBJECTS), len(WORDS), hidden=args.hidden_size)
     print("[main] training baseline SFT", flush=True)
     train_sft(baseline, train_rows, out_dir, args)
     print("[main] writing baseline predictions", flush=True)

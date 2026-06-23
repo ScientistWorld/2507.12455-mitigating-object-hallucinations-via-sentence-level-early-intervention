@@ -33,14 +33,13 @@ run_cfg() {
     --out "tmp/sentinel_sweep/${name}/scores.json"
 }
 
-COMMON_ARGS=(--sft-epochs 20 --preference-images 700 --samples-per-context 16 --sample-temperature 1.4)
+COMMON_ARGS=(--hidden-size 192 --sft-epochs 30 --preference-images 700 --samples-per-context 16 --sample-temperature 1.4)
 
-run_cfg dpo1_lr1e4_p50 "${COMMON_ARGS[@]}" --dpo-epochs 1 --dpo-lr 1e-4 --dpo-beta 0.1 --caption-hallucination-prob 0.50
-run_cfg dpo2_lr1e4_p50 "${COMMON_ARGS[@]}" --dpo-epochs 2 --dpo-lr 1e-4 --dpo-beta 0.1 --caption-hallucination-prob 0.50
-run_cfg dpo3_lr1e4_p50 "${COMMON_ARGS[@]}" --dpo-epochs 3 --dpo-lr 1e-4 --dpo-beta 0.1 --caption-hallucination-prob 0.50
-run_cfg dpo2_lr2e4_p50 "${COMMON_ARGS[@]}" --dpo-epochs 2 --dpo-lr 2e-4 --dpo-beta 0.1 --caption-hallucination-prob 0.50
-run_cfg dpo4_lr1e4_b03_p50 "${COMMON_ARGS[@]}" --dpo-epochs 4 --dpo-lr 1e-4 --dpo-beta 0.3 --caption-hallucination-prob 0.50
-run_cfg dpo1_lr5e5_p45 "${COMMON_ARGS[@]}" --dpo-epochs 1 --dpo-lr 5e-5 --dpo-beta 0.1 --caption-hallucination-prob 0.45
+run_cfg h192_dpo1_lr5e5_p50 "${COMMON_ARGS[@]}" --dpo-epochs 1 --dpo-lr 5e-5 --dpo-beta 0.1 --caption-hallucination-prob 0.50
+run_cfg h192_dpo2_lr1e4_p50 "${COMMON_ARGS[@]}" --dpo-epochs 2 --dpo-lr 1e-4 --dpo-beta 0.1 --caption-hallucination-prob 0.50
+run_cfg h192_dpo3_lr1e4_p55 "${COMMON_ARGS[@]}" --dpo-epochs 3 --dpo-lr 1e-4 --dpo-beta 0.1 --caption-hallucination-prob 0.55
+run_cfg h192_dpo2_lr2e4_p55 "${COMMON_ARGS[@]}" --dpo-epochs 2 --dpo-lr 2e-4 --dpo-beta 0.1 --caption-hallucination-prob 0.55
+run_cfg h192_dpo4_lr1e4_b03_p55 "${COMMON_ARGS[@]}" --dpo-epochs 4 --dpo-lr 1e-4 --dpo-beta 0.3 --caption-hallucination-prob 0.55
 
 python - <<'PY'
 import json
@@ -59,7 +58,8 @@ for scores_path in sorted(root.glob("*/scores.json")):
     mention_gain = baseline["mention_hallucination_rate"] - sentinel["mention_hallucination_rate"]
     recall_delta = sentinel["object_recall"] - baseline["object_recall"]
     qa_delta = sentinel["qa_accuracy"] - baseline["qa_accuracy"]
-    score = response_gain + mention_gain + 0.25 * recall_delta + 0.25 * qa_delta
+    constraint_penalty = 2.0 * max(0.0, -recall_delta) + 2.0 * max(0.0, -qa_delta)
+    score = response_gain + mention_gain + 0.5 * max(0.0, recall_delta) + 0.5 * max(0.0, qa_delta) - constraint_penalty
     rows.append(
         {
             "name": name,
@@ -68,6 +68,7 @@ for scores_path in sorted(root.glob("*/scores.json")):
             "mention_gain": mention_gain,
             "recall_delta": recall_delta,
             "qa_delta": qa_delta,
+            "constraint_penalty": constraint_penalty,
             "baseline": baseline,
             "sentinel": sentinel,
             "scores_path": str(scores_path),
@@ -88,7 +89,8 @@ for row in rows:
         f"resp_gain={row['response_gain']:.3f} "
         f"ment_gain={row['mention_gain']:.3f} "
         f"recall_delta={row['recall_delta']:.3f} "
-        f"qa_delta={row['qa_delta']:.3f}"
+        f"qa_delta={row['qa_delta']:.3f} "
+        f"constraint_penalty={row['constraint_penalty']:.3f}"
     )
 
 best = rows[0]

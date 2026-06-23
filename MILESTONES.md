@@ -28,3 +28,8 @@
 - Continued audit after milestone reset: current `scoring/scores.json` still contains the failed `84900da4-ee5` scores and no `tmp/sentinel_sweep/summary.json` exists yet.
 - Verified `eval/metrics.py` scores prediction artifacts independently from `method/`, and `validate.py --compare` passes structurally while showing the current SENTINEL scores are not good enough for `core_claim`.
 - Keeping milestone at `method_runs` and submitting the prepared CPU sweep to generate fresh C-DPO-only results.
+
+### [2026-06-23 00:31] - method_runs
+- CPU sweep `63cdc35d-8f1` completed successfully and preserved recall/QA in its best configuration, but the hallucination improvement was too small for a robust `core_claim`.
+- Diagnosed repeated single-object generation as the remaining scaled-benchmark bottleneck.
+- Changed the synthetic SFT caption order from random to canonical visual-object order and exposed hidden size as a CLI scale parameter, then prepared a tighter sweep with stronger recall/QA penalties.

@@ -5,4 +5,4 @@ action: submit
 gpus: 0
 test: false
 milestone: method_runs
-notes: "CPU sweep after adding context-coherent positive selection and prompt-masked SFT; selects the best faithful C-DPO-only compact run and validates scores."
+notes: "CPU sweep after canonicalizing synthetic SFT captions and modestly increasing hidden size; expected to fix repeated single-object generation while preserving SENTINEL C-DPO-only intervention."
