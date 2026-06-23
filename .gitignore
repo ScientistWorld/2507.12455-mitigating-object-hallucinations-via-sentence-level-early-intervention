@@ -32,6 +32,7 @@ data/downloads/
 
 # Container artifacts (multi-GB)
 environment/container.sif
+environment/container.final.def
 environment/container.squashfs
 environment/overlay*.img
 environment/.setup_wrapper.sh
@@ -66,6 +67,7 @@ docker_*.tar.xz
 **/*.tar.xz
 
 # Swarm/worker artifacts
+jobs/
 trajectory/
 .empty_*/
 outputs/
