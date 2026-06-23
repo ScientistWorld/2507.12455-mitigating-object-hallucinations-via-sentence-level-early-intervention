@@ -17,6 +17,36 @@ def read_jsonl(path: Path) -> list[dict]:
         return [json.loads(line) for line in f if line.strip()]
 
 
+def rows_by_id(rows: list[dict], source: str) -> dict[str, dict]:
+    keyed = {}
+    duplicates = []
+    for index, row in enumerate(rows):
+        row_id = row_key(row, index)
+        if row_id in keyed:
+            duplicates.append(row_id)
+        keyed[row_id] = row
+    if duplicates:
+        raise ValueError(f"{source} contains duplicate ids: {', '.join(sorted(set(duplicates))[:10])}")
+    return keyed
+
+
+def attach_predictions(gold_rows: list[dict], prediction_rows: list[dict], source: Path) -> list[dict]:
+    predictions = rows_by_id(prediction_rows, str(source))
+    scored_rows = []
+    missing = []
+    for index, gold in enumerate(gold_rows):
+        row_id = row_key(gold, index)
+        pred = predictions.get(row_id)
+        if pred is None:
+            missing.append(row_id)
+            continue
+        scored_rows.append({**gold, "prediction": pred.get("prediction", "")})
+    if missing:
+        preview = ", ".join(missing[:10])
+        raise ValueError(f"{source} is missing predictions for test rows: {preview}")
+    return scored_rows
+
+
 def extract_objects(text: str) -> list[str]:
     low = text.lower()
     found = []
@@ -102,8 +132,8 @@ def train_score_method_names(path: Path) -> list[str] | None:
     return sorted(results)
 
 
-def score_prediction_file(path: Path) -> dict:
-    rows = test_rows(read_jsonl(path))
+def score_prediction_file(path: Path, gold_rows: list[dict]) -> dict:
+    rows = attach_predictions(test_rows(gold_rows), read_jsonl(path), path)
     if not rows:
         raise ValueError(f"Test slice is empty for {path}")
     metrics = score_caption_rows(rows)
@@ -114,11 +144,13 @@ def score_prediction_file(path: Path) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input-dir", default="outputs")
+    parser.add_argument("--gold-data", default="data/eval_scenes.jsonl")
     parser.add_argument("--out", default="scoring/scores_test.json")
     parser.add_argument("--train-scores", default="scoring/scores_train.json")
     args = parser.parse_args()
 
     input_dir = Path(args.input_dir)
+    gold_rows = read_jsonl(Path(args.gold_data))
     methods = train_score_method_names(Path(args.train_scores))
     if methods is None:
         methods = disk_method_names(input_dir)
@@ -132,7 +164,7 @@ def main() -> None:
         if not path.exists():
             missing.append(str(path))
             continue
-        experiments[EXPERIMENT]["results"][name] = score_prediction_file(path)
+        experiments[EXPERIMENT]["results"][name] = score_prediction_file(path, gold_rows)
     if missing:
         raise FileNotFoundError("Missing prediction artifacts for test scoring: " + ", ".join(missing))
 

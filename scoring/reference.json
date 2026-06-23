@@ -5,16 +5,16 @@
       "weight": 0.45,
       "primary_metric": "response_hallucination_rate",
       "metrics": {
-        "response_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0},
-        "mention_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0},
-        "amber_chair": {"higher_is_better": false, "coefficient": -0.7},
-        "amber_hal_score": {"higher_is_better": false, "coefficient": -0.7},
-        "amber_cog_score": {"higher_is_better": false, "coefficient": -0.5},
-        "hallusion_question_accuracy": {"higher_is_better": true, "coefficient": 0.4},
-        "vqav2_accuracy": {"higher_is_better": true, "coefficient": 0.5},
-        "textvqa_accuracy": {"higher_is_better": true, "coefficient": 0.5},
-        "scienceqa_image_accuracy": {"higher_is_better": true, "coefficient": 0.4},
-        "mmvet_overall": {"higher_is_better": true, "coefficient": 0.4}
+        "response_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0, "description": "Object HalBench response-level hallucination rate; lower values indicate fewer captions with any nonexistent object."},
+        "mention_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0, "description": "Object HalBench mention-level hallucination rate; lower values indicate fewer nonexistent object mentions among all object mentions."},
+        "amber_chair": {"higher_is_better": false, "coefficient": -0.7, "description": "AMBER CHAIR hallucination metric used as an independent hallucination constraint."},
+        "amber_hal_score": {"higher_is_better": false, "coefficient": -0.7, "description": "AMBER hallucination score; lower values indicate less hallucination on a separate benchmark."},
+        "amber_cog_score": {"higher_is_better": false, "coefficient": -0.5, "description": "AMBER cognition hallucination score; lower values indicate fewer cognition-related hallucination errors."},
+        "hallusion_question_accuracy": {"higher_is_better": true, "coefficient": 0.4, "description": "HallusionBench question accuracy, included to catch methods that reduce hallucination by damaging visual reasoning."},
+        "vqav2_accuracy": {"higher_is_better": true, "coefficient": 0.5, "description": "VQAv2 accuracy, included as a general visual question answering capability constraint."},
+        "textvqa_accuracy": {"higher_is_better": true, "coefficient": 0.5, "description": "TextVQA accuracy, included as a text-in-image understanding capability constraint."},
+        "scienceqa_image_accuracy": {"higher_is_better": true, "coefficient": 0.4, "description": "ScienceQA image accuracy, included as a multimodal reasoning capability constraint."},
+        "mmvet_overall": {"higher_is_better": true, "coefficient": 0.4, "description": "MM-Vet overall score, included as a broad multimodal capability constraint."}
       },
       "results": {
         "llava_v15_7b_baseline": {
@@ -50,16 +50,16 @@
       "weight": 0.25,
       "primary_metric": "response_hallucination_rate",
       "metrics": {
-        "response_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0},
-        "mention_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0},
-        "amber_chair": {"higher_is_better": false, "coefficient": -0.7},
-        "amber_hal_score": {"higher_is_better": false, "coefficient": -0.7},
-        "amber_cog_score": {"higher_is_better": false, "coefficient": -0.5},
-        "hallusion_question_accuracy": {"higher_is_better": true, "coefficient": 0.4},
-        "vqav2_accuracy": {"higher_is_better": true, "coefficient": 0.5},
-        "textvqa_accuracy": {"higher_is_better": true, "coefficient": 0.5},
-        "scienceqa_image_accuracy": {"higher_is_better": true, "coefficient": 0.4},
-        "mmvet_overall": {"higher_is_better": true, "coefficient": 0.4}
+        "response_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0, "description": "Object HalBench response-level hallucination rate; lower values indicate fewer captions with any nonexistent object."},
+        "mention_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0, "description": "Object HalBench mention-level hallucination rate; lower values indicate fewer nonexistent object mentions among all object mentions."},
+        "amber_chair": {"higher_is_better": false, "coefficient": -0.7, "description": "AMBER CHAIR hallucination metric used as an independent hallucination constraint."},
+        "amber_hal_score": {"higher_is_better": false, "coefficient": -0.7, "description": "AMBER hallucination score; lower values indicate less hallucination on a separate benchmark."},
+        "amber_cog_score": {"higher_is_better": false, "coefficient": -0.5, "description": "AMBER cognition hallucination score; lower values indicate fewer cognition-related hallucination errors."},
+        "hallusion_question_accuracy": {"higher_is_better": true, "coefficient": 0.4, "description": "HallusionBench question accuracy, included to catch methods that reduce hallucination by damaging visual reasoning."},
+        "vqav2_accuracy": {"higher_is_better": true, "coefficient": 0.5, "description": "VQAv2 accuracy, included as a general visual question answering capability constraint."},
+        "textvqa_accuracy": {"higher_is_better": true, "coefficient": 0.5, "description": "TextVQA accuracy, included as a text-in-image understanding capability constraint."},
+        "scienceqa_image_accuracy": {"higher_is_better": true, "coefficient": 0.4, "description": "ScienceQA image accuracy, included as a multimodal reasoning capability constraint."},
+        "mmvet_overall": {"higher_is_better": true, "coefficient": 0.4, "description": "MM-Vet overall score, included as a broad multimodal capability constraint."}
       },
       "results": {
         "llava_v15_13b_baseline": {
@@ -95,11 +95,11 @@
       "weight": 0.3,
       "primary_metric": "response_hallucination_rate",
       "metrics": {
-        "response_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0},
-        "mention_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0},
-        "object_recall": {"higher_is_better": true, "coefficient": 0.7},
-        "avg_object_mentions": {"higher_is_better": true, "coefficient": 0.2},
-        "qa_accuracy": {"higher_is_better": true, "coefficient": 0.5}
+        "response_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0, "description": "Percentage of evaluated responses that mention at least one object absent from the authoritative scene record."},
+        "mention_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0, "description": "Percentage of extracted object mentions that are absent from the authoritative scene record."},
+        "object_recall": {"higher_is_better": true, "coefficient": 0.7, "description": "Percentage of gold scene objects recovered by the response, preventing trivial silence from winning the hallucination metrics."},
+        "avg_object_mentions": {"higher_is_better": true, "coefficient": 0.2, "description": "Average number of recognized object mentions per response, used as a weak coverage pressure alongside hallucination penalties."},
+        "qa_accuracy": {"higher_is_better": true, "coefficient": 0.5, "description": "Object-presence question accuracy derived from the response and authoritative QA labels."}
       },
       "results": {
         "language_prior": {

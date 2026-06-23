@@ -14,5 +14,6 @@ mkdir -p scoring
 INPUT_DIR="${1:-outputs}"
 python -m eval.test.evaluate \
   --input-dir "$INPUT_DIR" \
+  --gold-data data/eval_scenes.jsonl \
   --out scoring/scores_test.json \
   --train-scores scoring/scores_train.json
