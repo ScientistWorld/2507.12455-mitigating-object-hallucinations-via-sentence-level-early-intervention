@@ -1,9 +1,9 @@
-# This iteration submits a compute job.
-# Once you set action to 'submit', STOP immediately.
+# This iteration is complete.
+# Once you set action to 'done', STOP immediately.
 # Do NOT sleep, poll, or wait. The system reads this file
 # only after your turn ends.
-action: submit
+action: done
 gpus: 0
 test: false
 milestone: core_claim
-notes: "Run evaluate_{train,test}.sh on existing outputs to populate scores_{train,test}.json."
+notes: "Deterministic IID row split; 15 train metrics and 15 test metrics populated. Sentinel remains better than baseline on hallucination and coverage constraints; train/test sentinel gaps are +11.0 response-hallucination pts, +4.57 mention-hallucination pts, -5.21 object-recall pts, -2.35 QA pts on test vs train. Caveat: weak language_prior saturates at 100% test response hallucination, but proposed/baseline metrics are non-saturated."
