@@ -1,8 +1,3 @@
-# IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
-# Do NOT sleep, poll, or wait for jobs. The system reads this file
-# only after your turn ends. Sleeping blocks the entire pipeline.
-action: submit
-gpus: 0
-test: false
-milestone: method_runs
-notes: "CPU sweep after canonicalizing synthetic SFT captions and modestly increasing hidden size; expected to fix repeated single-object generation while preserving SENTINEL C-DPO-only intervention."
+action: done
+milestone: core_claim
+notes: "Reproduced the scaled SENTINEL core claim: C-DPO reduced response/mention hallucination while preserving or improving object recall and QA; environment packaged and validated."

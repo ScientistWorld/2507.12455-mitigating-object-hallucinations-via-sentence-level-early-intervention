@@ -13,7 +13,16 @@ Implemented a scaled, self-contained reproduction path:
 
 ## Results
 
-Current status after the continuation audit is `method_runs`. The historical scores below were produced by an earlier compact run, but that implementation included auxiliary object-presence supervision and decode-time object filtering that are not part of the paper's SENTINEL method. Those shortcuts have now been removed, so `scoring/scores.json` must be refreshed by the next job before `core_claim` can be restored for the patched implementation.
+Current status is `core_claim`. Job `30b976da-67f` completed the faithful compact SENTINEL path after removing non-paper shortcuts and selecting the best conservative C-DPO configuration from the CPU sweep. The current `scoring/scores.json` was produced from generated prediction artifacts, and `python validate.py --compare` passes.
+
+Current reproduced scores on `synthetic_object_halbench`:
+- `language_prior`: response hallucination 98.750, mention hallucination 71.667, object recall 27.984, QA accuracy 47.312.
+- `baseline`: response hallucination 57.500, mention hallucination 21.638, object recall 87.929, QA accuracy 89.744.
+- `sentinel`: response hallucination 48.750, mention hallucination 17.263, object recall 92.044, QA accuracy 92.804.
+
+This supports the scaled core claim: sentence-level early intervention through sampled validation, context bootstrapping, and C-DPO reduces object hallucination while preserving or improving object coverage and QA behavior.
+
+The historical scores below were produced by earlier compact runs. One earlier run included auxiliary object-presence supervision and decode-time object filtering that are not part of the paper's SENTINEL method; those shortcuts have been removed and are not used for the current milestone.
 
 The earlier scaled reproduction reached `core_claim`. Job `f289abfe-f08` ran the full pipeline, sampled 1,389 in-domain SENTINEL preference pairs, trained C-DPO, wrote predictions, and passed `python validate.py --compare`. Because of the audit issue described below, these numbers are now treated as historical evidence from the pre-fix implementation rather than the current milestone proof.
 
@@ -22,7 +31,7 @@ Historical reproduced scores on `synthetic_object_halbench`:
 - `baseline`: response hallucination 24.583, mention hallucination 9.704, object recall 91.907, QA accuracy 93.714.
 - `sentinel`: response hallucination 4.167, mention hallucination 1.353, object recall 100.000, QA accuracy 99.669.
 
-This supports the paper's core benefit/constraint claim in the compact environment: sentence-level early intervention sharply reduces object hallucination while maintaining useful object coverage and QA behavior.
+The pre-audit historical run supported the paper's core benefit/constraint claim in the compact environment, but it is no longer used as milestone evidence.
 
 Audit fixes on 2026-06-20:
 - Corrected `scoring/reference.json` hallucination/recall/QA values to use the same percentage scale as `eval/metrics.py`.
@@ -76,16 +85,17 @@ Continuation audit on 2026-06-20:
 - Job `63cdc35d-8f1` completed the prepared CPU sweep. Best config was `dpo1_lr5e5_p45`: baseline response hallucination 31.250%, mention hallucination 25.449%, object recall 34.156%, QA accuracy 59.553%; SENTINEL response hallucination 28.750%, mention hallucination 23.385%, object recall 34.156%, QA accuracy 59.553%. This is a real C-DPO improvement with constraints preserved, but it is too small and the sample outputs show repeated single-object captions rather than useful multi-object descriptions.
 - Diagnosed the remaining compact-model bottleneck as random-order SFT captions: after `There is a`, many different true objects are valid next tokens, so the tiny model learns a high-entropy language pattern and repeats one object under greedy decoding. The data generator already stores canonical sorted captions; the method-side noisy caption source now follows canonical visual-object order and appends an occasional absent object to preserve the hallucination problem while making the base captioning task learnable.
 - Added `--hidden-size` to the method CLI and updated the next sweep to use a modestly larger hidden state with fewer configurations and a stronger penalty for recall/QA losses.
+- Job `30b976da-67f` completed that canonical-order sweep and selected `h192_dpo1_lr5e5_p50`. The baseline now produces useful multi-object captions, and SENTINEL improves both hallucination metrics while also improving recall and QA. This restores `core_claim` for the patched C-DPO-only reproduction.
 
 ## Remaining
 
-Rerun the patched canonical-order compact method and regenerate `scoring/scores.json`. If the method reduces response- and mention-level hallucination while preserving object recall and QA accuracy relative to a baseline that produces useful multi-object captions, restore `core_claim`. If the compact model still collapses, move to the released SENTINEL preference data or a closer LLaVA-v1.5 stack using the already available shared LLaVA and GroundingDINO assets. To reach higher milestones after `core_claim`, add more benchmark axes such as a second synthetic difficulty setting, a standard-DPO ablation, or a public VLM hallucination dataset.
+The compact environment is usable at `core_claim`. To reach higher milestones, add more benchmark axes such as a second synthetic difficulty setting, a standard-DPO ablation, or a public VLM hallucination dataset. A fuller reproduction would move to the released SENTINEL preference data or a closer LLaVA-v1.5 stack using the already available shared LLaVA and GroundingDINO assets.
 
 ## Issues
 
 The full paper setup uses LLaVA-v1.5, Visual Genome, Scene-GraphParser, GroundingDINO, YOLO-World, and public hallucination benchmarks. That is larger than this initial autonomous run, so the first runnable environment uses a scaled synthetic benchmark while preserving the SENTINEL algorithmic procedure.
 
-The current implementation has only re-established `method_runs` after removing non-paper shortcuts. It does not yet support the scaled core claim with refreshed scores.
+The current implementation supports the scaled core claim, but it is not a full paper-scale reproduction of the original LLaVA-v1.5 benchmarks.
 
 ## Deviations from Paper
 

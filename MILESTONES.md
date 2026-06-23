@@ -1,6 +1,6 @@
 # Reproduction Milestones
 
-**Current: method_runs**
+**Current: core_claim**
 
 ## Progress Log
 
@@ -33,3 +33,8 @@
 - CPU sweep `63cdc35d-8f1` completed successfully and preserved recall/QA in its best configuration, but the hallucination improvement was too small for a robust `core_claim`.
 - Diagnosed repeated single-object generation as the remaining scaled-benchmark bottleneck.
 - Changed the synthetic SFT caption order from random to canonical visual-object order and exposed hidden size as a CLI scale parameter, then prepared a tighter sweep with stronger recall/QA penalties.
+
+### [2026-06-23 01:11] - core_claim
+- CPU sweep `30b976da-67f` completed successfully with the faithful compact SENTINEL path and selected `h192_dpo1_lr5e5_p50`.
+- Restored `core_claim`: SENTINEL reduced response hallucination from 57.500% to 48.750% and mention hallucination from 21.638% to 17.263%.
+- Constraint metrics were preserved or improved: object recall increased from 87.929% to 92.044%, and QA accuracy increased from 89.744% to 92.804%.
