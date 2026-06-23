@@ -92,6 +92,7 @@
     },
     "synthetic_object_halbench": {
       "description": "Runnable scaled SENTINEL reproduction of the paper's Object HalBench-style claim on deterministic synthetic scenes. These targets are from the validated scaled run and exist so scripts/evaluate.sh can compare future methods on the compact benchmark; the paper-reported full-scale targets are recorded in the paper_llava_v15_* experiments.",
+      "notes": "These are not paper-reported benchmark numbers. They are validated compact synthetic-environment reference values produced by the faithful scaled reproduction after substituting a small image-conditioned model and deterministic synthetic scenes for the full LLaVA-v1.5/Visual Genome/Object HalBench setup. The paper-reported values remain in the paper_llava_v15_7b_main and paper_llava_v15_13b_main entries.",
       "weight": 0.3,
       "primary_metric": "response_hallucination_rate",
       "metrics": {

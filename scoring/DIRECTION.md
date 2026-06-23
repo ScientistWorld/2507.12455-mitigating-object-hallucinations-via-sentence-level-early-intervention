@@ -6,11 +6,11 @@ This benchmark studies object hallucination mitigation for image-conditioned lan
 
 ## Core Contribution Scope
 
-Work should stay within training-time or alignment-time methods that improve visual grounding of generated object mentions. Improvements should preserve useful object coverage, not simply suppress mentions.
+Work should improve the visual grounding of generated object mentions. A stronger system should mention fewer absent objects while preserving useful coverage of objects that are actually present.
 
 ## Approach Scope
 
-Future agents may change candidate sampling, object validation signals, preference-pair construction, contextual bootstrapping, or the preference objective. They may also improve the compact model so long as comparisons remain within the provided benchmark resources.
+Future agents may change the model, training data usage, optimization strategy, decoding policy, or other grounding technique, provided the comparison stays within the provided benchmark resources and the same output format. Improvements should come from better image-conditioned generation, not from using labels from the evaluation split or changing the evaluator.
 
 ## Out of Bounds
 

@@ -4,7 +4,7 @@
 
 These entries in `scoring/reference.json` preserve the paper-reported Table 1 targets for full-scale LLaVA-v1.5 runs. They document the original benchmark goals: reduce Object HalBench response/mention hallucination and AMBER hallucination metrics while maintaining HallusionBench, VQAv2, TextVQA, ScienceQA, and MM-Vet performance.
 
-The current runnable environment does not reproduce these full-scale targets directly because it uses a compact synthetic substitute instead of LLaVA-v1.5, Visual Genome, Scene-GraphParser, GroundingDINO, YOLO-World, and the public hallucination/general benchmark suite.
+The current runnable environment does not reproduce these full-scale targets directly because it uses a compact synthetic substitute instead of the full paper-scale model, image data sources, external object-checking resources, and public hallucination/general benchmark suite.
 
 ## Runnable Target: synthetic_object_halbench
 
