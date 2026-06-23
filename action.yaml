@@ -6,4 +6,4 @@ action: done
 gpus: 0
 test: false
 milestone: core_claim
-notes: "Packaging audit passed; added repo-level ignores for generated job and container artifacts."
+notes: "Core-claim SENTINEL scaled reproduction is validated; evaluate, train/test scoring, and post-design checks pass. Generated job artifacts were removed from git tracking and ignored."
