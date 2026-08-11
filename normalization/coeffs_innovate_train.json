@@ -1,0 +1,135 @@
+{
+  "paper_id": "2507.12455",
+  "phase": "train",
+  "cohort": [
+    "claude-opus-4-8-xhigh",
+    "claude-opus-xhigh",
+    "gpt-5.6-sol-xhigh",
+    "gpt-5.6-terra-xhigh",
+    "gpt-5.6-luna-xhigh",
+    "gpt-5.5-xhigh",
+    "glm-5-xhigh",
+    "minimax-xhigh",
+    "grok-4.3-xhigh",
+    "gemini-3-pro-preview",
+    "gemini-3.1-flash-lite-preview",
+    "kimi-k2.6-thinking",
+    "mimo-pro-xhigh",
+    "deepseek-v4-pro-xhigh"
+  ],
+  "models_present": [
+    "gpt-5.5-xhigh",
+    "gpt-5.6-luna-xhigh",
+    "gpt-5.6-sol-xhigh",
+    "gpt-5.6-terra-xhigh"
+  ],
+  "n_models": 4,
+  "n_cells": 5,
+  "last_updated": "2026-08-11T03:05:25.278301+00:00",
+  "excluded": false,
+  "typical_spread": 39.452268394624426,
+  "paper_baseline": 2.3012269458323606,
+  "cohort_raw": {
+    "gpt-5.5-xhigh": -1.4352015420479214,
+    "gpt-5.6-luna-xhigh": -3.1672523496167995,
+    "gpt-5.6-sol-xhigh": -1.4352015420479214,
+    "gpt-5.6-terra-xhigh": -3.1672523496167995
+  },
+  "cells": [
+    {
+      "experiment": "synthetic_object_halbench",
+      "method": "sentinel",
+      "metric": "avg_object_mentions",
+      "source": 3.37,
+      "higher_is_better": true,
+      "coefficient": 2.246753409610567,
+      "prior_weight": 0.06,
+      "spread": 0.005773502691896135,
+      "normalizer": 0.005773502691896135,
+      "effective_weight": 0.02985068027013321,
+      "cohort_imp": {
+        "gpt-5.6-sol-xhigh": -0.3600000000000003,
+        "gpt-5.6-terra-xhigh": -0.3700000000000001,
+        "gpt-5.6-luna-xhigh": -0.3700000000000001,
+        "gpt-5.5-xhigh": -0.3600000000000003
+      }
+    },
+    {
+      "experiment": "synthetic_object_halbench",
+      "method": "sentinel",
+      "metric": "mention_hallucination_rate",
+      "source": 15.43026706231454,
+      "higher_is_better": false,
+      "coefficient": 0.0032869699197314553,
+      "prior_weight": 0.3,
+      "spread": 39.452268394624426,
+      "normalizer": 39.452268394624426,
+      "effective_weight": 0.2984194731964217,
+      "cohort_imp": {
+        "gpt-5.6-sol-xhigh": 15.43026706231454,
+        "gpt-5.6-terra-xhigh": -52.90306627101879,
+        "gpt-5.6-luna-xhigh": -52.90306627101879,
+        "gpt-5.5-xhigh": 15.43026706231454
+      }
+    },
+    {
+      "experiment": "synthetic_object_halbench",
+      "method": "sentinel",
+      "metric": "object_recall",
+      "source": 94.6843853820598,
+      "higher_is_better": true,
+      "coefficient": 0.0022982255512823545,
+      "prior_weight": 0.21,
+      "spread": 39.51300845616708,
+      "normalizer": 39.51300845616708,
+      "effective_weight": 0.20897397168916745,
+      "cohort_imp": {
+        "gpt-5.6-sol-xhigh": 5.315614617940199,
+        "gpt-5.6-terra-xhigh": -63.12292358803987,
+        "gpt-5.6-luna-xhigh": -63.12292358803987,
+        "gpt-5.5-xhigh": 5.315614617940199
+      }
+    },
+    {
+      "experiment": "synthetic_object_halbench",
+      "method": "sentinel",
+      "metric": "qa_accuracy",
+      "source": 94.0119760479042,
+      "higher_is_better": true,
+      "coefficient": 0.0020690658607924023,
+      "prior_weight": 0.15,
+      "spread": 28.925133246825563,
+      "normalizer": 28.925133246825563,
+      "effective_weight": 0.13772384341691266,
+      "cohort_imp": {
+        "gpt-5.6-sol-xhigh": 5.988023952095801,
+        "gpt-5.6-terra-xhigh": -44.1117764471058,
+        "gpt-5.6-luna-xhigh": -44.1117764471058,
+        "gpt-5.5-xhigh": 5.988023952095801
+      }
+    },
+    {
+      "experiment": "synthetic_object_halbench",
+      "method": "sentinel",
+      "metric": "response_hallucination_rate",
+      "source": 44.0,
+      "higher_is_better": false,
+      "coefficient": 0.0024963257878456184,
+      "prior_weight": 0.3,
+      "spread": 56.58032638058332,
+      "normalizer": 56.58032638058332,
+      "effective_weight": 0.32503203142736503,
+      "cohort_imp": {
+        "gpt-5.6-sol-xhigh": 44.0,
+        "gpt-5.6-terra-xhigh": -54.0,
+        "gpt-5.6-luna-xhigh": -54.0,
+        "gpt-5.5-xhigh": 44.0
+      }
+    }
+  ],
+  "mode": "innovate",
+  "pruned_cells": [],
+  "locked": true,
+  "locked_at": "2026-08-11T03:07:22.660474+00:00",
+  "locked_n_models": 4
+}
