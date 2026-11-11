@@ -5,4 +5,4 @@ action: submit
 gpus: 2
 test: false
 milestone: core_claim
-notes: "Resubmit hardening job after fixing image-token expansion and OWLv2 truncation: smoke test with log-prob/margin assertions, SENTINEL on LLaVA-v1.5-7B (2-GPU preference construction, C-DPO LoRA), baseline/reference/half-data/lr5e-6/seed43 predictions, post-hoc detector brute force, shortcut cases through the no-arg hidden test, rank + paired bootstrap."
+notes: "Rebuild with fixed batched decoding: baseline predictions, SENTINEL preference data (2 shards, 115-min cap), C-DPO reference at paper LR for the paper's 134 updates, lr5e-6 and half-data variants, re-predicted seed-42/43 adapters for seed noise, post-hoc detector brute force, shortcut cases through the no-arg hidden test, rank + paired bootstrap."
