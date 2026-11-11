@@ -11,6 +11,9 @@ from pathlib import Path
 import torch
 from PIL import Image
 
+# Jobs run with a single CPU core: avoid thread oversubscription.
+torch.set_num_threads(1)
+
 ROOT = Path(__file__).resolve().parents[2]
 DL = ROOT / "data" / "downloads"
 LLAVA_PATH = DL / "models" / "llava-1.5-7b-hf"
@@ -102,6 +105,10 @@ class LlavaRunner:
         self.pad_id = self.tok.pad_token_id if self.tok.pad_token_id is not None else 0
         self.eos_id = self.tok.eos_token_id
         self.period_id = self.tok.convert_tokens_to_ids(".")
+        cfg = self.model.config
+        self.image_token_id = cfg.image_token_index
+        vc = cfg.vision_config
+        self.image_seq_length = getattr(cfg, "image_seq_length", None) or (vc.image_size // vc.patch_size) ** 2
         self._prompt_cache: dict[str, list[int]] = {}
 
     # -- inputs -------------------------------------------------------------
@@ -114,9 +121,14 @@ class LlavaRunner:
         """Token ids of the full chat prompt, with the <image> placeholder
         expanded to the number of visual tokens (processor convention)."""
         if question not in self._prompt_cache:
-            dummy = Image.new("RGB", (336, 336), self.pad_color)
-            enc = self.processor(images=dummy, text=chat_prompt(question), return_tensors="pt")
-            self._prompt_cache[question] = enc["input_ids"][0].tolist()
+            ids = self.tok(chat_prompt(question), add_special_tokens=True)["input_ids"]
+            n = ids.count(self.image_token_id)
+            if n == 1:  # expand the placeholder to one token per visual feature
+                k = ids.index(self.image_token_id)
+                ids = ids[:k] + [self.image_token_id] * self.image_seq_length + ids[k + 1 :]
+            if ids.count(self.image_token_id) != self.image_seq_length:
+                raise RuntimeError(f"prompt has {ids.count(self.image_token_id)} image tokens, expected {self.image_seq_length}")
+            self._prompt_cache[question] = ids
         return list(self._prompt_cache[question])
 
     def text_ids(self, text: str) -> list[int]:

@@ -61,6 +61,35 @@ def subset(pairs: list[dict], fraction: float, seed: int) -> list[dict]:
     return sorted(ranked[: int(round(fraction * len(pairs)))], key=lambda p: p["pair_id"])
 
 
+def run_step(model, runner, batch, micro, prompt_cache, device, beta) -> dict:
+    """Accumulate C-DPO gradients of one global batch; returns summed statistics."""
+    stats = {"loss": 0.0, "acc": 0.0, "margin": 0.0, "chosen_reward": 0.0, "rejected_reward": 0.0}
+    for start in range(0, len(batch), micro):
+        mb = batch[start : start + micro]
+        prefixes, responses, images = [], [], []
+        for p in mb:
+            if p["prompt"] not in prompt_cache:
+                prompt_cache[p["prompt"]] = runner.prompt_ids(p["prompt"])
+            pre = prompt_cache[p["prompt"]] + p["context_ids"]
+            img = load_image(p["image"])
+            prefixes += [pre, pre]
+            responses += [p["chosen_ids"], p["rejected_ids"]]
+            images += [img, img]
+        lp = response_logps(model, runner.pad_id, runner.pixel_values(images), prefixes, responses)
+        pc, pr = lp[0::2], lp[1::2]
+        rc = torch.tensor([p["ref_chosen"] for p in mb], device=device)
+        rr = torch.tensor([p["ref_rejected"] for p in mb], device=device)
+        logits = (pc - pr) - (rc - rr)
+        loss = -F.logsigmoid(beta * logits)
+        (loss.sum() / len(batch)).backward()
+        stats["loss"] += float(loss.detach().sum())
+        stats["acc"] += float((logits > 0).float().sum())
+        stats["margin"] += float(logits.detach().sum())
+        stats["chosen_reward"] += float((beta * (pc - rc)).detach().sum())
+        stats["rejected_reward"] += float((beta * (pr - rr)).detach().sum())
+    return stats
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--pairs", default="checkpoints/preferences/pairs.jsonl")
@@ -120,31 +149,23 @@ def main() -> None:
     model.train()
     history = []
     t0 = time.time()
+    micro = args.micro_batch
     for step, batch in enumerate(batches):
-        stats = {"loss": 0.0, "acc": 0.0, "margin": 0.0, "chosen_reward": 0.0, "rejected_reward": 0.0}
-        for start in range(0, len(batch), args.micro_batch):
-            mb = batch[start : start + args.micro_batch]
-            prefixes, responses, images = [], [], []
-            for p in mb:
-                if p["prompt"] not in prompt_cache:
-                    prompt_cache[p["prompt"]] = runner.prompt_ids(p["prompt"])
-                pre = prompt_cache[p["prompt"]] + p["context_ids"]
-                img = load_image(p["image"])
-                prefixes += [pre, pre]
-                responses += [p["chosen_ids"], p["rejected_ids"]]
-                images += [img, img]
-            lp = response_logps(model, runner.pad_id, runner.pixel_values(images), prefixes, responses)
-            pc, pr = lp[0::2], lp[1::2]
-            rc = torch.tensor([p["ref_chosen"] for p in mb], device=device)
-            rr = torch.tensor([p["ref_rejected"] for p in mb], device=device)
-            logits = (pc - pr) - (rc - rr)
-            loss = -F.logsigmoid(args.beta * logits)
-            (loss.sum() / len(batch)).backward()
-            stats["loss"] += float(loss.detach().sum())
-            stats["acc"] += float((logits > 0).float().sum())
-            stats["margin"] += float(logits.detach().sum())
-            stats["chosen_reward"] += float((args.beta * (pc - rc)).detach().sum())
-            stats["rejected_reward"] += float((args.beta * (pr - rr)).detach().sum())
+        while True:
+            try:
+                stats = run_step(model, runner, batch, micro, prompt_cache, device, args.beta)
+                break
+            except torch.cuda.OutOfMemoryError:
+                opt.zero_grad(set_to_none=True)
+                torch.cuda.empty_cache()
+                if micro > 1:
+                    micro //= 2
+                    log(f"OOM: micro-batch -> {micro}")
+                elif not getattr(model, "is_gradient_checkpointing", False):
+                    model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
+                    log("OOM: enabling gradient checkpointing")
+                else:
+                    raise
         torch.nn.utils.clip_grad_norm_(trainable, 1.0)
         opt.step()
         sched.step()

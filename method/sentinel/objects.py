@@ -63,7 +63,7 @@ class ObjectExtractor:
                 lemma = tok.lemma_.lower().strip()
                 if not lemma.isalpha() or not self.is_concrete(lemma):
                     continue
-                compounds = [c.lemma_.lower() for c in tok.lefts if c.dep_ == "compound" and c.pos_ in ("NOUN", "PROPN")]
+                compounds = [c.lemma_.lower() for c in tok.lefts if c.dep_ == "compound" and c.pos_ in ("NOUN", "PROPN") and c.lemma_.isalpha()][-2:]
                 phrase = " ".join(compounds + [lemma])
                 if lemma not in seen:
                     seen[lemma] = {"lemma": lemma, "phrase": phrase}

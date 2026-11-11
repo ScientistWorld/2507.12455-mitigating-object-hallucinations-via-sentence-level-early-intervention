@@ -43,6 +43,7 @@ class ImageState:
         self.context_text = ""
         self.context_lemmas: set[str] = set()
         self.cache: dict[str, dict] = {}
+        self.det_inputs = None
         self.steps = 0
         self.pairs: list[dict] = []
         self.done = False
@@ -135,7 +136,9 @@ def run_shard(args) -> None:
             sents = [c for c in cands if c["kind"] == "sent"]
             new = sorted({o["phrase"] for c in sents for o in c["objects"]} - set(st.cache))
             if new:
-                st.cache.update(checker.validate(st.image, new))
+                if st.det_inputs is None:
+                    st.det_inputs = checker.prepare(st.image)
+                st.cache.update(checker.validate(st.det_inputs, new))
             for c in sents:
                 labels = [st.cache[o["phrase"]]["label"] for o in c["objects"]]
                 c["lemmas"] = {o["lemma"] for o in c["objects"]}
@@ -191,6 +194,8 @@ def run_shard(args) -> None:
             elif st.steps >= args.max_steps:
                 st.done, st.reason = True, "max_steps"
         finished = [st for st in active if st.done]
+        for st in finished:
+            st.det_inputs = None
         for st in finished:
             append_jsonl(pairs_path, st.pairs)
             append_jsonl(stats_path, [{"image": st.name, "steps": st.steps, "pairs": len(st.pairs), "reason": st.reason, **st.counts}])

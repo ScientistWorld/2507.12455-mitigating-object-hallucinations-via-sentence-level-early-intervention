@@ -11,6 +11,8 @@
 set -uo pipefail
 cd /home/user
 export PYTHONUNBUFFERED=1 TOKENIZERS_PARALLELISM=false HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+# Jobs get one CPU core: no thread oversubscription; nvidia-smi and torch share PCI ordering.
+export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 CUDA_DEVICE_ORDER=PCI_BUS_ID
 L=logs/job
 PREDS=checkpoints/hardening/preds
 mkdir -p "$L" "$PREDS" outputs
@@ -20,18 +22,38 @@ budget() { local b=$(( $1 - $(mins) )); [ "$b" -gt 1 ] && echo "$b" || echo 1; }
 
 nvidia-smi || true
 python -c "import torch, transformers, peft, spacy; print('torch', torch.__version__, 'transformers', transformers.__version__, 'peft', peft.__version__, 'spacy', spacy.__version__, [torch.cuda.get_device_name(i) for i in range(torch.cuda.device_count())])" || exit 1
+env | grep -i -E "cuda|nvidia|gpu|ray_|slurm" | sort || true
+nproc || true
 NGPU=$(python -c "import torch; print(torch.cuda.device_count())")
-D0=cuda:0; D1=cuda:1
-[ "$NGPU" -ge 2 ] || D1=cuda:0
-PREF_STOP=${PREF_STOP:-125}
+# All node GPUs are visible inside the container; use the two least loaded.
+read -r G0 G1 < <(nvidia-smi --query-gpu=index,utilization.gpu,memory.used --format=csv,noheader,nounits 2>/dev/null |
+  sort -t, -k2,2n -k3,3n | head -n 2 | cut -d, -f1 | tr '\n' ' ')
+D0=cuda:${G0:-0}; D1=cuda:${G1:-1}
+[ "$NGPU" -ge 2 ] || D1=$D0
+echo "[run] using $D0 and $D1 of $NGPU visible GPUs"
+PREF_STOP=${PREF_STOP:-120}
 
 # ---- 0. smoke test of every stage on a few images --------------------------
 if [ ! -f checkpoints/smoke/OK ]; then
   echo "[run] smoke test $(mins) min"
   python -m method.sentinel.build_preferences --out-dir checkpoints/smoke/prefs --num-images 12 --max-steps 3 --batch-images 4 --device $D0 || exit 1
   python -m method.sentinel.build_preferences --out-dir checkpoints/smoke/prefs --merge || exit 1
-  head -c 3000 checkpoints/smoke/prefs/pairs.jsonl; echo
-  python -m method.sentinel.cdpo --pairs checkpoints/smoke/prefs/pairs.jsonl --out checkpoints/smoke/cdpo --max-steps 2 --global-batch 4 --device $D0 || exit 1
+  python - <<'PY' || exit 1
+import json
+rows = [json.loads(l) for l in open("checkpoints/smoke/prefs/pairs.jsonl")]
+for r in rows[:8]:
+    print(round(r["ref_chosen"], 2), round(r["ref_rejected"], 2), len(r["chosen_ids"]), len(r["rejected_ids"]), "|", r["chosen"], "||", r["rejected"], "|", {k: v["label"] for k, v in r["rejected_objects"].items()})
+per_tok = [r["ref_chosen"] / len(r["chosen_ids"]) for r in rows]
+print("mean ref logp/token (chosen):", sum(per_tok) / len(per_tok))
+assert rows and all(-15 < x < 0 for x in per_tok), "implausible reference log-probs"
+PY
+  python -m method.sentinel.cdpo --pairs checkpoints/smoke/prefs/pairs.jsonl --out checkpoints/smoke/cdpo --max-steps 4 --global-batch 4 --lr 1e-4 --device $D0 || exit 1
+  python - <<'PY' || exit 1
+import json
+h = json.load(open("checkpoints/smoke/cdpo/train_log.json"))["history"]
+print([round(x["margin"], 4) for x in h])
+assert abs(h[-1]["margin"]) > 1e-3, "C-DPO margin did not move: log-prob plumbing is broken"
+PY
   python -m method.sentinel.predict --name smoke --adapter checkpoints/smoke/cdpo/adapter --limit 6 --out-dir checkpoints/smoke/outputs --device $D0 || exit 1
   cat checkpoints/smoke/outputs/smoke_predictions.jsonl
   touch checkpoints/smoke/OK

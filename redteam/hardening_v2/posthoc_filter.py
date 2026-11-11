@@ -46,7 +46,7 @@ def main() -> None:
         sents = [s for s in _SPLIT.split(row["prediction"].strip()) if s]
         objs = extractor.extract(sents)
         phrases = sorted({o["phrase"] for ob in objs for o in ob})
-        verdict = checker.validate(load_image(item["image"]), phrases) if phrases else {}
+        verdict = checker.validate(checker.prepare(load_image(item["image"])), phrases) if phrases else {}
         keep = [s for s, ob in zip(sents, objs) if not any(verdict[o["phrase"]]["label"] == "hallucinated" for o in ob)]
         removed += len(sents) - len(keep)
         total += len(sents)

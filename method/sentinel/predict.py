@@ -26,8 +26,8 @@ def main() -> None:
     ap.add_argument("--inputs", default=str(ROOT / "data/eval_inputs.jsonl"))
     ap.add_argument("--out-dir", default=str(ROOT / "outputs"))
     ap.add_argument("--limit", type=int, default=0, help="debug: only the first N inputs of each task")
-    ap.add_argument("--caption-batch", type=int, default=16)
-    ap.add_argument("--vqa-batch", type=int, default=48)
+    ap.add_argument("--caption-batch", type=int, default=48)
+    ap.add_argument("--vqa-batch", type=int, default=96)
     args = ap.parse_args()
 
     out_path = Path(args.out_dir) / f"{args.name}_predictions.jsonl"
