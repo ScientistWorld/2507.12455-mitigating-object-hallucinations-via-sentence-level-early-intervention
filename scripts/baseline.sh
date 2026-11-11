@@ -1,21 +1,13 @@
 #!/bin/bash
-# Run a baseline method from the paper.
+# Baseline: the unaligned LLaVA-v1.5-7B, greedy decoding on all evaluation
+# inputs -> outputs/baseline_predictions.jsonl.
 #
-# Baselines are simple reference methods the paper compares against. 
-# Implement this only if applicable, i.e. the paper has baselines.
-# You do not need to implement all baselines to begin — 
-# just enough to validate that the evaluation pipeline works 
-# and provide a reference point. You can decide to expand more baselines later.
-# Each baseline must be actually run and scored through evaluate.sh
-# so the numbers are verified, not self-reported.
-# You can decide what this baseline script should do yourself.
-#
-# Usage:
-#   bash scripts/baseline.sh <name>
+# The evaluators score an evaluator-owned frozen copy of these predictions
+# (eval/{train,test}/fixed_baseline_predictions.jsonl); this script exists so
+# the baseline can be regenerated and checked.
 
-set -e
+set -euo pipefail
+cd "$(dirname "$0")/.."
+export PYTHONUNBUFFERED=1 TOKENIZERS_PARALLELISM=false HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
 
-cd /home/user
-
-python -m baseline.majority_language_prior --eval-data data/eval_scenes.jsonl --out outputs/language_prior_predictions.jsonl
-bash scripts/evaluate.sh outputs
+python -m method.sentinel.predict --name baseline --device cuda:0

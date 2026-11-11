@@ -1,19 +1,11 @@
 #!/bin/bash
-# Held-out test-slice evaluator for final anti-shortcut scoring.
-#
-# Contract mirrors scripts/evaluate.sh: pass the same input directory used for
-# train scoring. When scoring/scores_train.json exists, every method listed
-# there is scored here as well.
+# Held-out test evaluator -> scoring/scores_test.json.
+# Runs with no arguments; scores every outputs/*_predictions.jsonl, every
+# method listed in scoring/scores_train.json and the primary slot 'sentinel'
+# (missing or invalid submissions receive the worst value of every metric).
 
 set -e
-
-cd /home/user
-
+cd "$(dirname "$0")/.."
 mkdir -p scoring
 
-INPUT_DIR="${1:-outputs}"
-python -m eval.test.evaluate \
-  --input-dir "$INPUT_DIR" \
-  --gold-data data/eval_scenes.jsonl \
-  --out scoring/scores_test.json \
-  --train-scores scoring/scores_train.json
+python -m eval.test.evaluate --input-dir outputs --out scoring/scores_test.json --train-scores scoring/scores_train.json

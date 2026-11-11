@@ -1,17 +1,9 @@
 #!/bin/bash
-# Visible train-slice evaluator for future method development.
-#
-# Contract mirrors scripts/evaluate.sh: pass an input directory containing
-# '*_predictions.jsonl' artifacts, and this writes a score JSON file.
+# Visible development-slice evaluator -> scoring/scores_train.json.
+# Runs with no arguments and scores every outputs/*_predictions.jsonl.
 
 set -e
-
-cd /home/user
-
+cd "$(dirname "$0")/.."
 mkdir -p scoring
 
-INPUT_DIR="${1:-outputs}"
-python -m eval.train.evaluate \
-  --input-dir "$INPUT_DIR" \
-  --gold-data data/eval_scenes.jsonl \
-  --out scoring/scores_train.json
+python -m eval.train.evaluate --input-dir outputs --out scoring/scores_train.json

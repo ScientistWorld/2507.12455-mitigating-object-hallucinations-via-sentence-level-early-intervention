@@ -1,15 +1,23 @@
 #!/bin/bash
-# Run the paper's proposed method.
+# Run the paper's method (SENTINEL on LLaVA-v1.5-7B) end to end:
+#   1. in-domain preference data construction (one shard per visible GPU)
+#   2. C-DPO training with LoRA
+#   3. greedy predictions on all evaluation inputs -> outputs/sentinel_predictions.jsonl
+# Every stage resumes from its saved artifacts under checkpoints/.
 #
-# This script trains/runs the paper's method using code in method/.
-#
-# Usage:
-#   bash scripts/method.sh
+# Usage: bash scripts/method.sh   (extra args are passed to the C-DPO trainer)
 
-set -e
+set -euo pipefail
+cd "$(dirname "$0")/.."
+export PYTHONUNBUFFERED=1 TOKENIZERS_PARALLELISM=false HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
 
-cd /home/user
-
-python data/synthetic_scenes.py --out-dir data
-python -m method.train "$@"
-bash scripts/evaluate.sh outputs
+NGPU=$(python -c "import torch; print(max(1, torch.cuda.device_count()))")
+pids=()
+for ((k = 0; k < NGPU; k++)); do
+  python -m method.sentinel.build_preferences --shard "$k" --num-shards "$NGPU" --device "cuda:$k" &
+  pids+=($!)
+done
+for p in "${pids[@]}"; do wait "$p"; done
+python -m method.sentinel.build_preferences --merge
+python -m method.sentinel.cdpo --out checkpoints/sentinel --device cuda:0 "$@"
+python -m method.sentinel.predict --name sentinel --adapter checkpoints/sentinel/adapter --device cuda:0

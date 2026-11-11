@@ -1,133 +1,41 @@
 {
   "experiments": {
-    "paper_llava_v15_7b_main": {
-      "description": "Paper-reported main SENTINEL result for LLaVA-v1.5-7B from Table 1.",
-      "weight": 0.45,
+    "object_halbench_coco": {
+      "description": "Object hallucination in detailed image descriptions (Object HalBench protocol: CHAIR over the 80 MSCOCO categories, eight detailed-description prompts, greedy decoding) on held-out MSCOCO val2017 images, with LLaVA-v1.5-7B as the base model. Response- and mention-level hallucination are the benefit metrics; object coverage is the detail-preservation constraint.",
+      "notes": "Same base model (LLaVA-v1.5-7B) and metric family as the paper's Object HalBench column; the test uses 700 val2017 images instead of the 300-image Object HalBench set, counts each object once per response, and ignores negated mentions. The paper's preference data scale (8.6K pairs from ~4K Visual Genome images) is reduced to what one 6-hour job can build from unlabelled COCO train2017 images; see PROGRESS.md. Paper-reported values are kept under '_paper_*' keys; 'baseline' and 'sentinel' are this gym's reference runs on the hidden test.",
+      "weight": 0.8,
       "primary_metric": "response_hallucination_rate",
       "metrics": {
-        "response_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0, "description": "Object HalBench response-level hallucination rate; lower values indicate fewer captions with any nonexistent object."},
-        "mention_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0, "description": "Object HalBench mention-level hallucination rate; lower values indicate fewer nonexistent object mentions among all object mentions."},
-        "amber_chair": {"higher_is_better": false, "coefficient": -0.7, "description": "AMBER CHAIR hallucination metric used as an independent hallucination constraint."},
-        "amber_hal_score": {"higher_is_better": false, "coefficient": -0.7, "description": "AMBER hallucination score; lower values indicate less hallucination on a separate benchmark."},
-        "amber_cog_score": {"higher_is_better": false, "coefficient": -0.5, "description": "AMBER cognition hallucination score; lower values indicate fewer cognition-related hallucination errors."},
-        "hallusion_question_accuracy": {"higher_is_better": true, "coefficient": 0.4, "description": "HallusionBench question accuracy, included to catch methods that reduce hallucination by damaging visual reasoning."},
-        "vqav2_accuracy": {"higher_is_better": true, "coefficient": 0.5, "description": "VQAv2 accuracy, included as a general visual question answering capability constraint."},
-        "textvqa_accuracy": {"higher_is_better": true, "coefficient": 0.5, "description": "TextVQA accuracy, included as a text-in-image understanding capability constraint."},
-        "scienceqa_image_accuracy": {"higher_is_better": true, "coefficient": 0.4, "description": "ScienceQA image accuracy, included as a multimodal reasoning capability constraint."},
-        "mmvet_overall": {"higher_is_better": true, "coefficient": 0.4, "description": "MM-Vet overall score, included as a broad multimodal capability constraint."}
+        "response_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0, "description": "Percentage of image descriptions that assert at least one MSCOCO object absent from the image (CHAIR_s / Object HalBench Resp.)."},
+        "mention_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0, "description": "Percentage of asserted MSCOCO objects (counted once per description) that are absent from the image (CHAIR_i / Object HalBench Ment.)."},
+        "object_coverage": {"higher_is_better": true, "coefficient": 0.5, "description": "Percentage of the image's ground-truth MSCOCO objects that the description asserts; guards against reducing hallucination by describing less. A run below 0.8x the frozen baseline's coverage is scored as failed."}
       },
       "results": {
-        "llava_v15_7b_baseline": {
-          "type": "baseline",
-          "response_hallucination_rate": 52.7,
-          "mention_hallucination_rate": 28.0,
-          "amber_chair": 8.4,
-          "amber_hal_score": 35.5,
-          "amber_cog_score": 4.0,
-          "hallusion_question_accuracy": 46.86,
-          "vqav2_accuracy": 78.5,
-          "textvqa_accuracy": 58.2,
-          "scienceqa_image_accuracy": 66.8,
-          "mmvet_overall": 31.0
-        },
-        "sentinel_llava_v15_7b": {
-          "type": "proposed",
-          "response_hallucination_rate": 4.3,
-          "mention_hallucination_rate": 2.6,
-          "amber_chair": 2.9,
-          "amber_hal_score": 14.6,
-          "amber_cog_score": 1.2,
-          "hallusion_question_accuracy": 47.56,
-          "vqav2_accuracy": 78.4,
-          "textvqa_accuracy": 58.2,
-          "scienceqa_image_accuracy": 69.2,
-          "mmvet_overall": 32.6
-        }
+        "_paper_llava_v15_7b": {"type": "baseline", "response_hallucination_rate": 52.7, "mention_hallucination_rate": 28.0},
+        "_paper_sentinel_llava_v15_7b": {"type": "proposed", "response_hallucination_rate": 4.3, "mention_hallucination_rate": 2.6}
       }
     },
-    "paper_llava_v15_13b_main": {
-      "description": "Paper-reported main SENTINEL result for LLaVA-v1.5-13B from Table 1.",
-      "weight": 0.25,
-      "primary_metric": "response_hallucination_rate",
+    "vqav2_general": {
+      "description": "General visual question answering capability retained after hallucination mitigation (VQAv2 questions on the same held-out images, LLaVA-1.5 short-answer prompt, official VQA accuracy).",
+      "notes": "Subset of VQAv2 val (3 questions per held-out image). A run more than 5 points below the frozen baseline is scored as failed.",
+      "weight": 0.2,
+      "primary_metric": "vqa_accuracy",
       "metrics": {
-        "response_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0, "description": "Object HalBench response-level hallucination rate; lower values indicate fewer captions with any nonexistent object."},
-        "mention_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0, "description": "Object HalBench mention-level hallucination rate; lower values indicate fewer nonexistent object mentions among all object mentions."},
-        "amber_chair": {"higher_is_better": false, "coefficient": -0.7, "description": "AMBER CHAIR hallucination metric used as an independent hallucination constraint."},
-        "amber_hal_score": {"higher_is_better": false, "coefficient": -0.7, "description": "AMBER hallucination score; lower values indicate less hallucination on a separate benchmark."},
-        "amber_cog_score": {"higher_is_better": false, "coefficient": -0.5, "description": "AMBER cognition hallucination score; lower values indicate fewer cognition-related hallucination errors."},
-        "hallusion_question_accuracy": {"higher_is_better": true, "coefficient": 0.4, "description": "HallusionBench question accuracy, included to catch methods that reduce hallucination by damaging visual reasoning."},
-        "vqav2_accuracy": {"higher_is_better": true, "coefficient": 0.5, "description": "VQAv2 accuracy, included as a general visual question answering capability constraint."},
-        "textvqa_accuracy": {"higher_is_better": true, "coefficient": 0.5, "description": "TextVQA accuracy, included as a text-in-image understanding capability constraint."},
-        "scienceqa_image_accuracy": {"higher_is_better": true, "coefficient": 0.4, "description": "ScienceQA image accuracy, included as a multimodal reasoning capability constraint."},
-        "mmvet_overall": {"higher_is_better": true, "coefficient": 0.4, "description": "MM-Vet overall score, included as a broad multimodal capability constraint."}
+        "vqa_accuracy": {"higher_is_better": true, "coefficient": 1.0, "description": "VQAv2 accuracy (min(1, matching human answers / 3), averaged over leave-one-out subsets) on short answers."}
       },
       "results": {
-        "llava_v15_13b_baseline": {
-          "type": "baseline",
-          "response_hallucination_rate": 46.0,
-          "mention_hallucination_rate": 23.0,
-          "amber_chair": 6.9,
-          "amber_hal_score": 31.9,
-          "amber_cog_score": 3.3,
-          "hallusion_question_accuracy": 46.43,
-          "vqav2_accuracy": 80.0,
-          "textvqa_accuracy": 61.2,
-          "scienceqa_image_accuracy": 71.6,
-          "mmvet_overall": 36.0
-        },
-        "sentinel_llava_v15_13b": {
-          "type": "proposed",
-          "response_hallucination_rate": 3.3,
-          "mention_hallucination_rate": 1.9,
-          "amber_chair": 2.7,
-          "amber_hal_score": 11.7,
-          "amber_cog_score": 0.9,
-          "hallusion_question_accuracy": 46.77,
-          "vqav2_accuracy": 79.9,
-          "textvqa_accuracy": 61.0,
-          "scienceqa_image_accuracy": 72.8,
-          "mmvet_overall": 36.2
-        }
-      }
-    },
-    "synthetic_object_halbench": {
-      "description": "Runnable scaled SENTINEL reproduction of the paper's Object HalBench-style claim on deterministic synthetic scenes. These targets are from the validated scaled run and exist so scripts/evaluate.sh can compare future methods on the compact benchmark; the paper-reported full-scale targets are recorded in the paper_llava_v15_* experiments.",
-      "notes": "These are not paper-reported benchmark numbers. They are validated compact synthetic-environment reference values produced by the faithful scaled reproduction after substituting a small image-conditioned model and deterministic synthetic scenes for the full LLaVA-v1.5/Visual Genome/Object HalBench setup. The paper-reported values remain in the paper_llava_v15_7b_main and paper_llava_v15_13b_main entries.",
-      "weight": 0.3,
-      "primary_metric": "response_hallucination_rate",
-      "metrics": {
-        "response_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0, "description": "Percentage of evaluated responses that mention at least one object absent from the authoritative scene record."},
-        "mention_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0, "description": "Percentage of extracted object mentions that are absent from the authoritative scene record."},
-        "object_recall": {"higher_is_better": true, "coefficient": 0.7, "description": "Percentage of gold scene objects recovered by the response, preventing trivial silence from winning the hallucination metrics."},
-        "avg_object_mentions": {"higher_is_better": true, "coefficient": 0.2, "description": "Average number of recognized object mentions per response, used as a weak coverage pressure alongside hallucination penalties."},
-        "qa_accuracy": {"higher_is_better": true, "coefficient": 0.5, "description": "Object-presence question accuracy derived from the response and authoritative QA labels."}
-      },
-      "results": {
-        "language_prior": {
-          "type": "baseline",
-          "response_hallucination_rate": 98.75,
-          "mention_hallucination_rate": 71.66666666666667,
-          "object_recall": 27.983539094650205,
-          "avg_object_mentions": 3.0,
-          "qa_accuracy": 47.31182795698925
-        },
-        "baseline": {
-          "type": "baseline",
-          "response_hallucination_rate": 57.5,
-          "mention_hallucination_rate": 21.638141809290953,
-          "object_recall": 87.92866941015089,
-          "avg_object_mentions": 3.408333333333333,
-          "qa_accuracy": 89.74358974358974
-        },
-        "sentinel": {
-          "type": "proposed",
-          "response_hallucination_rate": 48.75,
-          "mention_hallucination_rate": 17.26263871763255,
-          "object_recall": 92.04389574759945,
-          "avg_object_mentions": 3.379166666666667,
-          "qa_accuracy": 92.80397022332507
-        }
+        "_paper_llava_v15_7b": {"type": "baseline", "vqa_accuracy": 78.5},
+        "_paper_sentinel_llava_v15_7b": {"type": "proposed", "vqa_accuracy": 78.4}
       }
     }
+  },
+  "_paper_table1": {
+    "source": "Peng et al. 2025, SENTINEL, Table 1 (paper-reported; not on this gym's scale)",
+    "columns": ["object_halbench_resp", "object_halbench_ment", "amber_chair", "amber_hal", "amber_cog", "hallusionbench_question_acc", "vqav2_acc", "textvqa_acc", "scienceqa_image_acc", "mmvet_overall"],
+    "llava_v15_7b_baseline": [52.7, 28.0, 8.4, 35.5, 4.0, 46.86, 78.5, 58.2, 66.8, 31.0],
+    "llava_v15_7b_sentinel": [4.3, 2.6, 2.9, 14.6, 1.2, 47.56, 78.4, 58.2, 69.2, 32.6],
+    "llava_v15_13b_baseline": [46.0, 23.0, 6.9, 31.9, 3.3, 46.43, 80.0, 61.2, 71.6, 36.0],
+    "llava_v15_13b_sentinel": [3.3, 1.9, 2.7, 11.7, 0.9, 46.77, 79.9, 61.0, 72.8, 36.2],
+    "data_scale_table16_7b": {"2.0K_pairs": {"resp": 39.0, "ment": 20.0}, "8.6K_pairs": {"resp": 4.3, "ment": 2.6}}
   }
 }

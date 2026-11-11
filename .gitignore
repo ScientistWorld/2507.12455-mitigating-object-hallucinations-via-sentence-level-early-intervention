@@ -235,3 +235,4 @@ tmp/
 protocol.md
 *.egg-info
 core.[0-9]*
+outputs.case_backup/

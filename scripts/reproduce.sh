@@ -1,29 +1,15 @@
 #!/bin/bash
-# Reproduce the paper's results end-to-end.
+# Reproduce the reference end to end (run inside the container, workspace at
+# /home/user, after scripts/download.sh).  Needs 1-2 GPUs with >= 40 GB.
 #
-# This script runs inside the compute container and should call
-# scripts/baseline.sh and scripts/method.sh to run baselines and
-# the paper's method, each of which calls scripts/evaluate.sh.
-#
-# Assumes:
-#   - Container is built (environment/container.sif)
-#   - Data and models are downloaded (via scripts/download.sh)
-#   - Working directory is /home/user
-#
-# This is the "gold standard" reproduction — 
-# You do not need to run this, but keep this in good shape
-# so other agents can easily run a full loop of reproduction and get the paper's numbers.
+#   baseline predictions -> SENTINEL preference data -> C-DPO -> predictions
+#   -> development and held-out scores.
 
-set -e
+set -euo pipefail
+cd "$(dirname "$0")/.."
 
-cd /home/user
-
-mkdir -p outputs
-rm -f outputs/language_prior_predictions.jsonl \
-      outputs/baseline_predictions.jsonl \
-      outputs/sentinel_predictions.jsonl \
-      outputs/standard_dpo_predictions.jsonl
-
-python data/synthetic_scenes.py --out-dir data
-python -m baseline.majority_language_prior --eval-data data/eval_scenes.jsonl --out outputs/language_prior_predictions.jsonl
-bash scripts/method.sh "$@"
+bash scripts/baseline.sh
+bash scripts/method.sh
+bash scripts/evaluate_train.sh
+bash scripts/evaluate_test.sh
+bash scripts/evaluate.sh
