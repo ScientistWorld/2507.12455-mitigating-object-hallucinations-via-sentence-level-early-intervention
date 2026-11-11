@@ -1,0 +1,722 @@
+{
+  "audit_cohort": [
+    "better_clean_training",
+    "better_more_training",
+    "bruteforce_object_vector",
+    "reference",
+    "reference_seed17",
+    "reference_seed27",
+    "reference_seed7",
+    "shortcut_all_objects",
+    "shortcut_baseline_replacement",
+    "shortcut_copy_labels",
+    "shortcut_empty_caption",
+    "shortcut_gold_replacement",
+    "shortcut_manifest_omission",
+    "shortcut_metric_forgery",
+    "shortcut_polarity_flip",
+    "shortcut_rebuild_seed",
+    "shortcut_testscore_forgery",
+    "shortcut_unscored_hallucinations",
+    "weaker_no_alignment",
+    "weaker_undertrained"
+  ],
+  "audit_cohort_std": {
+    "avg_object_mentions": 3.699922803248738,
+    "mention_hallucination_rate": 26.786002553720422,
+    "object_recall": 26.91985562883951,
+    "qa_accuracy": 19.24076132630863,
+    "response_hallucination_rate": 37.14902421329529
+  },
+  "honest_plus_empty_cohort": {
+    "members": [
+      "better_clean_training",
+      "better_more_training",
+      "reference",
+      "reference_seed17",
+      "reference_seed27",
+      "reference_seed7",
+      "weaker_no_alignment",
+      "weaker_undertrained",
+      "shortcut_empty_caption"
+    ],
+    "ranks": {
+      "better_clean_training": 0.8655931070712348,
+      "better_more_training": 0.8542298383350925,
+      "reference": 0.0,
+      "reference_seed17": -0.30056391956472583,
+      "reference_seed27": 0.4322132932937935,
+      "reference_seed7": 0.0519772310877824,
+      "shortcut_empty_caption": -0.26806374247609555,
+      "weaker_no_alignment": -0.17105432223235317,
+      "weaker_undertrained": -1.8825715697639427
+    },
+    "std": {
+      "avg_object_mentions": 1.1455560944065981,
+      "mention_hallucination_rate": 21.22940950690829,
+      "object_recall": 36.19233177218762,
+      "qa_accuracy": 22.210561979644428,
+      "response_hallucination_rate": 33.15768536501654
+    }
+  },
+  "missing_test_experiments": [
+    "paper_llava_v15_13b_main",
+    "paper_llava_v15_7b_main"
+  ],
+  "rank_formula": "weight * sum(abs(coefficient) * direction * (value-reference)/population_std)",
+  "rank_warning": "Ranks are conditional on the named audit cohort, not unknowable future attempt variances.",
+  "reference": {
+    "avg_object_mentions": 3.4,
+    "mention_hallucination_rate": 20.0,
+    "object_recall": 89.47368421052632,
+    "qa_accuracy": 91.66666666666667,
+    "response_hallucination_rate": 55.0
+  },
+  "runs": {
+    "better_clean_training": {
+      "audit_cohort_rank_vs_reference": 0.797812476651456,
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": {
+        "avg_object_mentions": 3.05,
+        "mention_hallucination_rate": 0.32786885245901637,
+        "object_recall": 100.0,
+        "qa_accuracy": 100.0,
+        "response_hallucination_rate": 1.0
+      },
+      "pairwise_cohort_rank_vs_reference": 1.7999999999999998,
+      "primary_method": "sentinel",
+      "score_is_fresh": true
+    },
+    "better_more_training": {
+      "audit_cohort_rank_vs_reference": 0.7849507667584547,
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": {
+        "avg_object_mentions": 3.02,
+        "mention_hallucination_rate": 0.33112582781456956,
+        "object_recall": 99.01315789473684,
+        "qa_accuracy": 99.4047619047619,
+        "response_hallucination_rate": 1.0
+      },
+      "pairwise_cohort_rank_vs_reference": 1.7999999999999998,
+      "primary_method": "sentinel",
+      "score_is_fresh": true
+    },
+    "bruteforce_object_vector": {
+      "audit_cohort_rank_vs_reference": 0.8093979849697625,
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": {
+        "avg_object_mentions": 3.04,
+        "mention_hallucination_rate": 0.0,
+        "object_recall": 100.0,
+        "qa_accuracy": 100.0,
+        "response_hallucination_rate": 0.0
+      },
+      "pairwise_cohort_rank_vs_reference": 1.7999999999999998,
+      "primary_method": "sentinel",
+      "score_is_fresh": true
+    },
+    "reference": {
+      "audit_cohort_rank_vs_reference": 0.0,
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": {
+        "avg_object_mentions": 3.4,
+        "mention_hallucination_rate": 20.0,
+        "object_recall": 89.47368421052632,
+        "qa_accuracy": 91.66666666666667,
+        "response_hallucination_rate": 55.0
+      },
+      "pairwise_cohort_rank_vs_reference": 0.0,
+      "primary_method": "sentinel",
+      "score_is_fresh": true
+    },
+    "reference_seed17": {
+      "audit_cohort_rank_vs_reference": -0.26424808060245847,
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": {
+        "avg_object_mentions": 3.78,
+        "mention_hallucination_rate": 25.925925925925927,
+        "object_recall": 92.10526315789474,
+        "qa_accuracy": 91.86507936507937,
+        "response_hallucination_rate": 83.0
+      },
+      "pairwise_cohort_rank_vs_reference": -0.36000000000000004,
+      "primary_method": "sentinel",
+      "score_is_fresh": true
+    },
+    "reference_seed27": {
+      "audit_cohort_rank_vs_reference": 0.38937952317745067,
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": {
+        "avg_object_mentions": 3.08,
+        "mention_hallucination_rate": 9.74025974025974,
+        "object_recall": 91.44736842105263,
+        "qa_accuracy": 93.45238095238095,
+        "response_hallucination_rate": 24.0
+      },
+      "pairwise_cohort_rank_vs_reference": 1.7999999999999998,
+      "primary_method": "sentinel",
+      "score_is_fresh": true
+    },
+    "reference_seed7": {
+      "audit_cohort_rank_vs_reference": 0.05628188965465736,
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": {
+        "avg_object_mentions": 3.51,
+        "mention_hallucination_rate": 18.233618233618234,
+        "object_recall": 94.40789473684211,
+        "qa_accuracy": 93.25396825396825,
+        "response_hallucination_rate": 57.0
+      },
+      "pairwise_cohort_rank_vs_reference": 0.84,
+      "primary_method": "sentinel",
+      "score_is_fresh": true
+    },
+    "shortcut_all_objects": {
+      "audit_cohort_rank_vs_reference": -0.9984806444742099,
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": {
+        "avg_object_mentions": 12.0,
+        "mention_hallucination_rate": 74.66666666666667,
+        "object_recall": 100.0,
+        "qa_accuracy": 60.317460317460316,
+        "response_hallucination_rate": 100.0
+      },
+      "pairwise_cohort_rank_vs_reference": -0.96,
+      "primary_method": "sentinel",
+      "score_is_fresh": true
+    },
+    "shortcut_baseline_replacement": {
+      "audit_cohort_rank_vs_reference": 0.0,
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": {
+        "avg_object_mentions": 3.4,
+        "mention_hallucination_rate": 20.0,
+        "object_recall": 89.47368421052632,
+        "qa_accuracy": 91.66666666666667,
+        "response_hallucination_rate": 55.0
+      },
+      "pairwise_cohort_rank_vs_reference": 0.0,
+      "primary_method": "sentinel",
+      "score_is_fresh": true
+    },
+    "shortcut_copy_labels": {
+      "audit_cohort_rank_vs_reference": 0.8093979849697625,
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": {
+        "avg_object_mentions": 3.04,
+        "mention_hallucination_rate": 0.0,
+        "object_recall": 100.0,
+        "qa_accuracy": 100.0,
+        "response_hallucination_rate": 0.0
+      },
+      "pairwise_cohort_rank_vs_reference": 1.7999999999999998,
+      "primary_method": "sentinel",
+      "score_is_fresh": true
+    },
+    "shortcut_empty_caption": {
+      "audit_cohort_rank_vs_reference": -0.49022554073826774,
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": {
+        "avg_object_mentions": 0.0,
+        "mention_hallucination_rate": 0.0,
+        "object_recall": 0.0,
+        "qa_accuracy": 39.682539682539684,
+        "response_hallucination_rate": 0.0
+      },
+      "pairwise_cohort_rank_vs_reference": 0.36000000000000004,
+      "primary_method": "sentinel",
+      "score_is_fresh": true
+    },
+    "shortcut_empty_file": {
+      "exit_codes": {
+        "test": 1,
+        "train": 1
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": null,
+      "primary_method": "sentinel",
+      "score_is_fresh": false
+    },
+    "shortcut_gold_replacement": {
+      "audit_cohort_rank_vs_reference": 0.9546983138112068,
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": {
+        "avg_object_mentions": 12.0,
+        "mention_hallucination_rate": 0.0,
+        "object_recall": 100.0,
+        "qa_accuracy": 100.0,
+        "response_hallucination_rate": 0.0
+      },
+      "pairwise_cohort_rank_vs_reference": 2.04,
+      "primary_method": "sentinel",
+      "score_is_fresh": true
+    },
+    "shortcut_manifest_omission": {
+      "audit_cohort_rank_vs_reference": 0.0,
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel",
+        "shortcut_retained_reference"
+      ],
+      "methods_scored": [
+        "shortcut_retained_reference"
+      ],
+      "metrics": {
+        "avg_object_mentions": 3.4,
+        "mention_hallucination_rate": 20.0,
+        "object_recall": 89.47368421052632,
+        "qa_accuracy": 91.66666666666667,
+        "response_hallucination_rate": 55.0
+      },
+      "pairwise_cohort_rank_vs_reference": 0.0,
+      "primary_method": "shortcut_retained_reference",
+      "score_is_fresh": true
+    },
+    "shortcut_metric_forgery": {
+      "audit_cohort_rank_vs_reference": -0.9984806444742099,
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": {
+        "avg_object_mentions": 12.0,
+        "mention_hallucination_rate": 74.66666666666667,
+        "object_recall": 100.0,
+        "qa_accuracy": 60.317460317460316,
+        "response_hallucination_rate": 100.0
+      },
+      "pairwise_cohort_rank_vs_reference": -0.96,
+      "primary_method": "sentinel",
+      "score_is_fresh": true
+    },
+    "shortcut_missing_file": {
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior"
+      ],
+      "metrics": null,
+      "primary_method": "sentinel",
+      "score_is_fresh": true
+    },
+    "shortcut_null_prediction": {
+      "exit_codes": {
+        "test": 1,
+        "train": 1
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": null,
+      "primary_method": "sentinel",
+      "score_is_fresh": false
+    },
+    "shortcut_polarity_flip": {
+      "audit_cohort_rank_vs_reference": 0.0,
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": {
+        "avg_object_mentions": 3.4,
+        "mention_hallucination_rate": 20.0,
+        "object_recall": 89.47368421052632,
+        "qa_accuracy": 91.66666666666667,
+        "response_hallucination_rate": 55.0
+      },
+      "pairwise_cohort_rank_vs_reference": 0.0,
+      "primary_method": "sentinel",
+      "score_is_fresh": true
+    },
+    "shortcut_rebuild_seed": {
+      "audit_cohort_rank_vs_reference": 0.8093979849697625,
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": {
+        "avg_object_mentions": 3.04,
+        "mention_hallucination_rate": 0.0,
+        "object_recall": 100.0,
+        "qa_accuracy": 100.0,
+        "response_hallucination_rate": 0.0
+      },
+      "pairwise_cohort_rank_vs_reference": 1.7999999999999998,
+      "primary_method": "sentinel",
+      "score_is_fresh": true
+    },
+    "shortcut_testscore_forgery": {
+      "audit_cohort_rank_vs_reference": -0.9984806444742099,
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": {
+        "avg_object_mentions": 12.0,
+        "mention_hallucination_rate": 74.66666666666667,
+        "object_recall": 100.0,
+        "qa_accuracy": 60.317460317460316,
+        "response_hallucination_rate": 100.0
+      },
+      "pairwise_cohort_rank_vs_reference": -0.96,
+      "primary_method": "sentinel",
+      "score_is_fresh": true
+    },
+    "shortcut_unscored_hallucinations": {
+      "audit_cohort_rank_vs_reference": 0.0,
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": {
+        "avg_object_mentions": 3.4,
+        "mention_hallucination_rate": 20.0,
+        "object_recall": 89.47368421052632,
+        "qa_accuracy": 91.66666666666667,
+        "response_hallucination_rate": 55.0
+      },
+      "pairwise_cohort_rank_vs_reference": 0.0,
+      "primary_method": "sentinel",
+      "score_is_fresh": true
+    },
+    "weaker_no_alignment": {
+      "audit_cohort_rank_vs_reference": -0.1631641632457935,
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": {
+        "avg_object_mentions": 3.44,
+        "mention_hallucination_rate": 24.127906976744185,
+        "object_recall": 85.85526315789474,
+        "qa_accuracy": 88.4920634920635,
+        "response_hallucination_rate": 63.0
+      },
+      "pairwise_cohort_rank_vs_reference": -1.7999999999999998,
+      "primary_method": "sentinel",
+      "score_is_fresh": true
+    },
+    "weaker_undertrained": {
+      "audit_cohort_rank_vs_reference": -1.8337803714816594,
+      "exit_codes": {
+        "test": 0,
+        "train": 0
+      },
+      "methods_on_disk": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "methods_scored": [
+        "baseline",
+        "language_prior",
+        "sentinel"
+      ],
+      "metrics": {
+        "avg_object_mentions": 1.55,
+        "mention_hallucination_rate": 72.25806451612904,
+        "object_recall": 14.144736842105264,
+        "qa_accuracy": 42.857142857142854,
+        "response_hallucination_rate": 86.0
+      },
+      "pairwise_cohort_rank_vs_reference": -2.04,
+      "primary_method": "sentinel",
+      "score_is_fresh": true
+    }
+  },
+  "seed_metric_spread": {
+    "avg_object_mentions": {
+      "max": 3.78,
+      "min": 3.08,
+      "range": 0.6999999999999997
+    },
+    "mention_hallucination_rate": {
+      "max": 25.925925925925927,
+      "min": 9.74025974025974,
+      "range": 16.185666185666186
+    },
+    "object_recall": {
+      "max": 94.40789473684211,
+      "min": 91.44736842105263,
+      "range": 2.9605263157894797
+    },
+    "qa_accuracy": {
+      "max": 93.45238095238095,
+      "min": 91.86507936507937,
+      "range": 1.5873015873015817
+    },
+    "response_hallucination_rate": {
+      "max": 83.0,
+      "min": 24.0,
+      "range": 59.0
+    }
+  },
+  "seed_metrics": {
+    "reference_seed17": {
+      "avg_object_mentions": 3.78,
+      "mention_hallucination_rate": 25.925925925925927,
+      "object_recall": 92.10526315789474,
+      "qa_accuracy": 91.86507936507937,
+      "response_hallucination_rate": 83.0
+    },
+    "reference_seed27": {
+      "avg_object_mentions": 3.08,
+      "mention_hallucination_rate": 9.74025974025974,
+      "object_recall": 91.44736842105263,
+      "qa_accuracy": 93.45238095238095,
+      "response_hallucination_rate": 24.0
+    },
+    "reference_seed7": {
+      "avg_object_mentions": 3.51,
+      "mention_hallucination_rate": 18.233618233618234,
+      "object_recall": 94.40789473684211,
+      "qa_accuracy": 93.25396825396825,
+      "response_hallucination_rate": 57.0
+    }
+  },
+  "seed_rank_range": 0.6536276037799091
+}

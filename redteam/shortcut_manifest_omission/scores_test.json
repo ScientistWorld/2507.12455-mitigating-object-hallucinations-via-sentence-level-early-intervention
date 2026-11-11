@@ -1,0 +1,15 @@
+{
+  "experiments": {
+    "synthetic_object_halbench": {
+      "results": {
+        "shortcut_retained_reference": {
+          "avg_object_mentions": 3.4,
+          "mention_hallucination_rate": 20.0,
+          "object_recall": 89.47368421052632,
+          "qa_accuracy": 91.66666666666667,
+          "response_hallucination_rate": 55.0
+        }
+      }
+    }
+  }
+}

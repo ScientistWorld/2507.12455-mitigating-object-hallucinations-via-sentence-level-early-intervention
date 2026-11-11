@@ -1,0 +1,19 @@
+{
+  "exit_codes": {
+    "test": 1,
+    "train": 1
+  },
+  "methods_on_disk": [
+    "baseline",
+    "language_prior",
+    "sentinel"
+  ],
+  "methods_scored": [
+    "baseline",
+    "language_prior",
+    "sentinel"
+  ],
+  "metrics": null,
+  "primary_method": "sentinel",
+  "score_is_fresh": false
+}

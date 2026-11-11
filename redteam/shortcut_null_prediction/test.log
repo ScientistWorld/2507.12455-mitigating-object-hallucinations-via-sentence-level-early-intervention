@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/user/eval/test/evaluate.py", line 177, in <module>
+    main()
+  File "/home/user/eval/test/evaluate.py", line 167, in main
+    experiments[EXPERIMENT]["results"][name] = score_prediction_file(path, gold_rows)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/eval/test/evaluate.py", line 139, in score_prediction_file
+    metrics = score_caption_rows(rows)
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/eval/test/evaluate.py", line 88, in score_caption_rows
+    pred = extract_objects(row.get("prediction", ""))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/eval/test/evaluate.py", line 51, in extract_objects
+    low = text.lower()
+          ^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'lower'

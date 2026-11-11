@@ -1,0 +1,17 @@
+[main] training baseline SFT
+[sft] epoch 1/30 loss=0.4937
+[sft] epoch 5/30 loss=0.4362
+[sft] epoch 10/30 loss=0.2795
+[sft] epoch 15/30 loss=0.2088
+[sft] epoch 20/30 loss=0.1438
+[sft] epoch 25/30 loss=0.1958
+[sft] epoch 30/30 loss=0.1229
+[main] writing baseline predictions
+[main] sampling SENTINEL preferences
+[preferences] sampled 251 pairs
+[preferences] sampled 500 pairs
+[preferences] sampled 750 pairs
+[preferences] final pairs=969
+[main] training SENTINEL C-DPO
+[cdpo] epoch 1/1 loss=0.6601
+[main] writing SENTINEL predictions

@@ -1,0 +1,13 @@
+{
+  "caption_hallucination_prob": 0.5,
+  "dpo_beta": 0.1,
+  "dpo_epochs": 1,
+  "dpo_lr": 5e-05,
+  "hidden_size": 192,
+  "icb_steps": 2,
+  "preference_images": 700,
+  "sample_temperature": 1.4,
+  "samples_per_context": 16,
+  "seed": 17,
+  "sft_epochs": 30
+}

@@ -1,0 +1,29 @@
+{
+  "experiments": {
+    "synthetic_object_halbench": {
+      "results": {
+        "baseline": {
+          "avg_object_mentions": 3.67,
+          "mention_hallucination_rate": 24.52316076294278,
+          "object_recall": 91.11842105263158,
+          "qa_accuracy": 90.07936507936508,
+          "response_hallucination_rate": 73.0
+        },
+        "language_prior": {
+          "avg_object_mentions": 3.0,
+          "mention_hallucination_rate": 73.66666666666667,
+          "object_recall": 25.986842105263158,
+          "qa_accuracy": 45.43650793650794,
+          "response_hallucination_rate": 100.0
+        },
+        "sentinel": {
+          "avg_object_mentions": 3.78,
+          "mention_hallucination_rate": 25.925925925925927,
+          "object_recall": 92.10526315789474,
+          "qa_accuracy": 91.86507936507937,
+          "response_hallucination_rate": 83.0
+        }
+      }
+    }
+  }
+}

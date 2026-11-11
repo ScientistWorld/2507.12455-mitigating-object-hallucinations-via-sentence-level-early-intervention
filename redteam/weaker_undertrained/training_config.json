@@ -1,0 +1,7 @@
+{
+  "dpo_epochs": 0,
+  "hidden_size": 192,
+  "note": "One SFT epoch, preference alignment removed.",
+  "seed": 7,
+  "sft_epochs": 1
+}

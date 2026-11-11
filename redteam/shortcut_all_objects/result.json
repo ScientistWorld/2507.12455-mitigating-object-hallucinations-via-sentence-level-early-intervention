@@ -1,0 +1,25 @@
+{
+  "exit_codes": {
+    "test": 0,
+    "train": 0
+  },
+  "methods_on_disk": [
+    "baseline",
+    "language_prior",
+    "sentinel"
+  ],
+  "methods_scored": [
+    "baseline",
+    "language_prior",
+    "sentinel"
+  ],
+  "metrics": {
+    "avg_object_mentions": 12.0,
+    "mention_hallucination_rate": 74.66666666666667,
+    "object_recall": 100.0,
+    "qa_accuracy": 60.317460317460316,
+    "response_hallucination_rate": 100.0
+  },
+  "primary_method": "sentinel",
+  "score_is_fresh": true
+}

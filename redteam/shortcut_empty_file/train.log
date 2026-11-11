@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/user/eval/train/evaluate.py", line 152, in <module>
+    main()
+  File "/home/user/eval/train/evaluate.py", line 144, in main
+    experiments[EXPERIMENT]["results"][method_name(path)] = score_prediction_file(path, gold_rows)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/eval/train/evaluate.py", line 121, in score_prediction_file
+    rows = attach_predictions(train_rows(gold_rows), read_jsonl(path), path)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/eval/train/evaluate.py", line 45, in attach_predictions
+    raise ValueError(f"{source} is missing predictions for train rows: {preview}")
+ValueError: outputs/sentinel_predictions.jsonl is missing predictions for train rows: scene_00900, scene_00908, scene_00909, scene_00910, scene_00911, scene_00912, scene_00913, scene_00919, scene_00926, scene_00931
