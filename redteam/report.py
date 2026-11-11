@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-import math
 import statistics
 from pathlib import Path
 
@@ -47,12 +46,24 @@ def main():
             seed_summary[metric] = {'min': min(values), 'max': max(values),
                                     'range': max(values) - min(values)}
     seed_ranks = [runs[name]['audit_cohort_rank_vs_reference'] for name in seeds]
+    paired_seed_checks = {}
+    for name in seeds:
+        scored = json.loads((AUDIT / name / 'scores_test.json').read_text())
+        baseline = scored['experiments'][EXPERIMENT]['results']['baseline']
+        paired_seed_checks[name] = {
+            'baseline': baseline,
+            'aligned_minus_baseline': {
+                metric: valid[name][metric] - baseline[metric] for metric in config}}
+    frozen_results = json.loads((AUDIT / 'reference/scores_test.json').read_text())['experiments'][EXPERIMENT]['results']
     summary = {'reference': reference, 'runs': runs,
                'rank_formula': 'weight * sum(abs(coefficient) * direction * (value-reference)/population_std)',
                'rank_warning': 'Ranks are conditional on the named audit cohort, not unknowable future attempt variances.',
                'audit_cohort': sorted(valid), 'audit_cohort_std': spreads,
                'seed_metrics': seeds, 'seed_metric_spread': seed_summary,
                'seed_rank_range': max(seed_ranks) - min(seed_ranks) if seed_ranks else None,
+               'paired_seed_checks': paired_seed_checks,
+               'frozen_baseline_ranks': {
+                   name: rank(row, spreads) for name, row in frozen_results.items()},
                'missing_test_experiments': sorted(set(reference_config['experiments']) - {EXPERIMENT})}
     # A second representative cohort isolates honest method variation + silence.
     honest_names = [n for n in valid if n == 'reference' or n.startswith(('reference_seed', 'better_', 'weaker_'))]

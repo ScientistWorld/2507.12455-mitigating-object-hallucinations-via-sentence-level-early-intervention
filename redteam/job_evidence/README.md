@@ -1,0 +1,1 @@
+Completed CPU audit job `02631c51-34a`, exit code 0. These scheduler-generated logs and metadata are preserved here before restoring `jobs/` to its initial state. Candidate preparation and all 23 real hidden-test runs are recorded in stdout; individual evidence is also in each case folder.

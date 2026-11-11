@@ -1,4 +1,2 @@
-action: submit
-gpus: 0
-test: false
-notes: "Bundled redteam audit: 3 reference seeds, stronger/weaker methods, exhaustive search, and isolated shortcut tests; restores runtime files after each run."
+action: done
+notes: "Audit complete: 23 hidden-test runs; honest quality ordering measured, large seed spread, perfect exhaustive solution and major scoring shortcuts documented in REDTEAM.md."

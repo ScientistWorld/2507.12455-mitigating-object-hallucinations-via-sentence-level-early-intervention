@@ -28,6 +28,11 @@
     "qa_accuracy": 19.24076132630863,
     "response_hallucination_rate": 37.14902421329529
   },
+  "frozen_baseline_ranks": {
+    "baseline": -0.1631641632457935,
+    "language_prior": -1.826612619479674,
+    "sentinel": 0.0
+  },
   "honest_plus_empty_cohort": {
     "members": [
       "better_clean_training",
@@ -41,8 +46,8 @@
       "shortcut_empty_caption"
     ],
     "ranks": {
-      "better_clean_training": 0.8655931070712348,
-      "better_more_training": 0.8542298383350925,
+      "better_clean_training": 0.865593107071235,
+      "better_more_training": 0.8542298383350923,
       "reference": 0.0,
       "reference_seed17": -0.30056391956472583,
       "reference_seed27": 0.4322132932937935,
@@ -63,6 +68,56 @@
     "paper_llava_v15_13b_main",
     "paper_llava_v15_7b_main"
   ],
+  "paired_seed_checks": {
+    "reference_seed17": {
+      "aligned_minus_baseline": {
+        "avg_object_mentions": 0.10999999999999988,
+        "mention_hallucination_rate": 1.4027651629831475,
+        "object_recall": 0.9868421052631646,
+        "qa_accuracy": 1.7857142857142918,
+        "response_hallucination_rate": 10.0
+      },
+      "baseline": {
+        "avg_object_mentions": 3.67,
+        "mention_hallucination_rate": 24.52316076294278,
+        "object_recall": 91.11842105263158,
+        "qa_accuracy": 90.07936507936508,
+        "response_hallucination_rate": 73.0
+      }
+    },
+    "reference_seed27": {
+      "aligned_minus_baseline": {
+        "avg_object_mentions": -0.029999999999999805,
+        "mention_hallucination_rate": -2.478389777425148,
+        "object_recall": 1.6447368421052602,
+        "qa_accuracy": 1.1904761904761898,
+        "response_hallucination_rate": -5.0
+      },
+      "baseline": {
+        "avg_object_mentions": 3.11,
+        "mention_hallucination_rate": 12.218649517684888,
+        "object_recall": 89.80263157894737,
+        "qa_accuracy": 92.26190476190476,
+        "response_hallucination_rate": 29.0
+      }
+    },
+    "reference_seed7": {
+      "aligned_minus_baseline": {
+        "avg_object_mentions": 0.029999999999999805,
+        "mention_hallucination_rate": -3.6054622261518823,
+        "object_recall": 4.934210526315795,
+        "qa_accuracy": 2.5793650793650755,
+        "response_hallucination_rate": -2.0
+      },
+      "baseline": {
+        "avg_object_mentions": 3.48,
+        "mention_hallucination_rate": 21.839080459770116,
+        "object_recall": 89.47368421052632,
+        "qa_accuracy": 90.67460317460318,
+        "response_hallucination_rate": 59.0
+      }
+    }
+  },
   "rank_formula": "weight * sum(abs(coefficient) * direction * (value-reference)/population_std)",
   "rank_warning": "Ranks are conditional on the named audit cohort, not unknowable future attempt variances.",
   "reference": {
@@ -74,7 +129,7 @@
   },
   "runs": {
     "better_clean_training": {
-      "audit_cohort_rank_vs_reference": 0.797812476651456,
+      "audit_cohort_rank_vs_reference": 0.7978124766514559,
       "exit_codes": {
         "test": 0,
         "train": 0
@@ -101,7 +156,7 @@
       "score_is_fresh": true
     },
     "better_more_training": {
-      "audit_cohort_rank_vs_reference": 0.7849507667584547,
+      "audit_cohort_rank_vs_reference": 0.7849507667584548,
       "exit_codes": {
         "test": 0,
         "train": 0
@@ -236,7 +291,7 @@
       "score_is_fresh": true
     },
     "reference_seed7": {
-      "audit_cohort_rank_vs_reference": 0.05628188965465736,
+      "audit_cohort_rank_vs_reference": 0.05628188965465735,
       "exit_codes": {
         "test": 0,
         "train": 0
@@ -263,7 +318,7 @@
       "score_is_fresh": true
     },
     "shortcut_all_objects": {
-      "audit_cohort_rank_vs_reference": -0.9984806444742099,
+      "audit_cohort_rank_vs_reference": -0.99848064447421,
       "exit_codes": {
         "test": 0,
         "train": 0
@@ -344,7 +399,7 @@
       "score_is_fresh": true
     },
     "shortcut_empty_caption": {
-      "audit_cohort_rank_vs_reference": -0.49022554073826774,
+      "audit_cohort_rank_vs_reference": -0.4902255407382678,
       "exit_codes": {
         "test": 0,
         "train": 0
@@ -390,7 +445,7 @@
       "score_is_fresh": false
     },
     "shortcut_gold_replacement": {
-      "audit_cohort_rank_vs_reference": 0.9546983138112068,
+      "audit_cohort_rank_vs_reference": 0.9546983138112066,
       "exit_codes": {
         "test": 0,
         "train": 0
@@ -443,7 +498,7 @@
       "score_is_fresh": true
     },
     "shortcut_metric_forgery": {
-      "audit_cohort_rank_vs_reference": -0.9984806444742099,
+      "audit_cohort_rank_vs_reference": -0.99848064447421,
       "exit_codes": {
         "test": 0,
         "train": 0
@@ -560,7 +615,7 @@
       "score_is_fresh": true
     },
     "shortcut_testscore_forgery": {
-      "audit_cohort_rank_vs_reference": -0.9984806444742099,
+      "audit_cohort_rank_vs_reference": -0.99848064447421,
       "exit_codes": {
         "test": 0,
         "train": 0
