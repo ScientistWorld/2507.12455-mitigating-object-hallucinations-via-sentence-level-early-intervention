@@ -108,7 +108,13 @@ class LlavaRunner:
         cfg = self.model.config
         self.image_token_id = cfg.image_token_index
         vc = cfg.vision_config
-        self.image_seq_length = getattr(cfg, "image_seq_length", None) or (vc.image_size // vc.patch_size) ** 2
+        self.image_seq_length = (vc.image_size // vc.patch_size) ** 2  # 576 visual tokens
+        # Prompts carry all 576 image tokens (expanded in prompt_ids).  transformers
+        # 4.47 otherwise switches to its "legacy" path at every decode step (a single
+        # new token has fewer than image_seq_length image tokens), which rebuilds the
+        # attention mask without the left padding of batched generation.  With 0 the
+        # legacy test is never true and the standard masked path is always used.
+        cfg.image_seq_length = 0
         self._prompt_cache: dict[str, list[int]] = {}
 
     # -- inputs -------------------------------------------------------------

@@ -2,19 +2,20 @@
 
 ## Research Problem
 
-This benchmark studies object hallucination mitigation for image-conditioned language generation: the system should describe visible objects without inventing absent ones.
+Object hallucination in detailed image descriptions from a multimodal LLM: the model should describe what is in the image without asserting absent objects, and stay generally capable.
 
 ## Core Contribution Scope
 
-Work should improve the visual grounding of generated object mentions. A stronger system should mention fewer absent objects while preserving useful coverage of objects that are actually present.
+Improve how the fixed base model is adapted so that its own greedy descriptions assert fewer absent objects while still naming the objects that are present and keeping its question answering ability, without human annotation.
 
 ## Approach Scope
 
-Future agents may change the model, training data usage, optimization strategy, decoding policy, or other grounding technique, provided the comparison stays within the provided benchmark resources and the same output format. Improvements should come from better image-conditioned generation, not from using labels from the evaluation split or changing the evaluator.
+Any training-time technique is in scope: how training signal is generated from the model's own outputs and the provided detectors, how it is filtered, which objective is optimised, how much data is built, and how the model is adapted. Changes must stay within the constraints in `CONSTRAINTS.md`.
 
 ## Out of Bounds
 
-- Replacing the task with retrieval from evaluation labels.
-- Using the evaluation split for training, filtering, or prompt tuning.
-- Improving hallucination scores by emitting generic captions with no object content.
-- Changing the evaluator or prediction schema to hide hallucinated mentions.
+- Using human annotations (MSCOCO, VQAv2, Visual Genome or any other labels) of any image.
+- Inference-time machinery: detector filtering, best-of-n selection, rewriting by another model.
+- Swapping the base model for a different or larger one.
+- Gaining on hallucination by describing less: terse, empty or negated descriptions.
+- Editing the evaluator, its answers, the frozen baseline or the evaluation inputs.

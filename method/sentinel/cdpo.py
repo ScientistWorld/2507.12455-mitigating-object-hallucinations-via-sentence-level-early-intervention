@@ -97,6 +97,7 @@ def main() -> None:
     ap.add_argument("--device", default="cuda:0")
     ap.add_argument("--lr", type=float, default=C.LEARNING_RATE)
     ap.add_argument("--epochs", type=float, default=C.EPOCHS)
+    ap.add_argument("--steps", type=int, default=C.OPT_STEPS, help="optimizer updates; cycles over the pairs when they are fewer than steps x global batch (0 = use --epochs)")
     ap.add_argument("--beta", type=float, default=C.DPO_BETA)
     ap.add_argument("--global-batch", type=int, default=C.GLOBAL_BATCH)
     ap.add_argument("--micro-batch", type=int, default=C.MICRO_BATCH)
@@ -116,7 +117,7 @@ def main() -> None:
     pairs = subset(read_jsonl(Path(args.pairs)), args.data_fraction, args.seed)
     if not pairs:
         raise RuntimeError("no preference pairs")
-    log(f"C-DPO on {len(pairs)} pairs, lr={args.lr}, epochs={args.epochs}, beta={args.beta}")
+    log(f"C-DPO on {len(pairs)} pairs, lr={args.lr}, steps={args.steps}, epochs={args.epochs}, beta={args.beta}")
 
     device = torch.device(args.device)
     model = LlavaForConditionalGeneration.from_pretrained(LLAVA_PATH, torch_dtype=torch.bfloat16, low_cpu_mem_usage=True).to(device)
@@ -133,10 +134,14 @@ def main() -> None:
     log(f"trainable LoRA params: {sum(p.numel() for p in trainable) / 1e6:.1f}M (gpu mem {total_mem:.0f} GiB)")
     opt = torch.optim.AdamW(trainable, lr=args.lr, weight_decay=C.WEIGHT_DECAY)
     steps_per_epoch = math.ceil(len(pairs) / args.global_batch)
-    total_steps = max(1, math.ceil(steps_per_epoch * args.epochs))
+    if args.steps > 0:
+        total_steps = args.steps
+        args.epochs = total_steps / steps_per_epoch
+    else:
+        total_steps = max(1, math.ceil(steps_per_epoch * args.epochs))
+        total_steps = min(total_steps, math.ceil(args.epochs) * steps_per_epoch)
     if args.max_steps:
         total_steps = min(total_steps, args.max_steps)
-    total_steps = min(total_steps, math.ceil(args.epochs) * steps_per_epoch)
     sched = get_cosine_schedule_with_warmup(opt, math.ceil(C.WARMUP_RATIO * total_steps), total_steps)
 
     prompt_cache: dict[str, list[int]] = {}

@@ -1,15 +1,9 @@
 # Experiment Overview
 
-## paper_llava_v15_7b_main
+## object_halbench_coco (weight 0.8)
 
-Records the paper's full-scale LLaVA-v1.5-7B comparison across hallucination and general-capability benchmarks. This is a reference-only target in the current compact environment.
+Establishes whether an adapted model describes images in detail while asserting fewer objects that are not there. Detailed descriptions are generated for held-out MSCOCO images under eight different prompt phrasings and compared with human object annotations. Two hallucination rates (per description and per asserted object) measure the benefit; object coverage measures that the descriptions still name the objects that are present, so describing less cannot pass as hallucinating less. Runs whose coverage falls below 0.8x the unaligned model's are scored as failed.
 
-## paper_llava_v15_13b_main
+## vqav2_general (weight 0.2)
 
-Records the paper's full-scale LLaVA-v1.5-13B comparison across hallucination and general-capability benchmarks. This is a reference-only target in the current compact environment.
-
-## synthetic_object_halbench
-
-Tests whether the reproduced system reduces object hallucination on image-conditioned object descriptions while preserving useful coverage of visible objects and simple object-presence question answering. This experiment is a compact, method-agnostic analogue of the paper's Object HalBench-style headline claim and is the only experiment currently written by `scripts/evaluate.sh`.
-
-The reference values for this experiment are scaled synthetic benchmark targets from the validated reproduction run. They intentionally do not copy the paper's full Object HalBench values, because those were measured on a different model and benchmark scale; the full paper values are recorded in the `paper_llava_v15_*` entries.
+Establishes that the gain in grounding is not bought with general visual question answering ability. Short-answer VQAv2 questions on the same held-out images are scored with the official VQA accuracy. Runs more than 5 points below the unaligned model are scored as failed.

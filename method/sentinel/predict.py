@@ -53,15 +53,25 @@ def main() -> None:
     for task, bs, max_new in (("caption", args.caption_batch, CAPTION_MAX_NEW_TOKENS), ("vqa", args.vqa_batch, VQA_MAX_NEW_TOKENS)):
         rows = sorted((r for r in todo if r["task"] == task), key=lambda r: (len(r["prompt"]), r["id"]))
         log(f"{args.name}: {len(rows)} {task} inputs")
-        for start in range(0, len(rows), bs):
+        start = 0
+        while start < len(rows):
             chunk = rows[start : start + bs]
             prefixes = [runner.prompt_ids(r["prompt"]) for r in chunk]
-            gens = runner.generate(prefixes, [load_image(r["image"]) for r in chunk], max_new_tokens=max_new, do_sample=False)
+            try:
+                gens = runner.generate(prefixes, [load_image(r["image"]) for r in chunk], max_new_tokens=max_new, do_sample=False)
+            except torch.cuda.OutOfMemoryError:  # the GPU may be shared with other jobs
+                torch.cuda.empty_cache()
+                if bs == 1:
+                    raise
+                bs = max(1, bs // 2)
+                log(f"OOM: {task} batch -> {bs}")
+                continue
+            start += len(chunk)
             with out_path.open("a", encoding="utf-8") as f:
                 for r, g in zip(chunk, gens):
                     f.write(json.dumps({"id": r["id"], "prediction": runner.decode(g)}) + "\n")
-            if (start // bs) % 10 == 0:
-                log(f"{args.name}: {task} {start + len(chunk)}/{len(rows)}")
+            if (start // len(chunk)) % 10 == 0:
+                log(f"{args.name}: {task} {start}/{len(rows)}")
     # Rewrite cleanly (drops any truncated line left by an interrupted run).
     final = {r["id"]: r for r in read_jsonl(out_path)}
     with out_path.open("w", encoding="utf-8") as f:

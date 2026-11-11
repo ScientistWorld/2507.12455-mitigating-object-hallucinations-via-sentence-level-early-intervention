@@ -58,7 +58,9 @@ def run_shard(args) -> None:
     stats_path = out_dir / f"images_shard{args.shard}.jsonl"
     names = (ROOT / C.TRAIN_IMAGES_LIST).read_text().split()[: args.num_images]
     mine = names[args.shard :: args.num_shards]
-    done = {r["image"] for r in read_jsonl(stats_path)}
+    done_stats = read_jsonl(stats_path)
+    done = {r["image"] for r in done_stats}
+    pairs_before = sum(r["pairs"] for r in done_stats)
     todo = [n for n in mine if n not in done]
     log(f"shard {args.shard}: {len(mine)} images assigned, {len(done)} done, {len(todo)} to do")
 
@@ -79,6 +81,8 @@ def run_shard(args) -> None:
     batch_images = args.batch_images
     while queue or active:
         out_of_time = args.time_budget_min > 0 and (time.time() - t0) > 60 * args.time_budget_min
+        enough = args.max_pairs > 0 and pairs_before + n_pairs >= args.max_pairs
+        out_of_time = out_of_time or enough
         while queue and len(active) < batch_images and not out_of_time:
             name = queue.pop(0)
             active.append(ImageState(name, load_image(f"train2017/{name}")))
@@ -282,8 +286,11 @@ def main() -> None:
     ap.add_argument("--max-steps", type=int, default=C.MAX_ICB_STEPS)
     ap.add_argument("--batch-images", type=int, default=C.BATCH_IMAGES)
     ap.add_argument("--time-budget-min", type=float, default=0.0, help="stop taking new images after this many minutes (0 = no limit)")
+    ap.add_argument("--max-pairs", type=int, default=0, help="stop taking new images once this shard holds this many pairs (0 = MAX_PAIRS / num_shards)")
     ap.add_argument("--merge", action="store_true")
     args = ap.parse_args()
+    if args.max_pairs == 0:
+        args.max_pairs = -(-C.MAX_PAIRS // args.num_shards)
     if args.merge:
         merge(args)
     else:
