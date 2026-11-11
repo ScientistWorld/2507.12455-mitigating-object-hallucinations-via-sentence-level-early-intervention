@@ -1,8 +1,8 @@
 # Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends.
-action: pending
-gpus: 0
+action: submit
+gpus: 2
 test: false
 milestone: core_claim
-notes: ""
+notes: "Resubmit hardening job after fixing image-token expansion and OWLv2 truncation: smoke test with log-prob/margin assertions, SENTINEL on LLaVA-v1.5-7B (2-GPU preference construction, C-DPO LoRA), baseline/reference/half-data/lr5e-6/seed43 predictions, post-hoc detector brute force, shortcut cases through the no-arg hidden test, rank + paired bootstrap."
