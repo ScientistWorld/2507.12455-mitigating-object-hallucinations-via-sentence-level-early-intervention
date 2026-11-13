@@ -3,7 +3,7 @@
     "object_halbench_coco": {
       "description": "Object hallucination in detailed image descriptions (Object HalBench protocol: CHAIR over the 80 MSCOCO categories, eight detailed-description prompts, greedy decoding) on held-out MSCOCO val2017 images, with LLaVA-v1.5-7B as the base model. Response- and mention-level hallucination are the benefit metrics; object coverage is the detail-preservation constraint.",
       "notes": "Same base model (LLaVA-v1.5-7B), preference-data scale (8,663 in-domain pairs vs the paper's 8.6K) and training hyper-parameters (LoRA r128/a256, lr 2e-6, cosine, batch 64, 1 epoch, beta 0.1) as the paper. Substitutions: unlabelled COCO train2017 images instead of Visual Genome, OWLv2 instead of YOLO-World as the second detector, spaCy dependency parsing instead of the FACTUAL scene-graph parser; the test uses 700 COCO val2017 images (not the 300-image Object HalBench set), counts each object once per response and ignores negated mentions. 'baseline' and 'sentinel' are this gym's reference runs on the hidden test; the paper's Object HalBench numbers are kept under '_paper_*' keys and are not on this test's scale (the reproduction reduces response hallucination by 23% relative, the paper by 92%).",
-      "weight": 0.95,
+      "weight": 0.98,
       "primary_metric": "response_hallucination_rate",
       "metrics": {
         "response_hallucination_rate": {
@@ -50,7 +50,7 @@
     "vqav2_general": {
       "description": "General visual question answering capability retained after hallucination mitigation (VQAv2 questions on the same held-out images, LLaVA-1.5 short-answer prompt, official VQA accuracy).",
       "notes": "Subset of VQAv2 val (3 questions per held-out image). Hallucination training barely moves VQA accuracy (spread across honest variants ~0.1 points), so after normalisation by its spread it would let answer noise outweigh real hallucination gains; it is therefore mainly a constraint: a run more than 5 points below the frozen baseline is scored as failed, and its rank weight is small.",
-      "weight": 0.05,
+      "weight": 0.02,
       "primary_metric": "vqa_accuracy",
       "metrics": {
         "vqa_accuracy": {

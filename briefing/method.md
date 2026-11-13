@@ -20,3 +20,11 @@ The paper trains LLaVA-v1.5-7B and LLaVA-v1.5-13B with LoRA on Visual Genome ima
 - **Constraint claim:** The hallucination reduction does not sacrifice general multimodal capability; performance is preserved or improved on VQAv2, TextVQA, ScienceQA, HallusionBench, and MM-Vet.
 - **Mechanistic claims:** In-domain samples outperform rewritten samples; context-coherent positives outperform context-agnostic positives; hallucination-free iterative context construction improves robustness; detector cross-checking and ignoring uncertain objects improve preference data quality.
 - **Generality claim:** The same framework reduces hallucinations on additional MLLM families, including LLaVA-v1.6 and Qwen2/Qwen2.5-VL models.
+
+## This environment's implementation
+
+`method/sentinel/` implements the steps above on LLaVA-v1.5-7B (HF port, LLaVA-1.5 square padding and conversation template):
+
+- `build_preferences.py`: n = 8 candidates per context sampled at temperature 1 and stopped at the first period or `</s>`; objects extracted with spaCy (noun heads + compounds) and the paper's POS and WordNet lexicographer-category filters (`objects.py`); presence cross-checked with GroundingDINO (box threshold 0.35) and OWLv2 (threshold 0.10) standing in for YOLO-World (`detectors.py`); uncertain objects ignored; y_w+ chosen among verified non-hallucinated candidates sharing an object with the context (any verified candidate for the first sentence); y_l among hallucinated candidates; the context is extended with y_w+ until `</s>`. Unlabelled COCO train2017 images; construction stops at 8.6K pairs (8,663 built from 2,400 images).
+- `cdpo.py`: C-DPO (context in the input, loss only on y_w+ / y_l tokens) with a frozen reference, LoRA r128 / alpha 256 on the language model's linear layers only, AdamW lr 2e-6, no weight decay, cosine schedule, global batch 64, beta 0.1, one epoch (134 updates).
+- `predict.py`: greedy decoding (512 new tokens for descriptions, 16 for VQA).

@@ -99,7 +99,11 @@ def main() -> None:
         raise SystemExit("reference not found in cohort_variants")
     metrics = [(e, m, c) for e, ec in ref_cfg.items() for m, c in ec["metrics"].items()]
     valid = {k: v for k, v in vectors.items() if str(v.get("status", "")).startswith("ok")}
-    std = {m: statistics.pstdev([v[m] for v in valid.values()]) for _, m, _ in metrics}
+    # Normalising cohort: the honest attempts (frozen baseline + every trained
+    # variant).  Shortcut entries are scored against it but do not set the spread.
+    honest = {k: v for k, v in valid.items() if ":" not in k and not k.startswith("posthoc")}
+    std = {m: statistics.pstdev([v[m] for v in honest.values()]) for _, m, _ in metrics}
+    std_all = {m: statistics.pstdev([v[m] for v in valid.values()]) for _, m, _ in metrics}
 
     def rank(v: dict) -> float:
         total = 0.0
@@ -111,6 +115,10 @@ def main() -> None:
         return total
 
     ranks = {k: rank(v) for k, v in vectors.items()}
+    std_main = std
+    std = std_all
+    ranks_all_valid_cohort = {k: rank(v) for k, v in vectors.items()}
+    std = std_main
     boots = {}
     preds = Path(args.preds)
     ref_rows = per_image(preds / f"{args.reference}_predictions.jsonl", gold, image_of)
@@ -119,11 +127,13 @@ def main() -> None:
         if name == args.reference:
             continue
         boots[name] = bootstrap(per_image(f, gold, image_of), ref_rows)
-    summary = {"reference": args.reference, "cohort_std": std, "cohort": sorted(valid), "vectors": vectors, "rank_vs_reference": ranks, "paired_bootstrap_vs_reference": boots}
+    summary = {"reference": args.reference, "cohort_std": std, "cohort": sorted(honest), "vectors": vectors, "rank_vs_reference": ranks,
+               "all_valid_cohort_std": std_all, "rank_vs_reference_all_valid_cohort": ranks_all_valid_cohort,
+               "paired_bootstrap_vs_reference": boots}
     (HERE / "summary.json").write_text(json.dumps(summary, indent=1, sort_keys=True) + "\n")
     for k in sorted(ranks, key=ranks.get, reverse=True):
         v = vectors[k]
-        print(f"{k:55s} rank {ranks[k]:+.3f}  R {v['response_hallucination_rate']:.2f} M {v['mention_hallucination_rate']:.2f} C {v['object_coverage']:.2f} V {v['vqa_accuracy']:.2f}  {v.get('status', '')}")
+        print(f"{k:45s} rank {ranks[k]:+.3f} (all-valid {ranks_all_valid_cohort[k]:+.3f})  R {v['response_hallucination_rate']:.2f} M {v['mention_hallucination_rate']:.2f} C {v['object_coverage']:.2f} V {v['vqa_accuracy']:.2f}  {v.get('status', '')}")
     for k, b in boots.items():
         print(k, json.dumps({m: [round(x["diff"], 2), [round(y, 2) for y in x["ci95"]]] for m, x in b.items()}))
 

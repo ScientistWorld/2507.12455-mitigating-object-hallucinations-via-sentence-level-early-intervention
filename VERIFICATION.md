@@ -1,3 +1,5 @@
+> **Superseded (iteration 11):** this report verified the retired synthetic 12-object gym. The gym was rebuilt on LLaVA-v1.5-7B and COCO; see `HARDENING.md` and `PROGRESS.md`.
+
 # Verification Report
 
 ## Initial Assessment

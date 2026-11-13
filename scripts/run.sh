@@ -1,15 +1,15 @@
 #!/bin/bash
-# Hardening job 2 (see HARDENING.md): candidate "better" variants of the
-# reference that must keep >= 0.9x baseline object coverage.  Reuses the
-# reference preference data (checkpoints/preferences/pairs.jsonl).
-#   lane A: plain C-DPO at lr 3e-6, then 4e-6
-#   lane B: C-DPO + per-token NLL on the chosen sentence (weight 1) at lr 5e-6, then 8e-6
+# Hardening job 3 (see HARDENING.md): the held-out test grew from 700 to 2,000
+# images; predictions resume, so every model only generates the new inputs.
+# Also trains a seed-43 replicate of the reference (training-seed noise).
+#   lane A: baseline, reference, lr3e-6, NLL lr5e-6, NLL lr8e-6 predictions; post-hoc filters
+#   lane B: reference seed 43 (train + predict); lr4e-6, lr5e-6, half-data, 4k, 4k-seed43 predictions
 
 set -uo pipefail
 cd /home/user
 export PYTHONUNBUFFERED=1 TOKENIZERS_PARALLELISM=false HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
 export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 CUDA_DEVICE_ORDER=PCI_BUS_ID
-L=logs/job2
+L=logs/job3
 PREDS=checkpoints/hardening/preds
 mkdir -p "$L" "$PREDS"
 START=$(date +%s)
@@ -25,15 +25,30 @@ pick() {
   echo "$g" > "$L/gpu_$1"
   echo "cuda:$g"
 }
-variant() {  # variant <lane> <other> <name> <cdpo args...>
-  local lane=$1 other=$2 name=$3; shift 3
-  python -m method.sentinel.cdpo --out checkpoints/$name --device "$(pick $lane $other)" "$@" > $L/cdpo_$name.log 2>&1 &&
-  python -m method.sentinel.predict --name $name --adapter checkpoints/$name/adapter --out-dir $PREDS --device "$(pick $lane $other)" > $L/predict_$name.log 2>&1
+pred() {  # pred <lane> <other> <name> <adapter|-> <out-dir>
+  local args=(--name "$3" --out-dir "$5")
+  [ "$4" = "-" ] || args+=(--adapter "$4")
+  python -m method.sentinel.predict "${args[@]}" --device "$(pick $1 $2)" > $L/predict_$3.log 2>&1
 }
-laneA() { variant A B sentinel_lr3e6 --lr 3e-6; variant A B sentinel_lr4e6 --lr 4e-6; }
-laneB() { sleep 30; variant B A sentinel_nll_lr5e6 --lr 5e-6 --sft-weight 1.0; variant B A sentinel_nll_lr8e6 --lr 8e-6 --sft-weight 1.0; }
+laneA() {
+  pred A B baseline - outputs
+  pred A B sentinel checkpoints/sentinel/adapter outputs
+  for v in sentinel_lr3e6 sentinel_nll_lr5e6 sentinel_nll_lr8e6; do pred A B $v checkpoints/$v/adapter $PREDS; done
+  cp outputs/sentinel_predictions.jsonl outputs/baseline_predictions.jsonl $PREDS/
+  for v in sentinel baseline; do
+    python -m redteam.hardening_v2.posthoc_filter --src outputs/${v}_predictions.jsonl --dst $PREDS/posthoc_${v}_predictions.jsonl --device "$(pick A B)" > $L/posthoc_$v.log 2>&1
+  done
+}
+laneB() {
+  sleep 30
+  python -m method.sentinel.cdpo --out checkpoints/sentinel_seed43 --seed 43 --device "$(pick B A)" > $L/cdpo_sentinel_seed43.log 2>&1 &&
+  pred B A sentinel_seed43 checkpoints/sentinel_seed43/adapter $PREDS
+  for v in sentinel_lr4e6 sentinel_lr5e6 sentinel_half_data; do pred B A $v checkpoints/$v/adapter $PREDS; done
+  for v in sentinel_4k sentinel_4k_seed43; do pred B A $v checkpoints/v1/$v/adapter $PREDS; done
+}
 laneA & a=$!; laneB & b=$!
 wait $a; wait $b
-for f in $L/cdpo_*.log; do echo "== $f"; grep -E "C-DPO on|OOM|saved" "$f"; grep "cdpo {" "$f" | tail -n 1; done
-grep -h "OOM\|wrote" $L/predict_*.log
-echo "[run2] done $(mins) min"
+grep -h "C-DPO on\|saved\|OOM" $L/cdpo_*.log; grep "cdpo {" $L/cdpo_*.log | tail -n 1
+grep -h "OOM\|wrote\|Error" $L/predict_*.log $L/posthoc_*.log
+wc -l outputs/*.jsonl $PREDS/*.jsonl
+echo "[run3] done $(mins) min"

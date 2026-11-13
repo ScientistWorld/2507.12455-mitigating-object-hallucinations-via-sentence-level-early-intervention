@@ -1,2 +1,0 @@
-baseline: ok (frozen evaluator-owned baseline)
-sentinel: failed: line 1: each row must be an object with string 'id' and string 'prediction'

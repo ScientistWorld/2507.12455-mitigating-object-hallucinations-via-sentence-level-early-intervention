@@ -33,6 +33,7 @@ def main() -> None:
     args = ap.parse_args()
     inputs = {r["id"]: r for r in read_jsonl(ROOT / "data/eval_inputs.jsonl")}
     preds = read_jsonl(Path(args.src))
+    done = {r["id"]: r for r in read_jsonl(Path(args.dst))}  # resume
     checker = CrossChecker(args.device)
     extractor = ObjectExtractor()
     out = []
@@ -40,6 +41,9 @@ def main() -> None:
     total = 0
     for k, row in enumerate(preds):
         item = inputs.get(row["id"])
+        if row["id"] in done:
+            out.append(done[row["id"]])
+            continue
         if item is None or item["task"] != "caption":
             out.append(row)
             continue

@@ -30,7 +30,7 @@ from .chair import INVERSE_SYNONYMS, caption_objects
 
 SEED = "sentinel-gym-v2-coco-val2017"
 N_DEV = 300
-N_TEST = 700
+N_TEST = 2000
 VQA_PER_IMAGE = 3
 
 # Eight diverse detailed-description prompts (Object HalBench style).
