@@ -1,15 +1,22 @@
 # Evaluation Targets
 
-## Paper Targets: paper_llava_v15_7b_main and paper_llava_v15_13b_main
+All targets are scored by `scripts/evaluate.sh` / `scripts/evaluate_train.sh` on the visible development slice (300 images) and by the hidden evaluator on the held-out test slice (700 images), from `outputs/<method>_predictions.jsonl`.
 
-These entries in `scoring/reference.json` preserve the paper-reported Table 1 targets for full-scale LLaVA-v1.5 runs. They document the original benchmark goals: reduce Object HalBench response/mention hallucination and AMBER hallucination metrics while maintaining HallusionBench, VQAv2, TextVQA, ScienceQA, and MM-Vet performance.
+## object_halbench_coco (weight 0.95)
 
-The current runnable environment does not reproduce these full-scale targets directly because it uses a compact synthetic substitute instead of the full paper-scale model, image data sources, external object-checking resources, and public hallucination/general benchmark suite.
+Detailed image descriptions from LLaVA-v1.5-7B (eight prompt phrasings), checked against human MSCOCO object annotations.
 
-## Runnable Target: synthetic_object_halbench
+- **Primary metric**: `response_hallucination_rate` (lower is better): % of descriptions asserting an absent object.
+- **Benefit metric**: `mention_hallucination_rate` (lower is better): % of asserted objects that are absent.
+- **Constraint metric**: `object_coverage` (higher is better, coefficient 1.5): % of present objects that are asserted. Runs below 0.9x the frozen baseline's coverage are scored as failed.
+- Reference values on the hidden test (`scoring/reference.json`): unaligned baseline 53.14 / 26.92 / 80.93; reference method 41.00 / 20.80 / 77.90.
+- Paper (Object HalBench, LLaVA-v1.5-7B, not on this scale): 52.7 / 28.0 -> 4.3 / 2.6.
 
-Tests whether a generated response mentions only objects that are present in the image while still naming useful visible objects.
-- **Metric**: response_hallucination_rate (lower is better)
-- **Constraint metrics**: object_recall and qa_accuracy (higher is better)
-- **How to run evaluation**: run `scripts/evaluate.sh outputs` after a method writes prediction JSONL files into `outputs/`.
-- **Reference values**: `scoring/reference.json` records validated scaled synthetic benchmark targets for automated comparison, and separately records the paper's full LLaVA-v1.5 Table 1 targets.
+## vqav2_general (weight 0.05)
+
+- **Constraint metric**: `vqa_accuracy` (higher is better): VQAv2 accuracy on short answers for the same held-out images. Runs more than 5 points below the frozen baseline are scored as failed.
+- Reference values on the hidden test: baseline 77.39; reference method 77.25. Paper (full VQAv2): 78.5 -> 78.4.
+
+## Not measured
+
+The paper's AMBER, HallusionBench, TextVQA, ScienceQA, MM-Vet and GPT-judged language-quality results and the 13B model are not measured here; their reported values are kept for reference under `_paper_table1` in `scoring/reference.json`.

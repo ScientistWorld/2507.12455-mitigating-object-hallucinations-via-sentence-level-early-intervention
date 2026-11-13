@@ -5,4 +5,4 @@ action: submit
 gpus: 2
 test: false
 milestone: core_claim
-notes: "Rebuild with fixed batched decoding: baseline predictions, SENTINEL preference data (2 shards, 115-min cap), C-DPO reference at paper LR for the paper's 134 updates, lr5e-6 and half-data variants, re-predicted seed-42/43 adapters for seed noise, post-hoc detector brute force, shortcut cases through the no-arg hidden test, rank + paired bootstrap."
+notes: "Variant job: candidate better variants under the 0.9x coverage floor, reusing the 8,663 reference pairs: plain C-DPO at lr 3e-6 and 4e-6; C-DPO + per-token NLL on chosen at lr 5e-6 and 8e-6 (134 steps each), with predictions on all eval inputs."
