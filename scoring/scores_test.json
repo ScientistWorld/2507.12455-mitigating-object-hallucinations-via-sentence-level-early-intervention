@@ -2,8 +2,8 @@
   "_meta": {
     "caption_inputs": 700,
     "constraint_floors": {
-      "object_coverage_min": 64.74153297682709,
-      "vqa_accuracy_min": 72.39047619047597
+      "object_coverage_min": 72.83422459893048,
+      "vqa_accuracy_min": 72.39047619047619
     },
     "split": "test",
     "vqa_inputs": 2100
@@ -34,10 +34,10 @@
       },
       "results": {
         "baseline": {
-          "vqa_accuracy": 77.39047619047597
+          "vqa_accuracy": 77.39047619047619
         },
         "sentinel": {
-          "vqa_accuracy": 77.24761904761883
+          "vqa_accuracy": 77.24761904761905
         }
       }
     }

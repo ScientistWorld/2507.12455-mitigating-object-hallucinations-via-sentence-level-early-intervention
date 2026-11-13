@@ -97,6 +97,12 @@ def main() -> None:
     cases["cohort_variants"] = (cohort, None)
     cases["shortcut_empty_caption"] = ({"sentinel_predictions.jsonl": with_captions(lambda r: "")}, None)
     cases["shortcut_terse_first_sentence"] = ({"sentinel_predictions.jsonl": with_captions(lambda r: re.split(r"(?<=[.!?])\s+", r["prediction"].strip())[0])}, None)
+    sent_split = re.compile(r"(?<=[.!?])\s+")
+    base_rows = {r["id"]: r["prediction"] for r in read_jsonl(preds / "baseline_predictions.jsonl")}
+    for k in (3, 4, 5):
+        # Say less: keep the first k sentences (hallucinations concentrate late in descriptions).
+        cases[f"shortcut_truncate{k}_reference"] = ({"sentinel_predictions.jsonl": with_captions(lambda r, k=k: " ".join(sent_split.split(r["prediction"].strip())[:k]))}, None)
+        cases[f"shortcut_truncate{k}_baseline"] = ({"sentinel_predictions.jsonl": with_captions(lambda r, k=k: " ".join(sent_split.split(base_rows[r["id"]].strip())[:k]))}, None)
     all_obj = " ".join(f"There is a {c}." for c in categories)
     cases["shortcut_all_objects"] = ({"sentinel_predictions.jsonl": with_captions(lambda r: all_obj)}, None)
     pattern = re.compile(r"\b(" + "|".join(re.escape(w) for w in caption_words) + r")s?\b", re.IGNORECASE)

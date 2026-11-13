@@ -61,7 +61,7 @@ def subset(pairs: list[dict], fraction: float, seed: int) -> list[dict]:
     return sorted(ranked[: int(round(fraction * len(pairs)))], key=lambda p: p["pair_id"])
 
 
-def run_step(model, runner, batch, micro, prompt_cache, device, beta) -> dict:
+def run_step(model, runner, batch, micro, prompt_cache, device, beta, sft_weight=0.0) -> dict:
     """Accumulate C-DPO gradients of one global batch; returns summed statistics."""
     stats = {"loss": 0.0, "acc": 0.0, "margin": 0.0, "chosen_reward": 0.0, "rejected_reward": 0.0}
     for start in range(0, len(batch), micro):
@@ -81,6 +81,9 @@ def run_step(model, runner, batch, micro, prompt_cache, device, beta) -> dict:
         rr = torch.tensor([p["ref_rejected"] for p in mb], device=device)
         logits = (pc - pr) - (rc - rr)
         loss = -F.logsigmoid(beta * logits)
+        if sft_weight:  # optional NLL on the chosen sentence (variant, not the paper's C-DPO)
+            n_tok = torch.tensor([len(p["chosen_ids"]) for p in mb], device=device, dtype=pc.dtype)
+            loss = loss + sft_weight * (-pc / n_tok)
         (loss.sum() / len(batch)).backward()
         stats["loss"] += float(loss.detach().sum())
         stats["acc"] += float((logits > 0).float().sum())
@@ -102,6 +105,7 @@ def main() -> None:
     ap.add_argument("--global-batch", type=int, default=C.GLOBAL_BATCH)
     ap.add_argument("--micro-batch", type=int, default=C.MICRO_BATCH)
     ap.add_argument("--data-fraction", type=float, default=1.0)
+    ap.add_argument("--sft-weight", type=float, default=0.0, help="variant only: add this x per-token NLL of the chosen sentence (0 = paper's C-DPO)")
     ap.add_argument("--seed", type=int, default=C.SEED)
     ap.add_argument("--max-steps", type=int, default=0, help="debug: stop after this many optimizer steps")
     args = ap.parse_args()
@@ -158,7 +162,7 @@ def main() -> None:
     for step, batch in enumerate(batches):
         while True:
             try:
-                stats = run_step(model, runner, batch, micro, prompt_cache, device, args.beta)
+                stats = run_step(model, runner, batch, micro, prompt_cache, device, args.beta, args.sft_weight)
                 break
             except torch.cuda.OutOfMemoryError:
                 opt.zero_grad(set_to_none=True)

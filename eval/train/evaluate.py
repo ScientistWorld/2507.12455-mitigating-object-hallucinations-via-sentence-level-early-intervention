@@ -10,8 +10,8 @@ Every number is recomputed here from raw text against the development answers
 in this directory.  A run is *failed* -- and receives the worst value of every
 metric of every experiment -- when its file is unreadable, malformed, has
 duplicate or missing development ids, or violates a capability constraint:
-  * object coverage below COVERAGE_FLOOR x the frozen baseline's coverage
-    (terse or empty descriptions cannot buy low hallucination rates);
+  * object coverage below COVERAGE_FLOOR (0.9) x the frozen baseline's coverage
+    (shorter, terser or emptier descriptions cannot buy low hallucination rates);
   * VQAv2 accuracy more than VQA_MAX_DROP points below the frozen baseline.
 """
 
@@ -30,7 +30,7 @@ GOLD = HERE / "gold.json"
 FIXED_BASELINE = HERE / "fixed_baseline_predictions.jsonl"
 BASELINE_NAME = "baseline"
 PRIMARY_SLOT = "sentinel"
-COVERAGE_FLOOR = 0.8
+COVERAGE_FLOOR = 0.9
 VQA_MAX_DROP = 5.0
 
 CAPTION_EXP = "object_halbench_coco"

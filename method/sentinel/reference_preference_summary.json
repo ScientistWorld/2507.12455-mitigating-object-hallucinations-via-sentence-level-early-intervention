@@ -1,0 +1,18 @@
+{
+  "images": 2400,
+  "pairs": 8663,
+  "pairs_per_image": 3.609583333333333,
+  "mean_steps": 5.024166666666667,
+  "finish_reasons": {
+    "eos": 2244,
+    "max_steps": 5,
+    "no_hallucination_free_continuation": 151
+  },
+  "candidate_labels": {
+    "factual": 58148,
+    "hallucinated": 22649,
+    "neutral": 13421,
+    "eos": 19145,
+    "incomplete": 460
+  }
+}

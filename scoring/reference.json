@@ -2,40 +2,154 @@
   "experiments": {
     "object_halbench_coco": {
       "description": "Object hallucination in detailed image descriptions (Object HalBench protocol: CHAIR over the 80 MSCOCO categories, eight detailed-description prompts, greedy decoding) on held-out MSCOCO val2017 images, with LLaVA-v1.5-7B as the base model. Response- and mention-level hallucination are the benefit metrics; object coverage is the detail-preservation constraint.",
-      "notes": "Same base model (LLaVA-v1.5-7B) and metric family as the paper's Object HalBench column; the test uses 700 val2017 images instead of the 300-image Object HalBench set, counts each object once per response, and ignores negated mentions. The paper's preference data scale (8.6K pairs from ~4K Visual Genome images) is reduced to what one 6-hour job can build from unlabelled COCO train2017 images; see PROGRESS.md. Paper-reported values are kept under '_paper_*' keys; 'baseline' and 'sentinel' are this gym's reference runs on the hidden test.",
-      "weight": 0.8,
+      "notes": "Same base model (LLaVA-v1.5-7B), preference-data scale (8,663 in-domain pairs vs the paper's 8.6K) and training hyper-parameters (LoRA r128/a256, lr 2e-6, cosine, batch 64, 1 epoch, beta 0.1) as the paper. Substitutions: unlabelled COCO train2017 images instead of Visual Genome, OWLv2 instead of YOLO-World as the second detector, spaCy dependency parsing instead of the FACTUAL scene-graph parser; the test uses 700 COCO val2017 images (not the 300-image Object HalBench set), counts each object once per response and ignores negated mentions. 'baseline' and 'sentinel' are this gym's reference runs on the hidden test; the paper's Object HalBench numbers are kept under '_paper_*' keys and are not on this test's scale (the reproduction reduces response hallucination by 23% relative, the paper by 92%).",
+      "weight": 0.95,
       "primary_metric": "response_hallucination_rate",
       "metrics": {
-        "response_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0, "description": "Percentage of image descriptions that assert at least one MSCOCO object absent from the image (CHAIR_s / Object HalBench Resp.)."},
-        "mention_hallucination_rate": {"higher_is_better": false, "coefficient": -1.0, "description": "Percentage of asserted MSCOCO objects (counted once per description) that are absent from the image (CHAIR_i / Object HalBench Ment.)."},
-        "object_coverage": {"higher_is_better": true, "coefficient": 0.5, "description": "Percentage of the image's ground-truth MSCOCO objects that the description asserts; guards against reducing hallucination by describing less. A run below 0.8x the frozen baseline's coverage is scored as failed."}
+        "response_hallucination_rate": {
+          "higher_is_better": false,
+          "coefficient": -1.0,
+          "description": "Percentage of image descriptions that assert at least one MSCOCO object absent from the image (CHAIR_s / Object HalBench Resp.)."
+        },
+        "mention_hallucination_rate": {
+          "higher_is_better": false,
+          "coefficient": -1.0,
+          "description": "Percentage of asserted MSCOCO objects (counted once per description) that are absent from the image (CHAIR_i / Object HalBench Ment.)."
+        },
+        "object_coverage": {
+          "higher_is_better": true,
+          "coefficient": 1.5,
+          "description": "Percentage of the image's ground-truth MSCOCO objects that the description asserts; the detail-preservation constraint. Its coefficient (1.5) makes shortening descriptions along the base model's own length/hallucination trade-off roughly rank-neutral. A run below 0.9x the frozen baseline's coverage is scored as failed."
+        }
       },
       "results": {
-        "_paper_llava_v15_7b": {"type": "baseline", "response_hallucination_rate": 52.7, "mention_hallucination_rate": 28.0},
-        "_paper_sentinel_llava_v15_7b": {"type": "proposed", "response_hallucination_rate": 4.3, "mention_hallucination_rate": 2.6}
+        "_paper_llava_v15_7b": {
+          "type": "baseline",
+          "response_hallucination_rate": 52.7,
+          "mention_hallucination_rate": 28.0
+        },
+        "_paper_sentinel_llava_v15_7b": {
+          "type": "proposed",
+          "response_hallucination_rate": 4.3,
+          "mention_hallucination_rate": 2.6
+        },
+        "baseline": {
+          "type": "baseline",
+          "mention_hallucination_rate": 26.9215,
+          "object_coverage": 80.9269,
+          "response_hallucination_rate": 53.1429
+        },
+        "sentinel": {
+          "type": "proposed",
+          "mention_hallucination_rate": 20.7975,
+          "object_coverage": 77.8966,
+          "response_hallucination_rate": 41.0
+        }
       }
     },
     "vqav2_general": {
       "description": "General visual question answering capability retained after hallucination mitigation (VQAv2 questions on the same held-out images, LLaVA-1.5 short-answer prompt, official VQA accuracy).",
-      "notes": "Subset of VQAv2 val (3 questions per held-out image). A run more than 5 points below the frozen baseline is scored as failed.",
-      "weight": 0.2,
+      "notes": "Subset of VQAv2 val (3 questions per held-out image). Hallucination training barely moves VQA accuracy (spread across honest variants ~0.1 points), so after normalisation by its spread it would let answer noise outweigh real hallucination gains; it is therefore mainly a constraint: a run more than 5 points below the frozen baseline is scored as failed, and its rank weight is small.",
+      "weight": 0.05,
       "primary_metric": "vqa_accuracy",
       "metrics": {
-        "vqa_accuracy": {"higher_is_better": true, "coefficient": 1.0, "description": "VQAv2 accuracy (min(1, matching human answers / 3), averaged over leave-one-out subsets) on short answers."}
+        "vqa_accuracy": {
+          "higher_is_better": true,
+          "coefficient": 1.0,
+          "description": "VQAv2 accuracy (min(1, matching human answers / 3), averaged over leave-one-out subsets) on short answers."
+        }
       },
       "results": {
-        "_paper_llava_v15_7b": {"type": "baseline", "vqa_accuracy": 78.5},
-        "_paper_sentinel_llava_v15_7b": {"type": "proposed", "vqa_accuracy": 78.4}
+        "_paper_llava_v15_7b": {
+          "type": "baseline",
+          "vqa_accuracy": 78.5
+        },
+        "_paper_sentinel_llava_v15_7b": {
+          "type": "proposed",
+          "vqa_accuracy": 78.4
+        },
+        "baseline": {
+          "type": "baseline",
+          "vqa_accuracy": 77.3905
+        },
+        "sentinel": {
+          "type": "proposed",
+          "vqa_accuracy": 77.2476
+        }
       }
     }
   },
   "_paper_table1": {
     "source": "Peng et al. 2025, SENTINEL, Table 1 (paper-reported; not on this gym's scale)",
-    "columns": ["object_halbench_resp", "object_halbench_ment", "amber_chair", "amber_hal", "amber_cog", "hallusionbench_question_acc", "vqav2_acc", "textvqa_acc", "scienceqa_image_acc", "mmvet_overall"],
-    "llava_v15_7b_baseline": [52.7, 28.0, 8.4, 35.5, 4.0, 46.86, 78.5, 58.2, 66.8, 31.0],
-    "llava_v15_7b_sentinel": [4.3, 2.6, 2.9, 14.6, 1.2, 47.56, 78.4, 58.2, 69.2, 32.6],
-    "llava_v15_13b_baseline": [46.0, 23.0, 6.9, 31.9, 3.3, 46.43, 80.0, 61.2, 71.6, 36.0],
-    "llava_v15_13b_sentinel": [3.3, 1.9, 2.7, 11.7, 0.9, 46.77, 79.9, 61.0, 72.8, 36.2],
-    "data_scale_table16_7b": {"2.0K_pairs": {"resp": 39.0, "ment": 20.0}, "8.6K_pairs": {"resp": 4.3, "ment": 2.6}}
+    "columns": [
+      "object_halbench_resp",
+      "object_halbench_ment",
+      "amber_chair",
+      "amber_hal",
+      "amber_cog",
+      "hallusionbench_question_acc",
+      "vqav2_acc",
+      "textvqa_acc",
+      "scienceqa_image_acc",
+      "mmvet_overall"
+    ],
+    "llava_v15_7b_baseline": [
+      52.7,
+      28.0,
+      8.4,
+      35.5,
+      4.0,
+      46.86,
+      78.5,
+      58.2,
+      66.8,
+      31.0
+    ],
+    "llava_v15_7b_sentinel": [
+      4.3,
+      2.6,
+      2.9,
+      14.6,
+      1.2,
+      47.56,
+      78.4,
+      58.2,
+      69.2,
+      32.6
+    ],
+    "llava_v15_13b_baseline": [
+      46.0,
+      23.0,
+      6.9,
+      31.9,
+      3.3,
+      46.43,
+      80.0,
+      61.2,
+      71.6,
+      36.0
+    ],
+    "llava_v15_13b_sentinel": [
+      3.3,
+      1.9,
+      2.7,
+      11.7,
+      0.9,
+      46.77,
+      79.9,
+      61.0,
+      72.8,
+      36.2
+    ],
+    "data_scale_table16_7b": {
+      "2.0K_pairs": {
+        "resp": 39.0,
+        "ment": 20.0
+      },
+      "8.6K_pairs": {
+        "resp": 4.3,
+        "ment": 2.6
+      }
+    }
   }
 }
