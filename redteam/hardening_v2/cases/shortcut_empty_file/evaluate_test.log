@@ -1,0 +1,2 @@
+baseline: ok (frozen evaluator-owned baseline)
+sentinel: failed: 2800 test inputs without a prediction (e.g. cap_000000000785)

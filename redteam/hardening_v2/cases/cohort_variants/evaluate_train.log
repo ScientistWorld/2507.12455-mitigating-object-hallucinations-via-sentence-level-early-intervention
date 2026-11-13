@@ -1,0 +1,8 @@
+baseline: ok (frozen evaluator-owned baseline)
+posthoc_baseline: ok
+posthoc_sentinel: ok
+sentinel: ok
+sentinel_4k: ok
+sentinel_4k_seed43: ok
+sentinel_half_data: ok
+sentinel_lr5e6: ok

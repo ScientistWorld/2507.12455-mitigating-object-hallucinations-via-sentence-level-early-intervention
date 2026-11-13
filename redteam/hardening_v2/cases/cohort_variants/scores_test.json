@@ -1,0 +1,105 @@
+{
+  "_meta": {
+    "caption_inputs": 700,
+    "constraint_floors": {
+      "object_coverage_min": 64.74153297682709,
+      "vqa_accuracy_min": 72.39047619047597
+    },
+    "split": "test",
+    "vqa_inputs": 2100
+  },
+  "experiments": {
+    "object_halbench_coco": {
+      "_status": {
+        "baseline": "ok (frozen evaluator-owned baseline)",
+        "posthoc_baseline": "ok",
+        "posthoc_sentinel": "ok",
+        "sentinel": "ok",
+        "sentinel_4k": "ok",
+        "sentinel_4k_seed43": "ok",
+        "sentinel_half_data": "ok",
+        "sentinel_lr5e6": "ok"
+      },
+      "results": {
+        "baseline": {
+          "mention_hallucination_rate": 26.921529175050303,
+          "object_coverage": 80.92691622103386,
+          "response_hallucination_rate": 53.142857142857146
+        },
+        "posthoc_baseline": {
+          "mention_hallucination_rate": 16.776149570490148,
+          "object_coverage": 73.39572192513369,
+          "response_hallucination_rate": 32.714285714285715
+        },
+        "posthoc_sentinel": {
+          "mention_hallucination_rate": 13.582887700534759,
+          "object_coverage": 72.01426024955437,
+          "response_hallucination_rate": 26.428571428571427
+        },
+        "sentinel": {
+          "mention_hallucination_rate": 20.797462618939736,
+          "object_coverage": 77.89661319073083,
+          "response_hallucination_rate": 41.0
+        },
+        "sentinel_4k": {
+          "mention_hallucination_rate": 25.187343880099917,
+          "object_coverage": 80.08021390374331,
+          "response_hallucination_rate": 50.0
+        },
+        "sentinel_4k_seed43": {
+          "mention_hallucination_rate": 24.678556615512235,
+          "object_coverage": 80.92691622103386,
+          "response_hallucination_rate": 50.285714285714285
+        },
+        "sentinel_half_data": {
+          "mention_hallucination_rate": 24.684608915054667,
+          "object_coverage": 79.81283422459893,
+          "response_hallucination_rate": 48.57142857142857
+        },
+        "sentinel_lr5e6": {
+          "mention_hallucination_rate": 8.328192473781616,
+          "object_coverage": 66.22103386809269,
+          "response_hallucination_rate": 16.142857142857142
+        }
+      }
+    },
+    "vqav2_general": {
+      "_status": {
+        "baseline": "ok (frozen evaluator-owned baseline)",
+        "posthoc_baseline": "ok",
+        "posthoc_sentinel": "ok",
+        "sentinel": "ok",
+        "sentinel_4k": "ok",
+        "sentinel_4k_seed43": "ok",
+        "sentinel_half_data": "ok",
+        "sentinel_lr5e6": "ok"
+      },
+      "results": {
+        "baseline": {
+          "vqa_accuracy": 77.39047619047597
+        },
+        "posthoc_baseline": {
+          "vqa_accuracy": 77.39047619047597
+        },
+        "posthoc_sentinel": {
+          "vqa_accuracy": 77.24761904761883
+        },
+        "sentinel": {
+          "vqa_accuracy": 77.24761904761883
+        },
+        "sentinel_4k": {
+          "vqa_accuracy": 77.08571428571408
+        },
+        "sentinel_4k_seed43": {
+          "vqa_accuracy": 77.39999999999979
+        },
+        "sentinel_half_data": {
+          "vqa_accuracy": 77.40476190476168
+        },
+        "sentinel_lr5e6": {
+          "vqa_accuracy": 77.40952380952356
+        }
+      }
+    }
+  }
+}

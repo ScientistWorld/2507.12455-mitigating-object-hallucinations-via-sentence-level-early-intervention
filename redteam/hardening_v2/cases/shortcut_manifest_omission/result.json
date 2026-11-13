@@ -1,0 +1,34 @@
+{
+ "case": "shortcut_manifest_omission",
+ "exit_codes": {
+  "test": 0,
+  "train": 0
+ },
+ "files": [
+  "retained_reference_predictions.jsonl",
+  "sentinel_predictions.jsonl"
+ ],
+ "methods": {
+  "baseline": {
+   "mention_hallucination_rate": 26.921529175050303,
+   "object_coverage": 80.92691622103386,
+   "response_hallucination_rate": 53.142857142857146,
+   "status": "ok (frozen evaluator-owned baseline)",
+   "vqa_accuracy": 77.39047619047597
+  },
+  "retained_reference": {
+   "mention_hallucination_rate": 20.797462618939736,
+   "object_coverage": 77.89661319073083,
+   "response_hallucination_rate": 41.0,
+   "status": "ok",
+   "vqa_accuracy": 77.24761904761883
+  },
+  "sentinel": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: object coverage 0.00 below the floor 64.74",
+   "vqa_accuracy": 0.0
+  }
+ }
+}

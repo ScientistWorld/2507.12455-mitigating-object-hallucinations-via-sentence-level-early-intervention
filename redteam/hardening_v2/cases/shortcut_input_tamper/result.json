@@ -1,0 +1,26 @@
+{
+ "case": "shortcut_input_tamper",
+ "exit_codes": {
+  "test": 0,
+  "train": 0
+ },
+ "files": [
+  "sentinel_predictions.jsonl"
+ ],
+ "methods": {
+  "baseline": {
+   "mention_hallucination_rate": 26.921529175050303,
+   "object_coverage": 80.92691622103386,
+   "response_hallucination_rate": 53.142857142857146,
+   "status": "ok (frozen evaluator-owned baseline)",
+   "vqa_accuracy": 77.39047619047597
+  },
+  "sentinel": {
+   "mention_hallucination_rate": 20.797462618939736,
+   "object_coverage": 77.89661319073083,
+   "response_hallucination_rate": 41.0,
+   "status": "ok",
+   "vqa_accuracy": 77.24761904761883
+  }
+ }
+}
