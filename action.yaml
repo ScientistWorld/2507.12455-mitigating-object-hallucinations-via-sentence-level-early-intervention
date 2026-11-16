@@ -1,8 +1,6 @@
 # Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends.
-action: submit
-gpus: 2
-test: false
+action: done
 milestone: core_claim
-notes: "Test enlarged 700 -> 2,000 images: resume predictions of baseline, reference and 8 variants on the 1,300 new images, post-hoc detector filters, and train/predict a seed-43 replicate of the reference for training-seed noise."
+notes: "Gym rebuilt on LLaVA-v1.5-7B + COCO with the paper's SENTINEL pipeline (8,663 pairs, paper hyper-parameters); 2,000-image hidden CHAIR/VQAv2 test with frozen baseline and failure floors; reference 53.45->42.45 resp. hallucination; better variants rank higher, weaker lower, shortcuts fail or lose; see HARDENING.md."
