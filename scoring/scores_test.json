@@ -1,12 +1,12 @@
 {
   "_meta": {
-    "caption_inputs": 700,
+    "caption_inputs": 2000,
     "constraint_floors": {
-      "object_coverage_min": 72.83422459893048,
-      "vqa_accuracy_min": 72.39047619047619
+      "object_coverage_min": 72.5181860393128,
+      "vqa_accuracy_min": 72.54833333333332
     },
     "split": "test",
-    "vqa_inputs": 2100
+    "vqa_inputs": 6000
   },
   "experiments": {
     "object_halbench_coco": {
@@ -16,14 +16,14 @@
       },
       "results": {
         "baseline": {
-          "mention_hallucination_rate": 26.921529175050303,
-          "object_coverage": 80.92691622103386,
-          "response_hallucination_rate": 53.142857142857146
+          "mention_hallucination_rate": 26.50007059155725,
+          "object_coverage": 80.57576226590311,
+          "response_hallucination_rate": 53.45
         },
         "sentinel": {
-          "mention_hallucination_rate": 20.797462618939736,
-          "object_coverage": 77.89661319073083,
-          "response_hallucination_rate": 41.0
+          "mention_hallucination_rate": 20.93243030398488,
+          "object_coverage": 77.69695093638755,
+          "response_hallucination_rate": 42.45
         }
       }
     },
@@ -34,10 +34,10 @@
       },
       "results": {
         "baseline": {
-          "vqa_accuracy": 77.39047619047619
+          "vqa_accuracy": 77.54833333333332
         },
         "sentinel": {
-          "vqa_accuracy": 77.24761904761905
+          "vqa_accuracy": 77.57166666666667
         }
       }
     }
