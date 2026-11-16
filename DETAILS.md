@@ -642,14 +642,13 @@ On the paper's Object HalBench (300 images), unaligned LLaVA-v1.5-7B has 52.7 re
 
 </details>
 
+### Iteration 11: claude-opus-5-5 (hardener)
+- **Milestone**: `core_claim` | **Status**: done
+- **Working time**: 1.2h | **GPU**: 15.8h
+- **Jobs**: 14 total (10 completed, 1 failed)
 
----
-
-# Reproduction Milestones
-
-**Current: core_claim**
-
-## Progress Log
+<details>
+<summary>Progress Log</summary>
 
 ### [2026-06-20 05:22] - core_claim
 - Completed the scaled SENTINEL pipeline end-to-end on the synthetic object-hallucination benchmark.
@@ -689,3 +688,15 @@ On the paper's Object HalBench (300 images), unaligned LLaVA-v1.5-7B has 52.7 re
 ### [2026-11-13] - core_claim
 - Hardening iteration rebuilt the gym on the paper's own setting: LLaVA-v1.5-7B, in-domain SENTINEL preference data (8,663 pairs from unlabelled COCO train2017 images, GroundingDINO + OWLv2 cross-check, context-coherent positives, iterative contextual bootstrapping) and C-DPO with LoRA at the paper's Table 10 settings.
 - Held-out Object HalBench-style test (2,000 COCO val2017 images): response hallucination 53.45 -> 42.45, mention 26.50 -> 20.93, object coverage 80.58 -> 77.70 (floor 72.5), VQAv2 77.55 -> 77.57. The paper's direction is reproduced with a smaller effect (21% vs 92% relative); a second training seed moves response hallucination by 0.25 points.
+
+</details>
+
+
+---
+
+# Reproduction Milestones
+
+**Current: core_claim**
+
+## Stop Justification
+- Completed at milestone `core_claim`.
