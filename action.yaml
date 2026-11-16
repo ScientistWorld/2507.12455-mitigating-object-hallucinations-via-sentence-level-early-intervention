@@ -3,4 +3,4 @@
 # only after your turn ends.
 action: done
 milestone: core_claim
-notes: "Gym rebuilt on LLaVA-v1.5-7B + COCO with the paper's SENTINEL pipeline (8,663 pairs, paper hyper-parameters); 2,000-image hidden CHAIR/VQAv2 test with frozen baseline and failure floors; reference 53.45->42.45 resp. hallucination; better variants rank higher, weaker lower, shortcuts fail or lose; see HARDENING.md."
+notes: "Gym rebuilt on LLaVA-v1.5-7B + COCO with the paper's SENTINEL pipeline (8,663 pairs, paper hyper-parameters); 2,000-image hidden CHAIR/VQAv2 test with frozen baseline and failure floors; reference 53.45->42.45 response hallucination (paper direction, smaller effect); better variants rank higher, weaker lower, major shortcuts fail or lose; see HARDENING.md."
