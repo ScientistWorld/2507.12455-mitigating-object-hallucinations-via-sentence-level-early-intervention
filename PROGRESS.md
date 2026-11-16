@@ -34,3 +34,18 @@ The reproduction reduces response-level hallucination by 11.0 points (95% paired
 - transformers 4.47.1's LLaVA "legacy" path is triggered at every decode step (one new token holds fewer than 576 image tokens) and then attends to left padding; the runner expands the image placeholder itself and sets `config.image_seq_length = 0`. A first run affected by this was discarded.
 - Jobs run with one CPU core on GPUs shared with other jobs: libraries are single-threaded, detector preprocessing runs on the GPU, GPUs are chosen per stage by free memory, and generation/training fall back to smaller batches on OOM.
 - Reference artifacts: `method/sentinel/reference_preference_summary.json`, `method/sentinel/reference_train_log.json`; the hardening job scripts are in `redteam/hardening_v2/`.
+
+## Handoff (end of iteration 11; GPU budget spent)
+
+- **Final gym.**
+  - Evaluators: `eval/train`, `eval/test`.
+  - Frozen baseline: `eval/*/fixed_baseline_predictions.jsonl`.
+  - Reference scores: `scoring/scores*.json`, `scoring/reference.json`.
+  - Hardening evidence: `HARDENING.md`, `redteam/hardening_v2/`.
+- **To reproduce the reference:**
+  1. `bash scripts/download.sh` (login node).
+  2. `bash scripts/run.sh` (2 GPUs; about 4-5 h on shared A100s).
+- **Most useful next steps:**
+  - Run the paper's ablations: context-agnostic positives, no ICB, uncertain-as-factual/hallucinated, standard DPO.
+  - Add a second general-capability benchmark.
+  - Investigate why the paper's learning rate gives a 21% rather than 92% hallucination reduction at 8.6K pairs (training-strength sweep in `HARDENING.md`).
