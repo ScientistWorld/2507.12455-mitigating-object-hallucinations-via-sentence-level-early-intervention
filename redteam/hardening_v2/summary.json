@@ -1,0 +1,727 @@
+{
+ "all_valid_cohort_std": {
+  "mention_hallucination_rate": 26.435073063120544,
+  "object_coverage": 8.281938941968072,
+  "response_hallucination_rate": 21.174914831955984,
+  "vqa_accuracy": 0.06416459293210604
+ },
+ "cohort": [
+  "baseline",
+  "sentinel",
+  "sentinel_4k",
+  "sentinel_4k_seed43",
+  "sentinel_half_data",
+  "sentinel_lr3e6",
+  "sentinel_nll_lr5e6",
+  "sentinel_nll_lr8e6",
+  "sentinel_seed43"
+ ],
+ "cohort_std": {
+  "mention_hallucination_rate": 4.439089729068153,
+  "object_coverage": 2.4766309045366173,
+  "response_hallucination_rate": 8.728023548417385,
+  "vqa_accuracy": 0.0967336932377119
+ },
+ "paired_bootstrap_vs_reference": {
+  "baseline": {
+   "mention_hallucination_rate": {
+    "ci95": [
+     4.773288639061917,
+     6.389775637266716
+    ],
+    "diff": 5.56764028757237
+   },
+   "object_coverage": {
+    "ci95": [
+     2.2300830513688084,
+     3.5130970724191144
+    ],
+    "diff": 2.878811329515557
+   },
+   "response_hallucination_rate": {
+    "ci95": [
+     9.149999999999999,
+     12.850000000000001
+    ],
+    "diff": 11.0
+   },
+   "vqa_accuracy": {
+    "ci95": [
+     -0.22166666666667822,
+     0.17833333333332746
+    ],
+    "diff": -0.023333333333354744
+   }
+  },
+  "posthoc_baseline": {
+   "mention_hallucination_rate": {
+    "ci95": [
+     -5.67469137848774,
+     -3.8596294325916283
+    ],
+    "diff": -4.7776282446914315
+   },
+   "object_coverage": {
+    "ci95": [
+     -5.595474698058396,
+     -3.6111111111111
+    ],
+    "diff": -4.596811639065152
+   },
+   "response_hallucination_rate": {
+    "ci95": [
+     -12.350000000000001,
+     -8.150000000000002
+    ],
+    "diff": -10.300000000000004
+   },
+   "vqa_accuracy": {
+    "ci95": [
+     -0.22166666666667822,
+     0.17833333333332746
+    ],
+    "diff": -0.023333333333354744
+   }
+  },
+  "posthoc_sentinel": {
+   "mention_hallucination_rate": {
+    "ci95": [
+     -8.159339328238085,
+     -6.7210148767146
+    ],
+    "diff": -7.434580238552089
+   },
+   "object_coverage": {
+    "ci95": [
+     -6.806043033725018,
+     -5.3722760290556835
+    ],
+    "diff": -6.082649744621577
+   },
+   "response_hallucination_rate": {
+    "ci95": [
+     -17.4,
+     -14.200000000000003
+    ],
+    "diff": -15.800000000000004
+   },
+   "vqa_accuracy": {
+    "ci95": [
+     0.0,
+     0.0
+    ],
+    "diff": 0.0
+   }
+  },
+  "sentinel_4k": {
+   "mention_hallucination_rate": {
+    "ci95": [
+     3.621346615794881,
+     5.157940258991726
+    ],
+    "diff": 4.377020693539514
+   },
+   "object_coverage": {
+    "ci95": [
+     1.105058365758751,
+     2.2751729438893165
+    ],
+    "diff": 1.6870453490171826
+   },
+   "response_hallucination_rate": {
+    "ci95": [
+     6.649999999999999,
+     10.199999999999996
+    ],
+    "diff": 8.449999999999996
+   },
+   "vqa_accuracy": {
+    "ci95": [
+     -0.2799999999999869,
+     0.10333333333335304
+    ],
+    "diff": -0.0866666666666589
+   }
+  },
+  "sentinel_4k_seed43": {
+   "mention_hallucination_rate": {
+    "ci95": [
+     3.3054955064855243,
+     4.884651499781604
+    ],
+    "diff": 4.096555203261495
+   },
+   "object_coverage": {
+    "ci95": [
+     1.7546559950746428,
+     2.964917727413848
+    ],
+    "diff": 2.3680544807305353
+   },
+   "response_hallucination_rate": {
+    "ci95": [
+     6.299999999999997,
+     9.800000000000004
+    ],
+    "diff": 8.049999999999997
+   },
+   "vqa_accuracy": {
+    "ci95": [
+     -0.22333333333332916,
+     0.19166666666666288
+    ],
+    "diff": -0.01500000000001478
+   }
+  },
+  "sentinel_half_data": {
+   "mention_hallucination_rate": {
+    "ci95": [
+     3.1887916776293572,
+     4.724751053468651
+    ],
+    "diff": 3.943264343572885
+   },
+   "object_coverage": {
+    "ci95": [
+     1.229954849758684,
+     2.371357718536885
+    ],
+    "diff": 1.8108651911468883
+   },
+   "response_hallucination_rate": {
+    "ci95": [
+     5.400000000000006,
+     8.800000000000004
+    ],
+    "diff": 7.099999999999994
+   },
+   "vqa_accuracy": {
+    "ci95": [
+     -0.3100000000000165,
+     0.09833333333334338
+    ],
+    "diff": -0.10166666666667368
+   }
+  },
+  "sentinel_lr3e6": {
+   "mention_hallucination_rate": {
+    "ci95": [
+     -5.922367331832103,
+     -4.321753948383044
+    ],
+    "diff": -5.125412760125231
+   },
+   "object_coverage": {
+    "ci95": [
+     -4.087065455684311,
+     -2.7586206896551744
+    ],
+    "diff": -3.4205231388329906
+   },
+   "response_hallucination_rate": {
+    "ci95": [
+     -12.450000000000003,
+     -9.0
+    ],
+    "diff": -10.750000000000004
+   },
+   "vqa_accuracy": {
+    "ci95": [
+     -0.24333333333332519,
+     0.1216666666666697
+    ],
+    "diff": -0.05666666666668618
+   }
+  },
+  "sentinel_lr4e6": {
+   "mention_hallucination_rate": {
+    "ci95": [
+     -10.520160119615243,
+     -8.71012061818217
+    ],
+    "diff": -9.631999438336623
+   },
+   "object_coverage": {
+    "ci95": [
+     -8.421374980860506,
+     -6.812075233127871
+    ],
+    "diff": -7.599442810710414
+   },
+   "response_hallucination_rate": {
+    "ci95": [
+     -21.599999999999998,
+     -17.5
+    ],
+    "diff": -19.550000000000004
+   },
+   "vqa_accuracy": {
+    "ci95": [
+     -0.17499999999999716,
+     0.3299999999999699
+    ],
+    "diff": 0.07833333333333314
+   }
+  },
+  "sentinel_lr5e6": {
+   "mention_hallucination_rate": {
+    "ci95": [
+     -14.026054090999834,
+     -12.035301825941506
+    ],
+    "diff": -13.045720064333464
+   },
+   "object_coverage": {
+    "ci95": [
+     -13.18543977503515,
+     -11.373092926490983
+    ],
+    "diff": -12.258164370840419
+   },
+   "response_hallucination_rate": {
+    "ci95": [
+     -28.4,
+     -24.25
+    ],
+    "diff": -26.35
+   },
+   "vqa_accuracy": {
+    "ci95": [
+     -0.40166666666667084,
+     0.18833333333333258
+    ],
+    "diff": -0.09000000000001762
+   }
+  },
+  "sentinel_nll_lr5e6": {
+   "mention_hallucination_rate": {
+    "ci95": [
+     -5.076557192095542,
+     -3.52753415860159
+    ],
+    "diff": -4.325746499357631
+   },
+   "object_coverage": {
+    "ci95": [
+     -3.076209615087336,
+     -1.7308850090307146
+    ],
+    "diff": -2.3835319609967485
+   },
+   "response_hallucination_rate": {
+    "ci95": [
+     -9.800000000000004,
+     -6.25
+    ],
+    "diff": -8.0
+   },
+   "vqa_accuracy": {
+    "ci95": [
+     -0.23166666666666913,
+     0.14999999999999147
+    ],
+    "diff": -0.043333333333336554
+   }
+  },
+  "sentinel_nll_lr8e6": {
+   "mention_hallucination_rate": {
+    "ci95": [
+     -7.97358433618885,
+     -6.1833348527668885
+    ],
+    "diff": -7.07176266973234
+   },
+   "object_coverage": {
+    "ci95": [
+     -4.98869630746043,
+     -3.443504996156804
+    ],
+    "diff": -4.209874632409836
+   },
+   "response_hallucination_rate": {
+    "ci95": [
+     -16.049999999999997,
+     -12.150000000000002
+    ],
+    "diff": -14.100000000000001
+   },
+   "vqa_accuracy": {
+    "ci95": [
+     0.0016666666666793617,
+     0.47666666666665947
+    ],
+    "diff": 0.23666666666666458
+   }
+  },
+  "sentinel_seed43": {
+   "mention_hallucination_rate": {
+    "ci95": [
+     -0.7861261625876672,
+     0.3997047082867482
+    ],
+    "diff": -0.20972802590161166
+   },
+   "object_coverage": {
+    "ci95": [
+     -0.07568876778685762,
+     0.9223674096848669
+    ],
+    "diff": 0.40241448692152915
+   },
+   "response_hallucination_rate": {
+    "ci95": [
+     -1.0,
+     1.6000000000000014
+    ],
+    "diff": 0.25
+   },
+   "vqa_accuracy": {
+    "ci95": [
+     -0.27333333333334053,
+     0.09166666666666856
+    ],
+    "diff": -0.09000000000001762
+   }
+  }
+ },
+ "rank_vs_reference": {
+  "baseline": -0.7603583908962264,
+  "posthoc_baseline": -0.522011399491394,
+  "posthoc_sentinel": -86.07234008120277,
+  "sentinel": 0.0,
+  "sentinel_4k": -0.9316559806602301,
+  "sentinel_4k_seed43": -0.40579683147698276,
+  "sentinel_half_data": -0.6139248694117143,
+  "sentinel_lr3e6": 0.2965867299477951,
+  "sentinel_lr4e6": -86.07234008120277,
+  "sentinel_lr5e6": -86.07234008120277,
+  "sentinel_nll_lr5e6": 0.42953313785321773,
+  "sentinel_nll_lr8e6": 0.6945486870892615,
+  "sentinel_seed43": 0.23847494865561636,
+  "shortcut_all_objects:sentinel": -9.787842189798782,
+  "shortcut_baseline_replacement:sentinel": 0.0,
+  "shortcut_copy_coco_captions:sentinel": -86.07234008120277,
+  "shortcut_dev_only:sentinel": -86.07234008120277,
+  "shortcut_duplicate_ids:sentinel": -86.07234008120277,
+  "shortcut_empty_caption:sentinel": -86.07234008120277,
+  "shortcut_empty_file:sentinel": -86.07234008120277,
+  "shortcut_input_tamper:sentinel": 0.0,
+  "shortcut_manifest_omission:baseline": -0.7603583908962264,
+  "shortcut_manifest_omission:retained_reference": 0.0,
+  "shortcut_manifest_omission:sentinel": -86.07234008120277,
+  "shortcut_metric_forgery:sentinel": -9.787842189798782,
+  "shortcut_missing_file:sentinel": -86.07234008120277,
+  "shortcut_null_prediction:sentinel": -86.07234008120277,
+  "shortcut_polarity_flip:sentinel": -86.07234008120277,
+  "shortcut_terse_first_sentence:sentinel": -86.07234008120277,
+  "shortcut_testscore_forgery:sentinel": -9.787842189798782,
+  "shortcut_truncate3_baseline:sentinel": -86.07234008120277,
+  "shortcut_truncate3_reference:sentinel": -86.07234008120277,
+  "shortcut_truncate4_baseline:sentinel": -2.054950319533475,
+  "shortcut_truncate4_reference:sentinel": -86.07234008120277,
+  "shortcut_truncate5_baseline:sentinel": -1.3322743603869616,
+  "shortcut_truncate5_reference:sentinel": -0.5931342432039497,
+  "shortcut_unscored_hallucinations:sentinel": 0.0
+ },
+ "rank_vs_reference_all_valid_cohort": {
+  "baseline": -0.2117956029792436,
+  "posthoc_baseline": -0.16937033585856043,
+  "posthoc_sentinel": -43.564429370755185,
+  "sentinel": 0.0,
+  "sentinel_4k": -0.2809130004645976,
+  "sentinel_4k_seed43": -0.10878924980056975,
+  "sentinel_half_data": -0.1850513258436799,
+  "sentinel_lr3e6": 0.06274423845029357,
+  "sentinel_lr4e6": -43.564429370755185,
+  "sentinel_lr5e6": -43.564429370755185,
+  "sentinel_nll_lr5e6": 0.09404218570173545,
+  "sentinel_nll_lr8e6": 0.2412670377710816,
+  "sentinel_seed43": 0.03957830569595484,
+  "shortcut_all_objects:sentinel": -1.4862981604125434,
+  "shortcut_baseline_replacement:sentinel": 0.0,
+  "shortcut_copy_coco_captions:sentinel": -43.564429370755185,
+  "shortcut_dev_only:sentinel": -43.564429370755185,
+  "shortcut_duplicate_ids:sentinel": -43.564429370755185,
+  "shortcut_empty_caption:sentinel": -43.564429370755185,
+  "shortcut_empty_file:sentinel": -43.564429370755185,
+  "shortcut_input_tamper:sentinel": 0.0,
+  "shortcut_manifest_omission:baseline": -0.2117956029792436,
+  "shortcut_manifest_omission:retained_reference": 0.0,
+  "shortcut_manifest_omission:sentinel": -43.564429370755185,
+  "shortcut_metric_forgery:sentinel": -1.4862981604125434,
+  "shortcut_missing_file:sentinel": -43.564429370755185,
+  "shortcut_null_prediction:sentinel": -43.564429370755185,
+  "shortcut_polarity_flip:sentinel": -43.564429370755185,
+  "shortcut_terse_first_sentence:sentinel": -43.564429370755185,
+  "shortcut_testscore_forgery:sentinel": -1.4862981604125434,
+  "shortcut_truncate3_baseline:sentinel": -43.564429370755185,
+  "shortcut_truncate3_reference:sentinel": -43.564429370755185,
+  "shortcut_truncate4_baseline:sentinel": -0.6240768895527531,
+  "shortcut_truncate4_reference:sentinel": -43.564429370755185,
+  "shortcut_truncate5_baseline:sentinel": -0.3963593438565365,
+  "shortcut_truncate5_reference:sentinel": -0.19471957327909395,
+  "shortcut_unscored_hallucinations:sentinel": 0.0
+ },
+ "reference": "sentinel",
+ "vectors": {
+  "baseline": {
+   "mention_hallucination_rate": 26.50007059155725,
+   "object_coverage": 80.57576226590311,
+   "response_hallucination_rate": 53.45,
+   "status": "ok (frozen evaluator-owned baseline)",
+   "vqa_accuracy": 77.54833333333332
+  },
+  "posthoc_baseline": {
+   "mention_hallucination_rate": 16.15480205929345,
+   "object_coverage": 73.1001392973224,
+   "response_hallucination_rate": 32.15,
+   "status": "ok",
+   "vqa_accuracy": 77.54833333333332
+  },
+  "posthoc_sentinel": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: object coverage 71.61 below the floor 72.52",
+   "vqa_accuracy": 0.0
+  },
+  "sentinel": {
+   "mention_hallucination_rate": 20.93243030398488,
+   "object_coverage": 77.69695093638755,
+   "response_hallucination_rate": 42.45,
+   "status": "ok",
+   "vqa_accuracy": 77.57166666666667
+  },
+  "sentinel_4k": {
+   "mention_hallucination_rate": 25.309450997524394,
+   "object_coverage": 79.38399628540473,
+   "response_hallucination_rate": 50.9,
+   "status": "ok",
+   "vqa_accuracy": 77.48500000000001
+  },
+  "sentinel_4k_seed43": {
+   "mention_hallucination_rate": 25.028985507246375,
+   "object_coverage": 80.06500541711809,
+   "response_hallucination_rate": 50.5,
+   "status": "ok",
+   "vqa_accuracy": 77.55666666666666
+  },
+  "sentinel_half_data": {
+   "mention_hallucination_rate": 24.875694647557765,
+   "object_coverage": 79.50781612753444,
+   "response_hallucination_rate": 49.55,
+   "status": "ok",
+   "vqa_accuracy": 77.47
+  },
+  "sentinel_lr3e6": {
+   "mention_hallucination_rate": 15.807017543859649,
+   "object_coverage": 74.27642779755456,
+   "response_hallucination_rate": 31.7,
+   "status": "ok",
+   "vqa_accuracy": 77.51499999999999
+  },
+  "sentinel_lr4e6": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: object coverage 70.10 below the floor 72.52",
+   "vqa_accuracy": 0.0
+  },
+  "sentinel_lr5e6": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: object coverage 65.44 below the floor 72.52",
+   "vqa_accuracy": 0.0
+  },
+  "sentinel_nll_lr5e6": {
+   "mention_hallucination_rate": 16.60668380462725,
+   "object_coverage": 75.3134189753908,
+   "response_hallucination_rate": 34.45,
+   "status": "ok",
+   "vqa_accuracy": 77.52833333333334
+  },
+  "sentinel_nll_lr8e6": {
+   "mention_hallucination_rate": 13.86066763425254,
+   "object_coverage": 73.48707630397772,
+   "response_hallucination_rate": 28.35,
+   "status": "ok",
+   "vqa_accuracy": 77.80833333333334
+  },
+  "sentinel_seed43": {
+   "mention_hallucination_rate": 20.72270227808327,
+   "object_coverage": 78.09936542330908,
+   "response_hallucination_rate": 42.7,
+   "status": "ok",
+   "vqa_accuracy": 77.48166666666665
+  },
+  "shortcut_all_objects:sentinel": {
+   "mention_hallucination_rate": 95.961875,
+   "object_coverage": 100.0,
+   "response_hallucination_rate": 100.0,
+   "status": "ok",
+   "vqa_accuracy": 77.57166666666667
+  },
+  "shortcut_baseline_replacement:sentinel": {
+   "mention_hallucination_rate": 20.93243030398488,
+   "object_coverage": 77.69695093638755,
+   "response_hallucination_rate": 42.45,
+   "status": "ok",
+   "vqa_accuracy": 77.57166666666667
+  },
+  "shortcut_copy_coco_captions:sentinel": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: object coverage 65.18 below the floor 72.52",
+   "vqa_accuracy": 0.0
+  },
+  "shortcut_dev_only:sentinel": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: 8000 test inputs without a prediction (e.g. cap_000000000139)",
+   "vqa_accuracy": 0.0
+  },
+  "shortcut_duplicate_ids:sentinel": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: duplicate id cap_000000000139",
+   "vqa_accuracy": 0.0
+  },
+  "shortcut_empty_caption:sentinel": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: object coverage 0.00 below the floor 72.52",
+   "vqa_accuracy": 0.0
+  },
+  "shortcut_empty_file:sentinel": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: 8000 test inputs without a prediction (e.g. cap_000000000139)",
+   "vqa_accuracy": 0.0
+  },
+  "shortcut_input_tamper:sentinel": {
+   "mention_hallucination_rate": 20.93243030398488,
+   "object_coverage": 77.69695093638755,
+   "response_hallucination_rate": 42.45,
+   "status": "ok",
+   "vqa_accuracy": 77.57166666666667
+  },
+  "shortcut_manifest_omission:baseline": {
+   "mention_hallucination_rate": 26.50007059155725,
+   "object_coverage": 80.57576226590311,
+   "response_hallucination_rate": 53.45,
+   "status": "ok (frozen evaluator-owned baseline)",
+   "vqa_accuracy": 77.54833333333332
+  },
+  "shortcut_manifest_omission:retained_reference": {
+   "mention_hallucination_rate": 20.93243030398488,
+   "object_coverage": 77.69695093638755,
+   "response_hallucination_rate": 42.45,
+   "status": "ok",
+   "vqa_accuracy": 77.57166666666667
+  },
+  "shortcut_manifest_omission:sentinel": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: object coverage 0.00 below the floor 72.52",
+   "vqa_accuracy": 0.0
+  },
+  "shortcut_metric_forgery:sentinel": {
+   "mention_hallucination_rate": 95.961875,
+   "object_coverage": 100.0,
+   "response_hallucination_rate": 100.0,
+   "status": "ok",
+   "vqa_accuracy": 77.57166666666667
+  },
+  "shortcut_missing_file:sentinel": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: missing prediction file sentinel_predictions.jsonl",
+   "vqa_accuracy": 0.0
+  },
+  "shortcut_null_prediction:sentinel": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: line 1: each row must be an object with string 'id' and string 'prediction'",
+   "vqa_accuracy": 0.0
+  },
+  "shortcut_polarity_flip:sentinel": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: object coverage 2.01 below the floor 72.52",
+   "vqa_accuracy": 0.0
+  },
+  "shortcut_terse_first_sentence:sentinel": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: object coverage 45.44 below the floor 72.52",
+   "vqa_accuracy": 0.0
+  },
+  "shortcut_testscore_forgery:sentinel": {
+   "mention_hallucination_rate": 95.961875,
+   "object_coverage": 100.0,
+   "response_hallucination_rate": 100.0,
+   "status": "ok",
+   "vqa_accuracy": 77.57166666666667
+  },
+  "shortcut_truncate3_baseline:sentinel": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: object coverage 64.49 below the floor 72.52",
+   "vqa_accuracy": 0.0
+  },
+  "shortcut_truncate3_reference:sentinel": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: object coverage 62.47 below the floor 72.52",
+   "vqa_accuracy": 0.0
+  },
+  "shortcut_truncate4_baseline:sentinel": {
+   "mention_hallucination_rate": 19.592529711375214,
+   "object_coverage": 73.30134654078316,
+   "response_hallucination_rate": 40.15,
+   "status": "ok",
+   "vqa_accuracy": 77.57166666666667
+  },
+  "shortcut_truncate4_reference:sentinel": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: object coverage 71.43 below the floor 72.52",
+   "vqa_accuracy": 0.0
+  },
+  "shortcut_truncate5_baseline:sentinel": {
+   "mention_hallucination_rate": 24.3825774584643,
+   "object_coverage": 78.19223030490636,
+   "response_hallucination_rate": 50.15,
+   "status": "ok",
+   "vqa_accuracy": 77.57166666666667
+  },
+  "shortcut_truncate5_reference:sentinel": {
+   "mention_hallucination_rate": 19.06026896895235,
+   "object_coverage": 75.45271629778672,
+   "response_hallucination_rate": 39.55,
+   "status": "ok",
+   "vqa_accuracy": 77.57166666666667
+  },
+  "shortcut_unscored_hallucinations:sentinel": {
+   "mention_hallucination_rate": 20.93243030398488,
+   "object_coverage": 77.69695093638755,
+   "response_hallucination_rate": 42.45,
+   "status": "ok",
+   "vqa_accuracy": 77.57166666666667
+  }
+ }
+}

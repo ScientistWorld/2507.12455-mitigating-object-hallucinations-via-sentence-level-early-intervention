@@ -1,0 +1,114 @@
+{
+ "case": "cohort_variants",
+ "exit_codes": {
+  "test": 0,
+  "train": 0
+ },
+ "files": [
+  "posthoc_baseline_predictions.jsonl",
+  "posthoc_sentinel_predictions.jsonl",
+  "sentinel_4k_predictions.jsonl",
+  "sentinel_4k_seed43_predictions.jsonl",
+  "sentinel_half_data_predictions.jsonl",
+  "sentinel_lr3e6_predictions.jsonl",
+  "sentinel_lr4e6_predictions.jsonl",
+  "sentinel_lr5e6_predictions.jsonl",
+  "sentinel_nll_lr5e6_predictions.jsonl",
+  "sentinel_nll_lr8e6_predictions.jsonl",
+  "sentinel_predictions.jsonl",
+  "sentinel_seed43_predictions.jsonl"
+ ],
+ "methods": {
+  "baseline": {
+   "mention_hallucination_rate": 26.50007059155725,
+   "object_coverage": 80.57576226590311,
+   "response_hallucination_rate": 53.45,
+   "status": "ok (frozen evaluator-owned baseline)",
+   "vqa_accuracy": 77.54833333333332
+  },
+  "posthoc_baseline": {
+   "mention_hallucination_rate": 16.15480205929345,
+   "object_coverage": 73.1001392973224,
+   "response_hallucination_rate": 32.15,
+   "status": "ok",
+   "vqa_accuracy": 77.54833333333332
+  },
+  "posthoc_sentinel": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: object coverage 71.61 below the floor 72.52",
+   "vqa_accuracy": 0.0
+  },
+  "sentinel": {
+   "mention_hallucination_rate": 20.93243030398488,
+   "object_coverage": 77.69695093638755,
+   "response_hallucination_rate": 42.45,
+   "status": "ok",
+   "vqa_accuracy": 77.57166666666667
+  },
+  "sentinel_4k": {
+   "mention_hallucination_rate": 25.309450997524394,
+   "object_coverage": 79.38399628540473,
+   "response_hallucination_rate": 50.9,
+   "status": "ok",
+   "vqa_accuracy": 77.48500000000001
+  },
+  "sentinel_4k_seed43": {
+   "mention_hallucination_rate": 25.028985507246375,
+   "object_coverage": 80.06500541711809,
+   "response_hallucination_rate": 50.5,
+   "status": "ok",
+   "vqa_accuracy": 77.55666666666666
+  },
+  "sentinel_half_data": {
+   "mention_hallucination_rate": 24.875694647557765,
+   "object_coverage": 79.50781612753444,
+   "response_hallucination_rate": 49.55,
+   "status": "ok",
+   "vqa_accuracy": 77.47
+  },
+  "sentinel_lr3e6": {
+   "mention_hallucination_rate": 15.807017543859649,
+   "object_coverage": 74.27642779755456,
+   "response_hallucination_rate": 31.7,
+   "status": "ok",
+   "vqa_accuracy": 77.51499999999999
+  },
+  "sentinel_lr4e6": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: object coverage 70.10 below the floor 72.52",
+   "vqa_accuracy": 0.0
+  },
+  "sentinel_lr5e6": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: object coverage 65.44 below the floor 72.52",
+   "vqa_accuracy": 0.0
+  },
+  "sentinel_nll_lr5e6": {
+   "mention_hallucination_rate": 16.60668380462725,
+   "object_coverage": 75.3134189753908,
+   "response_hallucination_rate": 34.45,
+   "status": "ok",
+   "vqa_accuracy": 77.52833333333334
+  },
+  "sentinel_nll_lr8e6": {
+   "mention_hallucination_rate": 13.86066763425254,
+   "object_coverage": 73.48707630397772,
+   "response_hallucination_rate": 28.35,
+   "status": "ok",
+   "vqa_accuracy": 77.80833333333334
+  },
+  "sentinel_seed43": {
+   "mention_hallucination_rate": 20.72270227808327,
+   "object_coverage": 78.09936542330908,
+   "response_hallucination_rate": 42.7,
+   "status": "ok",
+   "vqa_accuracy": 77.48166666666665
+  }
+ }
+}

@@ -1,0 +1,27 @@
+{
+ "case": "shortcut_baseline_replacement",
+ "exit_codes": {
+  "test": 0,
+  "train": 0
+ },
+ "files": [
+  "baseline_predictions.jsonl",
+  "sentinel_predictions.jsonl"
+ ],
+ "methods": {
+  "baseline": {
+   "mention_hallucination_rate": 26.50007059155725,
+   "object_coverage": 80.57576226590311,
+   "response_hallucination_rate": 53.45,
+   "status": "ok (frozen evaluator-owned baseline)",
+   "vqa_accuracy": 77.54833333333332
+  },
+  "sentinel": {
+   "mention_hallucination_rate": 20.93243030398488,
+   "object_coverage": 77.69695093638755,
+   "response_hallucination_rate": 42.45,
+   "status": "ok",
+   "vqa_accuracy": 77.57166666666667
+  }
+ }
+}

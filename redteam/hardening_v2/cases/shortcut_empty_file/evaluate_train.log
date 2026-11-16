@@ -1,0 +1,2 @@
+baseline: ok (frozen evaluator-owned baseline)
+sentinel: failed: 1200 development inputs without a prediction (e.g. cap_000000001818)

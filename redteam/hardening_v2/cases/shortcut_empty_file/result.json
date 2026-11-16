@@ -1,0 +1,26 @@
+{
+ "case": "shortcut_empty_file",
+ "exit_codes": {
+  "test": 0,
+  "train": 0
+ },
+ "files": [
+  "sentinel_predictions.jsonl"
+ ],
+ "methods": {
+  "baseline": {
+   "mention_hallucination_rate": 26.50007059155725,
+   "object_coverage": 80.57576226590311,
+   "response_hallucination_rate": 53.45,
+   "status": "ok (frozen evaluator-owned baseline)",
+   "vqa_accuracy": 77.54833333333332
+  },
+  "sentinel": {
+   "mention_hallucination_rate": 100.0,
+   "object_coverage": 0.0,
+   "response_hallucination_rate": 100.0,
+   "status": "failed: 8000 test inputs without a prediction (e.g. cap_000000000139)",
+   "vqa_accuracy": 0.0
+  }
+ }
+}

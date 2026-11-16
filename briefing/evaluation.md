@@ -11,7 +11,7 @@ A method writes `outputs/<method>_predictions.jsonl`, one JSON object per input 
 
 `cap_*` inputs ask for a detailed description (eight prompt variants); `vqa_*` inputs are VQAv2 questions with the LLaVA-1.5 short-answer suffix. Predictions are the raw generated text. The evaluator ignores every other field. Every input of the scored split must have exactly one prediction.
 
-`bash scripts/evaluate.sh` (and `scripts/evaluate_train.sh`) score the visible development slice (300 images, 900 questions). The held-out test slice (700 different images, 2,100 questions) is scored by a hidden evaluator through the same interface.
+`bash scripts/evaluate.sh` (and `scripts/evaluate_train.sh`) score the visible development slice (300 images, 900 questions). The held-out test slice (2,000 different images, 6,000 questions) is scored by a hidden evaluator through the same interface.
 
 ## Metrics
 
@@ -26,7 +26,7 @@ Object hallucination follows the Object HalBench / CHAIR protocol over the 80 MS
 
 A run is scored as failed, receiving the worst value of every metric (100 for the hallucination rates, 0 for coverage and accuracy), if its prediction file is missing, unreadable or malformed, contains duplicate ids, misses any input of the split, or violates a capability floor:
 
-- object coverage below 0.8 x the frozen baseline's coverage on the same split;
+- object coverage below 0.9 x the frozen baseline's coverage on the same split;
 - VQA accuracy more than 5 points below the frozen baseline's.
 
 The comparison baseline (unaligned LLaVA-v1.5-7B, greedy) is a frozen, evaluator-owned prediction file; it is reported as `baseline`.

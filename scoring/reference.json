@@ -2,7 +2,7 @@
   "experiments": {
     "object_halbench_coco": {
       "description": "Object hallucination in detailed image descriptions (Object HalBench protocol: CHAIR over the 80 MSCOCO categories, eight detailed-description prompts, greedy decoding) on held-out MSCOCO val2017 images, with LLaVA-v1.5-7B as the base model. Response- and mention-level hallucination are the benefit metrics; object coverage is the detail-preservation constraint.",
-      "notes": "Same base model (LLaVA-v1.5-7B), preference-data scale (8,663 in-domain pairs vs the paper's 8.6K) and training hyper-parameters (LoRA r128/a256, lr 2e-6, cosine, batch 64, 1 epoch, beta 0.1) as the paper. Substitutions: unlabelled COCO train2017 images instead of Visual Genome, OWLv2 instead of YOLO-World as the second detector, spaCy dependency parsing instead of the FACTUAL scene-graph parser; the test uses 700 COCO val2017 images (not the 300-image Object HalBench set), counts each object once per response and ignores negated mentions. 'baseline' and 'sentinel' are this gym's reference runs on the hidden test; the paper's Object HalBench numbers are kept under '_paper_*' keys and are not on this test's scale (the reproduction reduces response hallucination by 23% relative, the paper by 92%).",
+      "notes": "Same base model (LLaVA-v1.5-7B), preference-data scale (8,663 in-domain pairs vs the paper's 8.6K) and training hyper-parameters (LoRA r128/a256, lr 2e-6, cosine, batch 64, 1 epoch, beta 0.1) as the paper. Substitutions: unlabelled COCO train2017 images instead of Visual Genome, OWLv2 instead of YOLO-World as the second detector, spaCy dependency parsing instead of the FACTUAL scene-graph parser; the test uses 2,000 COCO val2017 images (not the 300-image Object HalBench set), counts each object once per response and ignores negated mentions. 'baseline' and 'sentinel' are this gym's reference runs on the hidden test; the paper's Object HalBench numbers are kept under '_paper_*' keys and are not on this test's scale (the reproduction reduces response hallucination by 21% relative, the paper by 92%).",
       "weight": 0.98,
       "primary_metric": "response_hallucination_rate",
       "metrics": {
@@ -35,15 +35,15 @@
         },
         "baseline": {
           "type": "baseline",
-          "mention_hallucination_rate": 26.9215,
-          "object_coverage": 80.9269,
-          "response_hallucination_rate": 53.1429
+          "mention_hallucination_rate": 26.5001,
+          "object_coverage": 80.5758,
+          "response_hallucination_rate": 53.45
         },
         "sentinel": {
           "type": "proposed",
-          "mention_hallucination_rate": 20.7975,
-          "object_coverage": 77.8966,
-          "response_hallucination_rate": 41.0
+          "mention_hallucination_rate": 20.9324,
+          "object_coverage": 77.697,
+          "response_hallucination_rate": 42.45
         }
       }
     },
@@ -70,11 +70,11 @@
         },
         "baseline": {
           "type": "baseline",
-          "vqa_accuracy": 77.3905
+          "vqa_accuracy": 77.5483
         },
         "sentinel": {
           "type": "proposed",
-          "vqa_accuracy": 77.2476
+          "vqa_accuracy": 77.5717
         }
       }
     }

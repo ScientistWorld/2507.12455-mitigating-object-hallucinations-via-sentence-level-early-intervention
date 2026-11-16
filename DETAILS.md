@@ -21,22 +21,29 @@ The paper addresses object hallucination in multimodal large language models, wh
 
 ## Research Question
 
-How can a multimodal large language model generate image-grounded descriptions and answers with substantially fewer object hallucinations, without losing its general visual question answering, reasoning, OCR, and language generation capabilities?
+How can a multimodal large language model generate image-grounded descriptions with substantially fewer object hallucinations, without losing detail or its general visual question answering ability, and without human annotation or a larger proprietary model to supervise it?
 
-Object hallucination means the model mentions an object or visual fact that is not supported by the image. The benchmark problem is not only to reduce these hallucinated mentions, but to do so under the same base-model scale and evaluation conditions used for standard MLLM comparisons.
+Object hallucination means the model asserts that an object is in the image when it is not. The problem is to reduce such assertions in long, detailed descriptions while keeping the descriptions informative and the model generally capable, at a fixed base-model scale.
 
 ## Why It Matters
 
-Hallucinated visual content makes MLLM outputs unreliable in settings where users depend on the model to describe, inspect, or reason about images. A good solution should improve factual grounding while keeping the model useful for ordinary multimodal tasks.
+Hallucinated visual content makes model outputs unreliable wherever users depend on the model to describe or reason about images. Methods that reduce hallucination by making descriptions terse, by adding expensive inference-time machinery, or by damaging general ability do not solve the problem.
+
+## Setting in this environment
+
+- Base model: LLaVA-v1.5-7B (fixed). Methods change how the model is adapted, not which model is used.
+- Unlabelled training images: MSCOCO train2017 images listed in `data/sentinel_train_images.txt` (pixels only; no annotations of any image may be used for training).
+- Evaluation inputs: MSCOCO val2017 images with eight detailed-description prompts, plus VQAv2 short-answer questions on the same images (`data/eval_inputs.jsonl`). Answers are held by the evaluator.
+- Public tools that may be used during training: the downloaded open-vocabulary detectors (GroundingDINO, OWLv2), NLP tooling, and the base model itself.
 
 ## Success Criteria
 
-A successful system should:
+A successful system:
 
-- Lower object hallucination rates on caption-style hallucination benchmarks.
-- Improve or preserve hallucination-sensitive question answering performance.
-- Maintain broad multimodal capabilities on general benchmarks such as VQA, text-rich VQA, science reasoning, and integrated visual conversation.
-- Avoid gains that come only from using a larger model, changing the test protocol, or sacrificing response quality.
+- lowers the share of descriptions that assert any absent object, and the share of asserted objects that are absent;
+- keeps describing the objects that are present (coverage);
+- keeps its short-answer visual question answering accuracy;
+- produces each output with the adapted model's own single greedy decoding pass.
 
 ---
 
@@ -63,33 +70,52 @@ The paper trains LLaVA-v1.5-7B and LLaVA-v1.5-13B with LoRA on Visual Genome ima
 - **Mechanistic claims:** In-domain samples outperform rewritten samples; context-coherent positives outperform context-agnostic positives; hallucination-free iterative context construction improves robustness; detector cross-checking and ignoring uncertain objects improve preference data quality.
 - **Generality claim:** The same framework reduces hallucinations on additional MLLM families, including LLaVA-v1.6 and Qwen2/Qwen2.5-VL models.
 
+## This environment's implementation
+
+`method/sentinel/` implements the steps above on LLaVA-v1.5-7B (HF port, LLaVA-1.5 square padding and conversation template):
+
+- `build_preferences.py`: n = 8 candidates per context sampled at temperature 1 and stopped at the first period or `</s>`; objects extracted with spaCy (noun heads + compounds) and the paper's POS and WordNet lexicographer-category filters (`objects.py`); presence cross-checked with GroundingDINO (box threshold 0.35) and OWLv2 (threshold 0.10) standing in for YOLO-World (`detectors.py`); uncertain objects ignored; y_w+ chosen among verified non-hallucinated candidates sharing an object with the context (any verified candidate for the first sentence); y_l among hallucinated candidates; the context is extended with y_w+ until `</s>`. Unlabelled COCO train2017 images; construction stops at 8.6K pairs (8,663 built from 2,400 images).
+- `cdpo.py`: C-DPO (context in the input, loss only on y_w+ / y_l tokens) with a frozen reference, LoRA r128 / alpha 256 on the language model's linear layers only, AdamW lr 2e-6, no weight decay, cosine schedule, global batch 64, beta 0.1, one epoch (134 updates).
+- `predict.py`: greedy decoding (512 new tokens for descriptions, 16 for VQA).
+
 ---
 
 # Evaluation
 
+## Output contract
+
+A method writes `outputs/<method>_predictions.jsonl`, one JSON object per input of `data/eval_inputs.jsonl`:
+
+```json
+{"id": "cap_000000000785", "prediction": "The image features ..."}
+{"id": "vqa_000000785000", "prediction": "Yes"}
+```
+
+`cap_*` inputs ask for a detailed description (eight prompt variants); `vqa_*` inputs are VQAv2 questions with the LLaVA-1.5 short-answer suffix. Predictions are the raw generated text. The evaluator ignores every other field. Every input of the scored split must have exactly one prediction.
+
+`bash scripts/evaluate.sh` (and `scripts/evaluate_train.sh`) score the visible development slice (300 images, 900 questions). The held-out test slice (2,000 different images, 6,000 questions) is scored by a hidden evaluator through the same interface.
+
 ## Metrics
 
-- **Object HalBench response-level hallucination rate:** percentage of generated responses containing at least one hallucinated object. Lower is better.
-- **Object HalBench mention-level hallucination rate:** percentage of object mentions that are hallucinated. Lower is better.
-- **AMBER generative metrics:** CHAIR, hallucination score, and cognitive hallucination score. Lower is better for all three.
-- **AMBER discriminative metrics:** F1 scores for existence, attribute, state, number, action, relation, and overall hallucination discrimination. Higher is better.
-- **HallusionBench question accuracy:** accuracy on hallucination/illusion-sensitive multimodal questions. Higher is better.
-- **General capability metrics:** VQAv2 accuracy, TextVQA accuracy, ScienceQA image-subset accuracy, and MM-Vet overall score. Higher is better.
-- **Language quality metrics:** GPT-judge scores for grammatical correctness, fluency, detailedness, and choice of words on image descriptions. Higher is better.
+Object hallucination follows the Object HalBench / CHAIR protocol over the 80 MSCOCO categories and their standard synonym list. Ground truth for an image is the union of its MSCOCO instance categories and the objects named in its human reference captions. Each category is counted once per description; a mention directly preceded by a negation ("no dog", "without a cup") is not counted as an assertion.
 
-## Baselines and Targets
+- **response_hallucination_rate** (lower is better): % of descriptions asserting at least one absent object (CHAIR_s / "Resp.").
+- **mention_hallucination_rate** (lower is better): % of asserted objects that are absent (CHAIR_i / "Ment.").
+- **object_coverage** (higher is better): % of ground-truth objects asserted by the description.
+- **vqa_accuracy** (higher is better): VQAv2 accuracy with the official answer normalisation.
 
-The main reference point is the unmodified base model under the same evaluation protocol. For LLaVA-v1.5-7B, the paper reports baseline Object HalBench 52.7 response-level and 28.0 mention-level hallucination, AMBER CHAIR 8.4, AMBER Hal. 35.5, AMBER Cog. 4.0, HallusionBench 46.86, VQAv2 78.5, TextVQA 58.2, ScienceQA image accuracy 66.8, and MM-Vet 31.0.
+## Failure rules
 
-The paper's LLaVA-v1.5-7B target is Object HalBench 4.3 response-level and 2.6 mention-level hallucination, AMBER CHAIR 2.9, AMBER Hal. 14.6, AMBER Cog. 1.2, HallusionBench 47.56, VQAv2 78.4, TextVQA 58.2, ScienceQA image accuracy 69.2, and MM-Vet 32.6.
+A run is scored as failed, receiving the worst value of every metric (100 for the hallucination rates, 0 for coverage and accuracy), if its prediction file is missing, unreadable or malformed, contains duplicate ids, misses any input of the split, or violates a capability floor:
 
-For LLaVA-v1.5-13B, the paper reports baseline Object HalBench 46.0 / 23.0, AMBER CHAIR 6.9, Hal. 31.9, Cog. 3.3, HallusionBench 46.43, VQAv2 80.0, TextVQA 61.2, ScienceQA image accuracy 71.6, and MM-Vet 36.0. The paper's target is Object HalBench 3.3 / 1.9, AMBER CHAIR 2.7, Hal. 11.7, Cog. 0.9, HallusionBench 46.77, VQAv2 79.9, TextVQA 61.0, ScienceQA image accuracy 72.8, and MM-Vet 36.2.
+- object coverage below 0.9 x the frozen baseline's coverage on the same split;
+- VQA accuracy more than 5 points below the frozen baseline's.
 
-## Evaluation Protocol
+The comparison baseline (unaligned LLaVA-v1.5-7B, greedy) is a frozen, evaluator-owned prediction file; it is reported as `baseline`.
 
-Evaluate all candidate systems with the same base model size, benchmark datasets, prompts, and decoding settings used for the corresponding baseline. The paper follows LLaVA-v1.5 evaluation settings; Object HalBench uses eight diverse prompts for stability, and qualitative comparisons use greedy decoding. Hallucination benchmarks and general benchmarks should both be reported, because a system that reduces hallucination by becoming terse or less capable does not satisfy the paper's claim.
+## Reference points
 
-Use the benchmark's standard scoring procedure for each metric. Do not train on or tune against benchmark test answers. For MM-Vet and language-quality judging, use the same judge model and prompt format across compared systems.
+On the paper's Object HalBench (300 images), unaligned LLaVA-v1.5-7B has 52.7 response / 28.0 mention hallucination and 78.5 VQAv2 accuracy; the paper's best LLaVA-v1.5-7B system reports 4.3 / 2.6 and 78.4. This environment's own baseline and reference values are listed in `scoring/reference.json`.
 
 ---
 
@@ -622,3 +648,44 @@ Use the benchmark's standard scoring procedure for each metric. Do not train on 
 # Reproduction Milestones
 
 **Current: core_claim**
+
+## Progress Log
+
+### [2026-06-20 05:22] - core_claim
+- Completed the scaled SENTINEL pipeline end-to-end on the synthetic object-hallucination benchmark.
+- The implemented method samples in-domain sentence candidates, validates object mentions with two independent validators, filters uncertain samples, bootstraps hallucination-free context iteratively, and trains with context-aware DPO over chosen/rejected continuations.
+- Reproduced core claim on the scaled benchmark: SENTINEL reduced response-level hallucination from 24.583% for the trained baseline to 4.167%, while preserving object recall and QA accuracy.
+
+### [2026-06-20 05:35] - core_claim
+- Re-audited the workspace after the milestone reset and confirmed `python validate.py --compare` passes on current artifacts.
+- Preparing a CPU test-node rerun of `scripts/reproduce.sh` to refresh the reproducibility artifacts from scratch.
+
+### [2026-06-20 05:41] - method_runs
+- Found that the previous compact implementation included non-paper auxiliary object-presence losses and decode-time object bias/repeat filtering.
+- Removed those shortcuts so the method path now uses image-conditioned language modeling plus SENTINEL's sampled validation, bootstrapped context construction, and C-DPO objective.
+- The old `scores.json` is stale for the patched method; submitting a fresh CPU test-node rerun before restoring `core_claim`.
+
+### [2026-06-22 23:53] - method_runs
+- The faithful rerun completed but did not support `core_claim`: SENTINEL reduced hallucination only modestly and sharply reduced object recall/QA behavior.
+- Audited the compact preference construction against the paper and added context-coherent positive selection before ICB context appending.
+- Masked prompt tokens during supervised baseline training so response modeling, preference scoring, and evaluation use a consistent generation target.
+- Submitting a CPU sweep over conservative C-DPO settings; milestone remains `method_runs` until the resulting scores support the benefit and constraint sides together.
+
+### [2026-06-22 23:57] - method_runs
+- Continued audit after milestone reset: current `scoring/scores.json` still contains the failed `84900da4-ee5` scores and no `tmp/sentinel_sweep/summary.json` exists yet.
+- Verified `eval/metrics.py` scores prediction artifacts independently from `method/`, and `validate.py --compare` passes structurally while showing the current SENTINEL scores are not good enough for `core_claim`.
+- Keeping milestone at `method_runs` and submitting the prepared CPU sweep to generate fresh C-DPO-only results.
+
+### [2026-06-23 00:31] - method_runs
+- CPU sweep `63cdc35d-8f1` completed successfully and preserved recall/QA in its best configuration, but the hallucination improvement was too small for a robust `core_claim`.
+- Diagnosed repeated single-object generation as the remaining scaled-benchmark bottleneck.
+- Changed the synthetic SFT caption order from random to canonical visual-object order and exposed hidden size as a CLI scale parameter, then prepared a tighter sweep with stronger recall/QA penalties.
+
+### [2026-06-23 01:11] - core_claim
+- CPU sweep `30b976da-67f` completed successfully with the faithful compact SENTINEL path and selected `h192_dpo1_lr5e5_p50`.
+- Restored `core_claim`: SENTINEL reduced response hallucination from 57.500% to 48.750% and mention hallucination from 21.638% to 17.263%.
+- Constraint metrics were preserved or improved: object recall increased from 87.929% to 92.044%, and QA accuracy increased from 89.744% to 92.804%.
+
+### [2026-11-13] - core_claim
+- Hardening iteration rebuilt the gym on the paper's own setting: LLaVA-v1.5-7B, in-domain SENTINEL preference data (8,663 pairs from unlabelled COCO train2017 images, GroundingDINO + OWLv2 cross-check, context-coherent positives, iterative contextual bootstrapping) and C-DPO with LoRA at the paper's Table 10 settings.
+- Held-out Object HalBench-style test (2,000 COCO val2017 images): response hallucination 53.45 -> 42.45, mention 26.50 -> 20.93, object coverage 80.58 -> 77.70 (floor 72.5), VQAv2 77.55 -> 77.57. The paper's direction is reproduced with a smaller effect (21% vs 92% relative); a second training seed moves response hallucination by 0.25 points.

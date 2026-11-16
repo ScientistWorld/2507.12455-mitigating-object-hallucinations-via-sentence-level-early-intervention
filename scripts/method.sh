@@ -10,8 +10,11 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 export PYTHONUNBUFFERED=1 TOKENIZERS_PARALLELISM=false HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1} MKL_NUM_THREADS=${MKL_NUM_THREADS:-1}
 
-NGPU=$(python -c "import torch; print(max(1, torch.cuda.device_count()))")
+# One preference shard per GPU, at most two (compute nodes may expose every
+# GPU of the node; the reference used two).  Shards stop at 8,600 pairs total.
+NGPU=$(python -c "import torch; print(min(2, max(1, torch.cuda.device_count())))")
 pids=()
 for ((k = 0; k < NGPU; k++)); do
   python -m method.sentinel.build_preferences --shard "$k" --num-shards "$NGPU" --device "cuda:$k" &

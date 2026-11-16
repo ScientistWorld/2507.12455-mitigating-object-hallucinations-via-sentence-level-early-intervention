@@ -1,0 +1,13 @@
+baseline: ok (frozen evaluator-owned baseline)
+posthoc_baseline: ok
+posthoc_sentinel: failed: object coverage 71.61 below the floor 72.52
+sentinel: ok
+sentinel_4k: ok
+sentinel_4k_seed43: ok
+sentinel_half_data: ok
+sentinel_lr3e6: ok
+sentinel_lr4e6: failed: object coverage 70.10 below the floor 72.52
+sentinel_lr5e6: failed: object coverage 65.44 below the floor 72.52
+sentinel_nll_lr5e6: ok
+sentinel_nll_lr8e6: ok
+sentinel_seed43: ok

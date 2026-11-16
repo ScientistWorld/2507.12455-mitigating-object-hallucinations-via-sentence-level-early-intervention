@@ -1,0 +1,45 @@
+{
+  "_meta": {
+    "caption_inputs": 2000,
+    "constraint_floors": {
+      "object_coverage_min": 72.5181860393128,
+      "vqa_accuracy_min": 72.54833333333332
+    },
+    "split": "test",
+    "vqa_inputs": 6000
+  },
+  "experiments": {
+    "object_halbench_coco": {
+      "_status": {
+        "baseline": "ok (frozen evaluator-owned baseline)",
+        "sentinel": "failed: duplicate id cap_000000000139"
+      },
+      "results": {
+        "baseline": {
+          "mention_hallucination_rate": 26.50007059155725,
+          "object_coverage": 80.57576226590311,
+          "response_hallucination_rate": 53.45
+        },
+        "sentinel": {
+          "mention_hallucination_rate": 100.0,
+          "object_coverage": 0.0,
+          "response_hallucination_rate": 100.0
+        }
+      }
+    },
+    "vqav2_general": {
+      "_status": {
+        "baseline": "ok (frozen evaluator-owned baseline)",
+        "sentinel": "failed: duplicate id cap_000000000139"
+      },
+      "results": {
+        "baseline": {
+          "vqa_accuracy": 77.54833333333332
+        },
+        "sentinel": {
+          "vqa_accuracy": 0.0
+        }
+      }
+    }
+  }
+}

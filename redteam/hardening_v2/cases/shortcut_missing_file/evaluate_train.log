@@ -1,0 +1,3 @@
+baseline: ok (frozen evaluator-owned baseline)
+other: ok
+sentinel: failed: missing prediction file sentinel_predictions.jsonl

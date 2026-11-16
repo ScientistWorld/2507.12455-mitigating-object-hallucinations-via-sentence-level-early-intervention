@@ -1,0 +1,2 @@
+baseline: ok (frozen evaluator-owned baseline)
+sentinel: failed: object coverage 0.00 below the floor 72.51

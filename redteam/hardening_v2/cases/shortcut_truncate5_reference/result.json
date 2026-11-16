@@ -1,0 +1,26 @@
+{
+ "case": "shortcut_truncate5_reference",
+ "exit_codes": {
+  "test": 0,
+  "train": 0
+ },
+ "files": [
+  "sentinel_predictions.jsonl"
+ ],
+ "methods": {
+  "baseline": {
+   "mention_hallucination_rate": 26.50007059155725,
+   "object_coverage": 80.57576226590311,
+   "response_hallucination_rate": 53.45,
+   "status": "ok (frozen evaluator-owned baseline)",
+   "vqa_accuracy": 77.54833333333332
+  },
+  "sentinel": {
+   "mention_hallucination_rate": 19.06026896895235,
+   "object_coverage": 75.45271629778672,
+   "response_hallucination_rate": 39.55,
+   "status": "ok",
+   "vqa_accuracy": 77.57166666666667
+  }
+ }
+}

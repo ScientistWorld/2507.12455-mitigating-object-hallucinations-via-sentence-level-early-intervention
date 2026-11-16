@@ -41,4 +41,4 @@
 
 ### [2026-11-13] - core_claim
 - Hardening iteration rebuilt the gym on the paper's own setting: LLaVA-v1.5-7B, in-domain SENTINEL preference data (8,663 pairs from unlabelled COCO train2017 images, GroundingDINO + OWLv2 cross-check, context-coherent positives, iterative contextual bootstrapping) and C-DPO with LoRA at the paper's Table 10 settings.
-- Held-out Object HalBench-style test (700 COCO val2017 images): response hallucination 53.14 -> 41.00, mention 26.92 -> 20.80, object coverage 80.93 -> 77.90 (floor 72.8), VQAv2 77.39 -> 77.25. The paper's direction is reproduced with a smaller effect (23% vs 92% relative).
+- Held-out Object HalBench-style test (2,000 COCO val2017 images): response hallucination 53.45 -> 42.45, mention 26.50 -> 20.93, object coverage 80.58 -> 77.70 (floor 72.5), VQAv2 77.55 -> 77.57. The paper's direction is reproduced with a smaller effect (21% vs 92% relative); a second training seed moves response hallucination by 0.25 points.
